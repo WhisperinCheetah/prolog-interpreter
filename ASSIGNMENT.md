@@ -173,6 +173,8 @@ Voeg aan je verslag je code toe met lijnnummers zodat je in de uitleg van je ver
 	- data representatie (hoe stel je de databank voor)
 	- evaluatie strategie (hoe evalueer je queries)
 - Beschrijving van je uitbreidingen
+- Beschrijving van je testen
+    - leg uit hoe we je tests kunnen uitvoeren
 - Conclusie
 
 
