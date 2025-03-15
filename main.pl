@@ -1,2 +1,4 @@
-likes(john,mary).
-likes(mary,john).
+23000.
+X.
+likes(john, mary).
+likes(mary, john).
