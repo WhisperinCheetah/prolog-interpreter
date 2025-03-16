@@ -101,9 +101,9 @@ int count_char(char* program, char c) {
 }
 
 // TODO: floating point values (check if between '(' and ')')
-int distance_to_next_dot(char* str) {
+int distance_to_next_char(char* str, char c) {
 	int dist = 0;
-	while (str[dist] != '.') {
+	while (str[dist] != c) {
 		dist++;
 	}
 
@@ -117,7 +117,7 @@ char** split_by_dot(char* program, int* line_count) {
 
 	int term_start_pos = 0;
 	for (int i = 0; i < term_count; i++) {
-		int term_length = distance_to_next_dot(&program[term_start_pos]);
+		int term_length = distance_to_next_char(&program[term_start_pos], '.');
 		char* term = strndup(&program[term_start_pos], term_length);
 
 		term_start_pos += term_length + 1;
@@ -139,6 +139,28 @@ typedef struct Term {
     };
 } Term;
 
+void print_term_name(Term* term) {
+	switch(term->type) {
+	case ATOM:
+		printf("%s", term->atom.name);
+		break;
+	case NUMBER:
+		printf("%f", term->number.value);
+		break;
+	case VARIABLE:
+		printf("%s", term->variable.name);
+		break;
+	case STRUCTURE:
+		printf("%s(", term->structure.functor);
+		for (int i = 0; i < term->structure.arity; i++) {
+			print_term_name(term->structure.args[i]);
+			printf(",");
+		}
+		printf(")");
+		break;
+	}
+}
+
 void print_term(Term* term) {
 	switch (term->type) {
 	case ATOM:
@@ -151,7 +173,12 @@ void print_term(Term* term) {
 		printf("Variable: %s\n", term->variable.name);
 		break;
 	case STRUCTURE:
-		printf("Structure: %s/%d\n", term->structure.functor, term->structure.arity);
+		printf("Structure: %s(", term->structure.functor);
+		for (int i = 0; i < term->structure.arity; i++) {
+			print_term_name(term->structure.args[i]);
+			printf(",");
+		}
+		printf(")/%d\n", term->structure.arity);
 		break;
     }
 }
@@ -201,38 +228,68 @@ bool isatom(char* start) {
 	return true;
 }
 
-Term** parse_structure_args(char* start, int* argc) {
-	*argc = count_char(start, ',');
+int count_char_between_brackets(char* program, char c) {
+	int count = 0;
+	int i = 0;
+	while (program[i] != '\0' && program[i] != '(' && program[i] != ')') {
+		if (program[i] == c) {
+			count++;
+		}
+		i++;
+	}
+
+	return count;
 }
 
-Term parse_term(char* start) {
-	Term term;
+Term* parse_term(char*);
+
+Term** parse_structure_args(char* start, int* argc) {
+	*argc = count_char_between_brackets(start, ',') + 1;
+	Term** argv = calloc(sizeof(Term*), *argc);
+
+	char* arg_start_char = start;
+	for (int i = 0; i < *argc; i++) {
+		argv[i] = parse_term(arg_start_char);
+		arg_start_char += distance_to_next_char(start, ',') + 1;
+	}
+
+	return argv;
+}
+
+Term* parse_term(char* start) {
+	Term* term = calloc(sizeof(Term), 1);
 	if (isupper(start[0])) {
-		term.type = VARIABLE;
-		term.variable.name = read_name(start);
+		term->type = VARIABLE;
+		term->variable.name = read_name(start);
 	} else if (islower(start[0])) {
 		if (isatom(start)) {
 			// parse atom
-			term.type = ATOM;
-			term.atom.name = read_name(start);
+			term->type = ATOM;
+			term->atom.name = read_name(start);
 		} else {
 			// parse complex term
-			term.type = STRUCTURE;
-			term.structure.functor = read_name(start);
-			term.structure.args = NULL;
-			term.structure.arity = 0;
+			int argc;
+			Term** argv =
+				parse_structure_args(start + distance_to_next_char(start, '(') + 1, &argc);
+			
+			term->type = STRUCTURE;
+			term->structure.functor = read_name(start);
+			term->structure.args = argv;
+			term->structure.arity = argc;
+			//term->structure.args = NULL;
+			//term->structure.arity = 0;
 		}
 	} else {
 		// parse number
-		term.type = NUMBER;
-		term.number.value = atof(start);
+		term->type = NUMBER;
+		term->number.value = atof(start);
 	}
 
 	return term;
 }
 
-Term* parse_lines(char** lines, int line_count) {
-	Term* terms = calloc(sizeof(Term), line_count);
+Term** parse_lines(char** lines, int line_count) {
+	Term** terms = calloc(sizeof(Term*), line_count);
 	for (int i = 0; i < line_count; i++) {
 		terms[i] = parse_term(lines[i]);
 	}
@@ -266,17 +323,18 @@ int main(int argc, char** argv) {
 	int line_count;
 	char** lines = split_by_dot(program, &line_count);
 
+	printf("SPLIT %d LINES\n", line_count);
+
 	printf("[\n");
 	for (int i = 0; i < line_count; i++) {
 		printf("\t%s,\n", lines[i]);
-		i++;
 	}
 	printf("]\n");
 
-	Term* terms = parse_lines(lines, line_count);
+	Term** terms = parse_lines(lines, line_count);
 
 	for (int i = 0; i < line_count; i++) {
-		print_term(&terms[i]);
+		print_term(terms[i]);
 	}
 	
 	return 0;
