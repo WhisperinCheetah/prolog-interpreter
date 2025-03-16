@@ -85,3 +85,34 @@ Term* duplicate_term(Term* src) {
 
 	return dup;
 }
+
+bool termcmp(Term* t1, Term* t2) {
+	if (t1->type != t2->type) {
+		return false;
+	}
+	
+	switch(t1->type) {
+	case ATOM:
+		return strcmp(t1->atom.name, t2->atom.name) == 0;
+	case NUMBER:
+		return t1->number.value == t2->number.value;
+	case VARIABLE:
+		return strcmp(t1->variable.name, t2->variable.name) == 0;
+	case STRUCTURE:
+		if (
+			strcmp(t1->structure.functor, t2->structure.functor) == 0
+			&& t1->structure.arity == t2->structure.arity
+			) {
+			
+			for (int i = 0; i < t1->structure.arity; i++) {
+				if (!termcmp(t1->structure.args[i], t2->structure.args[i])) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
