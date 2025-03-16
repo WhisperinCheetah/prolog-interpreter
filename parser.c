@@ -31,6 +31,8 @@ Terms
 
 Atomen:
 - moet beginnen met een kleine letter
+Nummers:
+- nummer
 Variabelen:
 - begint met hoofdletter/underscore
 Complexe termen:
@@ -48,7 +50,7 @@ Complexe termen:
 
 #include "parser.h"
 
-char* read_entire_file(FILE* file, int* program_size) {
+char* read_entire_file(FILE* file) {
 	if (!file) {
 		return NULL;
 	}
@@ -57,8 +59,6 @@ char* read_entire_file(FILE* file, int* program_size) {
 	fseek(file, 0, SEEK_END); // goto eof
 	size = ftell(file);
 	rewind(file);
-
-	*program_size = size;
 	
 	char* buffer = calloc(sizeof(char), size + 1); // '\0'
 	if (!buffer) return NULL;
@@ -70,11 +70,12 @@ char* read_entire_file(FILE* file, int* program_size) {
 	return buffer;
 }
 
-void clear_whitespace(char* str, int* size) {
-	char* buffer = calloc(sizeof(char), *size + 1);
+void clear_whitespace(char* str) {
+	int size = strlen(str);
+	char* buffer = calloc(sizeof(char), size + 1);
 
 	int whitespace_count = 0;
-	for (int i = 0; i < *size; i++) {
+	for (int i = 0; i < size; i++) {
 		if (isspace(str[i])) {
 			whitespace_count++;
 		} else {
@@ -82,9 +83,8 @@ void clear_whitespace(char* str, int* size) {
 		}
 	}
 
-	int new_size = *size - whitespace_count;
+	int new_size = size - whitespace_count;
 	
-	*size = new_size;
 	str = realloc(str, new_size + 1); // '\0'
 	strcpy(str, buffer); // strncpy causes a bug ??
 }
@@ -233,7 +233,7 @@ int count_char_between_brackets(char* program, char c) {
 	return count;
 }
 
-Term* parse_term(char*);
+Term* parse_term_no_whitespace(char*);
 
 Term** parse_structure_args(char* start, int* argc) {
 	*argc = count_char_between_brackets(start, ',') + 1;
@@ -241,14 +241,14 @@ Term** parse_structure_args(char* start, int* argc) {
 
 	char* arg_start_char = start;
 	for (int i = 0; i < *argc; i++) {
-		argv[i] = parse_term(arg_start_char);
+		argv[i] = parse_term_no_whitespace(arg_start_char);
 		arg_start_char += distance_to_next_char(start, ',') + 1;
 	}
 
 	return argv;
 }
 
-Term* parse_term(char* start) {
+Term* parse_term_no_whitespace(char* start) {
 	Term* term = calloc(sizeof(Term), 1);
 	if (isupper(start[0])) {
 		term->type = VARIABLE;
@@ -268,8 +268,6 @@ Term* parse_term(char* start) {
 			term->structure.functor = read_name(start);
 			term->structure.args = argv;
 			term->structure.arity = argc;
-			//term->structure.args = NULL;
-			//term->structure.arity = 0;
 		}
 	} else {
 		// parse number
@@ -280,17 +278,30 @@ Term* parse_term(char* start) {
 	return term;
 }
 
+Term* parse_term(char* start) {
+	int length = strlen(start);
+	char* copy = malloc(sizeof(char) * (length+1));
+	strcpy(copy, start);
+
+	clear_whitespace(copy);
+	
+	Term* term = parse_term_no_whitespace(copy);
+
+	free(copy);
+
+	return term;
+}
+
 Term** parse_lines(char** lines, int line_count) {
 	Term** terms = calloc(sizeof(Term*), line_count);
 	for (int i = 0; i < line_count; i++) {
-		terms[i] = parse_term(lines[i]);
+		terms[i] = parse_term_no_whitespace(lines[i]);
 	}
 	return terms;
 }
 
 Term** parse(FILE* file, int* term_count) {
-	int program_size;
-	char* program = read_entire_file(file, &program_size);
+	char* program = read_entire_file(file);
 
 	if (!program) {
 		fprintf(stderr, "Something went wrong while reading file\n");
@@ -298,7 +309,7 @@ Term** parse(FILE* file, int* term_count) {
 		return NULL;
 	}
 
-	clear_whitespace(program, &program_size);
+	clear_whitespace(program);
 
 	int line_count;
 	char** lines = split_by_dot(program, &line_count);
