@@ -37,8 +37,33 @@ bool termcmp(Term* t1, Term* t2) {
 	return false;
 }
 
-Term* unify_db_term(Term* dbterm, Term* query) {
-	
+Term* fill_db_term(Term* dbterm, Term* query) {
+	Term* dup = duplicate_term(dbterm);
+
+	// fill in variables with atoms and numbers
+	for (int i = 0; i < dup->structure.arity; i++) {
+		Term* arg = dup->structure.args[i];
+		if (arg->type == VARIABLE) {
+			// replace with value from query
+			dup->structure.args[i] = duplicate_term(query->structure.args[i]);
+
+			// replace variables with same name (TODO: RECURSIVE)
+			for (int j = i+1; j < dup->structure.arity; j++) {
+				Term* other_arg = dup->structure.args[j];
+				if (other_arg->type == VARIABLE && termcmp(arg, other_arg)) {
+					dup->structure.args[j] = duplicate_term(query->structure.args[i]);
+				}
+			}
+		}
+	}
+
+	return dup;
+}
+
+bool evaluate_terms(Term* dbterm, Term* query) {
+	Term* filled_dbterm = fill_db_term(dbterm, query);
+
+	return termcmp(filled_dbterm, query);
 }
 
 bool resolve(Term* query, Term** db, int db_size) {
@@ -49,7 +74,7 @@ bool resolve(Term* query, Term** db, int db_size) {
 	for (int i = 0; i < db_size; i++) {
 		Term* term = db[i];
 		
-		if (termcmp(term, query)) {
+		if (evaluate_terms(term, query)) {
 			return true;
 		}
 	}

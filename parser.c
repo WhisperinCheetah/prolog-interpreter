@@ -129,52 +129,6 @@ char** split_by_dot(char* program, int* line_count) {
 	return term_array;
 }
 
-
-
-void print_term_name(Term* term) {
-	switch(term->type) {
-	case ATOM:
-		printf("%s", term->atom.name);
-		break;
-	case NUMBER:
-		printf("%f", term->number.value);
-		break;
-	case VARIABLE:
-		printf("%s", term->variable.name);
-		break;
-	case STRUCTURE:
-		printf("%s(", term->structure.functor);
-		for (int i = 0; i < term->structure.arity; i++) {
-			print_term_name(term->structure.args[i]);
-			printf(",");
-		}
-		printf(")");
-		break;
-	}
-}
-
-void print_term(Term* term) {
-	switch (term->type) {
-	case ATOM:
-		printf("Atom: %s\n", term->atom.name);
-		break;
-	case NUMBER:
-		printf("Number: %f\n", term->number.value);
-		break;
-	case VARIABLE:
-		printf("Variable: %s\n", term->variable.name);
-		break;
-	case STRUCTURE:
-		printf("Structure: %s(", term->structure.functor);
-		for (int i = 0; i < term->structure.arity; i++) {
-			print_term_name(term->structure.args[i]);
-			printf(",");
-		}
-		printf(")/%d\n", term->structure.arity);
-		break;
-    }
-}
-
 char* read_until_bracket(char* str) {
 	int offset = 0;
 	while (str[offset] != '(' && str[offset] != ')') {

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "term.h"
 
@@ -46,24 +48,34 @@ void print_term(Term* term) {
     }
 }
 
+
 void copy_term(Term* dest, Term* src) {
 	dest->type = src->type;
-	
+
+	char* name_copy;
 	switch(src->type) {
 	case ATOM:
-		char* name_copy = strdup(src->atom.name);
+		name_copy = strdup(src->atom.name);
 		dest->atom.name = name_copy;
 		break;
 	case VARIABLE:
-		char* name_copy = strdup(src->variable.name);
+		name_copy = strdup(src->variable.name);
 		dest->variable.name = name_copy;
 		break;
 	case NUMBER:
 		dest->number.value = src->number.value;
 		break;
 	case STRUCTURE:
-		char* name_copy = strdup(src->structure.functor);
+		name_copy = strdup(src->structure.functor);
 		Term** arg_list = calloc(sizeof(Term*), src->structure.arity);
+		for (int i = 0; i < src->structure.arity; i++) {
+			arg_list[i] = duplicate_term(src->structure.args[i]);
+		}
+
+		dest->structure.functor = name_copy;
+		dest->structure.args = arg_list;
+		dest->structure.arity = src->structure.arity;
+		break;
 	}
 }
 

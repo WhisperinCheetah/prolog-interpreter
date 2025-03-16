@@ -15,5 +15,6 @@ typedef struct Term {
 
 void print_term(Term* term);
 void copy_term(Term* dest, Term* src);
+Term* duplicate_term(Term* src);
 
 #endif
