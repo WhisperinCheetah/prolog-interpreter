@@ -37,7 +37,9 @@ void print_database(TermDatabase* db) {
 	for (int i = 0; i < db->structure_pair_count; i++) {
 		StructurePair pair = db->structure_pairs[i];
 		printf("\t\tStructurePair {\n");
-		printf("\t\t\tFunctor = %s\n", pair.structure->structure.functor);
+		printf("\t\t\tFunctor = %s/%d\n",
+			   pair.structure->structure.functor,
+			   pair.structure->structure.arity);
 		printf("\t\t\tCandidateList* lists = \n");
 
 		for (int j = 0; j < pair.structure->structure.arity; j++) {
@@ -55,6 +57,8 @@ void print_database(TermDatabase* db) {
 			printf("],\n");
 		}
 	}
+
+	printf("}\n");
 }
 
 void init_database(TermDatabase* db) {
@@ -86,26 +90,28 @@ bool try_add_to_structure_pair_list(TermDatabase* db, Term* term) {
 			) {
 			// add arguments to list
 			for (int i = 0; i < s->structure.arity; i++) {
-				CandidateList list = pair.candidate_lists[i];
+				CandidateList* list = &pair.candidate_lists[i];
 				Term* arg = term->structure.args[i];
 
+				if (arg->type == VARIABLE || arg->type == STRUCTURE) break;
+
 				bool found = false;
-				for (int j = 0; j < list.count; j++) {
-					if (termcmp(list.candidates[j], arg)) {
+				for (int j = 0; j < list->count; j++) {
+					if (termcmp(list->candidates[j], arg)) {
 						found = true;
 						break;
 					}
 				}
 
 				if (!found) {
-					if (list.count >= list.size) {
-						list.candidates =
-							realloc(list.candidates, sizeof(Term*)*list.size*2);
-						list.size *= 2;
+					if (list->count >= list->size) {
+						list->candidates =
+							realloc(list->candidates, sizeof(Term*)*list->size*2);
+						list->size *= 2;
 					}
 					
-					list.candidates[list.count] = duplicate_term(arg);
-					list.count++;
+					list->candidates[list->count] = duplicate_term(arg);
+					list->count++;
 				}
 			}
 			
@@ -152,13 +158,12 @@ void add_to_structure_pair_list(TermDatabase* db, Term* term) {
 	try_add_to_structure_pair_list(db, term);
 }
 
-// TODO: fix adding arguments to structures
 TermDatabase* create_and_populate_database(Term** terms, int term_count) {
 	TermDatabase* db = calloc(sizeof(TermDatabase), 1);
 	db->terms = terms;
 	db->term_count = term_count;
 
-	int structure_count = count_structures(terms, term_count); // should count unique
+	int structure_count = count_structures(terms, term_count); // should count unique values
 	StructurePair* list = calloc(sizeof(StructurePair), structure_count);
 
 	db->structure_pairs = list;
@@ -221,10 +226,34 @@ bool resolve(Term* query, TermDatabase* db) {
 	return false;
 }
 
-bool run_query(char* query_str, TermDatabase* db) {
+void unify(TermDatabase* db, Term* query) {
+	
+}
+
+bool contains_variables(Term* structure) {
+	for (int i = 0; i < structure->structure.arity; i++) {
+		Term* arg = structure->structure.args[i];
+		if (arg->type == VARIABLE) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+// returns response (true, false, X=...)
+char* run_query(char* query_str, TermDatabase* db) {
 	Term* query = parse_term(query_str);
 
-	return resolve(query, db);
+	if (contains_variables(query)) {
+		
+	} else {
+		bool res = resolve(query, db);
+		
+		if (res) return "true";
+		else return "false";
+	}
+
 }
 
 int main(int argc, char** argv) {
