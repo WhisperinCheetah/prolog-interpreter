@@ -27,6 +27,11 @@ void print_term_name(Term* term) {
 }
 
 void print_term(Term* term) {
+	if (term == NULL) {
+		printf("Term: NULL\n");
+		return;
+	}
+	
 	switch (term->type) {
 	case ATOM:
 		printf("Atom: %s\n", term->atom.name);

@@ -226,8 +226,72 @@ bool resolve(Term* query, TermDatabase* db) {
 	return false;
 }
 
-void unify(TermDatabase* db, Term* query) {
+bool structures_eq(Term* s1, Term* s2) {
+	if (s1->type != STRUCTURE || s2->type != STRUCTURE) {
+		return false;
+	}
+
+	return
+		strcmp(s1->structure.functor, s2->structure.functor) == 0
+		&& s1->structure.arity == s2->structure.arity;
+}
+
+CandidateList* get_candidate_list(TermDatabase* db, Term* structure, int argi) {
+	CandidateList* list = NULL;
+	for (int i = 0; i < db->structure_pair_count; i++) {
+		if (structures_eq(structure, db->structure_pairs[i].structure)) {
+			list = &db->structure_pairs[i].candidate_lists[argi];
+			break;
+		}
+	}
+
+	return list;
+}
+
+Term* get_next_candidate(CandidateList* list, int* start_index) {
+	if (*start_index >= list->count) {
+		return NULL;
+	}
+
+	// can be one-liner
+	Term* res = list->candidates[*start_index];
+	*start_index += 1;
+
+	return res;
+}
+
+// currently assuming only 1 variable
+// should return response in form of VAR = ATOM
+Term* unify(TermDatabase* db, Term* query) {
+	int argi = -1;
+	for (int i = 0; i < query->structure.arity; i++) {
+		if (query->structure.args[i]->type == VARIABLE) {
+			argi = i;
+			break;
+		}
+	}
+
+	if (argi == -1) {
+		printf("Could not find variable\n");
+		return NULL;
+	}
 	
+	CandidateList* list = get_candidate_list(db, query, argi);
+
+	Term* query_copy = duplicate_term(query);
+	
+	int candidate_index = 0;
+	Term* candidate = NULL;
+	while (!resolve(query_copy, db)) {
+		candidate = get_next_candidate(list, &candidate_index);
+
+		if (candidate == NULL) break;
+		
+		query_copy->structure.args[argi] = candidate;
+	}
+
+
+	return candidate;
 }
 
 bool contains_variables(Term* structure) {
@@ -246,7 +310,24 @@ char* run_query(char* query_str, TermDatabase* db) {
 	Term* query = parse_term(query_str);
 
 	if (contains_variables(query)) {
-		
+		Term* res = unify(db, query);
+
+		if (res == NULL) {
+			return "FAILED";
+		}
+
+		switch(res->type) {
+		case ATOM:
+			return res->atom.name;
+		case NUMBER:
+			return "A number";
+		case VARIABLE:
+			fprintf(stderr, "Variable returned while unifying\n");
+			exit(1);
+		case STRUCTURE:
+			fprintf(stderr, "STRUCTURE RETURN IN UNIFICATION NOT IMPLEMENTED\n");
+			exit(1);
+		}
 	} else {
 		bool res = resolve(query, db);
 		
@@ -254,6 +335,7 @@ char* run_query(char* query_str, TermDatabase* db) {
 		else return "false";
 	}
 
+	return NULL;
 }
 
 int main(int argc, char** argv) {
@@ -287,11 +369,7 @@ int main(int argc, char** argv) {
 		buffer[strlen(buffer)-1] = '\0'; // remove newline
 
 		if (buffer[0] == '?' && buffer[1] == '-') {
-			if (run_query(&buffer[2], db)) {
-				printf("true\n");
-			} else {
-				printf("false\n");
-			}
+			printf("%s\n", run_query(&buffer[2], db));
 		}
 	}
 
