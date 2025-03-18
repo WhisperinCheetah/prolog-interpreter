@@ -246,15 +246,45 @@ Term* parse_term(char* start) {
 	return term;
 }
 
-Term** parse_lines(char** lines, int line_count) {
-	Term** terms = calloc(sizeof(Term*), line_count);
-	for (int i = 0; i < line_count; i++) {
-		terms[i] = parse_term_no_whitespace(lines[i]);
+bool isrule(char* line) {
+	int i = 1;
+	while (line[i] != '.' && line[i] != '\0') {
+		if (line[i-1] == ':' && line[i] == '-') {
+			return true;
+		}
+		i++;
 	}
-	return terms;
+	return false;
 }
 
-Term** parse(FILE* file, int* term_count) {
+Rule* parse_rule(char* start) {
+	printf("parsing rule: %s\n", start);
+
+	Term* head = parse_term_no_whitespace(start);
+
+	printf("rule head: ");
+	print_term(head);
+	
+	Rule* rule = calloc(sizeof(Rule), 1);
+	rule->head = head;
+	rule->body = NULL;
+	
+	return rule;
+}
+
+void parse_lines(TermDatabase* db, char** lines, int line_count) {
+	for (int i = 0; i < line_count; i++) {
+		if (isrule(lines[i])) {
+			Rule* rule = parse_rule(lines[i]);
+			add_rule_to_db(db, rule);
+		} else {
+			Term* term = parse_term_no_whitespace(lines[i]);
+			add_term_to_db(db, term);
+		}
+	}
+}
+
+TermDatabase* parse(FILE* file) {
 	char* program = read_entire_file(file);
 
 	if (!program) {
@@ -268,19 +298,15 @@ Term** parse(FILE* file, int* term_count) {
 	int line_count;
 	char** lines = split_by_dot(program, &line_count);
 
-	*term_count = line_count;
-
 	printf("[\n");
 	for (int i = 0; i < line_count; i++) {
 		printf("\t%s,\n", lines[i]);
 	}
 	printf("]\n");
 
-	Term** terms = parse_lines(lines, line_count);
-
-	for (int i = 0; i < line_count; i++) {
-		print_term(terms[i]);
-	}
+	TermDatabase* db = create_database();
+	parse_lines(db, lines, line_count);
+	create_candidates(db);
 	
-	return terms;
+	return db;
 }

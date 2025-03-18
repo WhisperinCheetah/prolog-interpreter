@@ -8,3 +8,4 @@ parser.o: parser.c parser.h term.o
 
 term.o: term.c term.h
 	gcc $(CFLAGS) -c term.c
+

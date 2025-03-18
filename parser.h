@@ -8,4 +8,4 @@
 #include "term.h"
 
 Term* parse_term(char* start);
-Term** parse(FILE* file, int* term_count);
+TermDatabase* parse(FILE* file);

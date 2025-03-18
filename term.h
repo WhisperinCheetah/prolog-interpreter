@@ -3,6 +3,11 @@
 
 #include <stdbool.h>
 
+#include "rule.h"
+
+  /***********/
+ /** TERMS **/
+/***********/
 typedef enum { ATOM, NUMBER, VARIABLE, STRUCTURE } TermType;
 
 typedef struct Term {
@@ -19,5 +24,60 @@ void print_term(Term* term);
 void copy_term(Term* dest, Term* src);
 Term* duplicate_term(Term* src);
 bool termcmp(Term* t1, Term* t2);
+
+  /***********/
+ /** RULES **/
+/***********/
+typedef enum { CONJUNCTION, DISJUNCTION } BodyType;
+
+typedef struct Rule {
+    Term *head;
+    struct BodyNode *body;
+} Rule;
+
+typedef struct BodyNode {
+    BodyType type; // Conjunction or disjunction with next
+    Term *term; 
+    struct BodyNode *next;
+} BodyNode;
+
+  /**************/
+ /** DATABASE **/
+/**************/
+typedef struct CandidateList {
+	Term** candidates;
+	int count;
+	int size;
+} CandidateList;
+
+typedef struct StructurePair {
+	Term* structure;
+	CandidateList* candidate_lists;
+} StructurePair;
+
+typedef struct TermDatabase {
+	int term_count;
+	int term_size;
+	Term** terms;
+
+	int rule_count;
+	int rule_size;
+	Rule** rules;
+	
+	int structure_pair_count;
+	int structure_pair_size;
+	StructurePair* structure_pairs;
+} TermDatabase;
+
+void print_database(TermDatabase*);
+void init_database(TermDatabase*);
+TermDatabase* create_database();
+TermDatabase* create_and_populate_database(Term** terms, int term_count);
+
+void add_rule_to_db(TermDatabase*, Rule*);
+void add_term_to_db(TermDatabase*, Term*);
+
+void create_candidates(TermDatabase*);
+
 
 #endif
