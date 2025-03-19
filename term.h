@@ -3,8 +3,6 @@
 
 #include <stdbool.h>
 
-#include "rule.h"
-
   /***********/
  /** TERMS **/
 /***********/
@@ -37,8 +35,9 @@ typedef struct Rule {
 
 typedef struct BodyNode {
     BodyType type; // Conjunction or disjunction with next
-    Term *term; 
-    struct BodyNode *next;
+	Term* term; // NULL if not leaf
+	struct BodyNode *left;
+    struct BodyNode *right;
 } BodyNode;
 
   /**************/

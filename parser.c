@@ -257,17 +257,26 @@ bool isrule(char* line) {
 	return false;
 }
 
+BodyNode* parse_rule_body(char* start) {
+	Term* body_term = parse_term_no_whitespace(start);
+
+	BodyNode* body = calloc(sizeof(BodyNode), 1);
+	body->term = body_term;
+	body->left = NULL;
+	body->right = NULL;
+
+	return body;
+}
+
 Rule* parse_rule(char* start) {
 	printf("parsing rule: %s\n", start);
 
 	Term* head = parse_term_no_whitespace(start);
-
-	printf("rule head: ");
-	print_term(head);
+	BodyNode* body = parse_rule_body(start + distance_to_next_char(start, '-') + 1);
 	
 	Rule* rule = calloc(sizeof(Rule), 1);
 	rule->head = head;
-	rule->body = NULL;
+	rule->body = body;
 	
 	return rule;
 }
