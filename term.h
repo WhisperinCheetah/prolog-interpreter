@@ -29,8 +29,9 @@ bool termcmp(Term* t1, Term* t2);
 typedef enum { CONJUNCTION, DISJUNCTION } BodyType;
 
 typedef struct Rule {
-    Term *head;
-    struct BodyNode *body;
+    Term* head;
+	Term** body;
+	int body_count
 } Rule;
 
 typedef struct BodyNode {

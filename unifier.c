@@ -186,6 +186,7 @@ Term* branch_and_bound(TermDatabase* db, Term* query, int varc) {
 
 // currently assuming only 1 variable
 // should return response in form of VAR = ATOM
+// return some kind of iterator
 Term* unify(TermDatabase* db, Term* query) {
 	int varc = count_vars(query);
 

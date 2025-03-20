@@ -248,6 +248,9 @@ Term* parse_term(char* start) {
 
 bool isrule(char* line) {
 	int i = 1;
+
+	if (line[0] == '\0') return false;
+	
 	while (line[i] != '.' && line[i] != '\0') {
 		if (line[i-1] == ':' && line[i] == '-') {
 			return true;
@@ -257,7 +260,33 @@ bool isrule(char* line) {
 	return false;
 }
 
+int count_body_terms(char* start) {
+	int count = 0;
+	int i = 0;
+	while (start[i] != '.' && start[i] != '\0') {
+		if (start[i] == ',') {
+			count++;
+		}
+
+		if (start[i] == '(') {
+			i += distance_to_next_char(&start[i], ')');
+		}
+
+		i++;
+	}
+
+	return count;
+}
+
 BodyNode* parse_rule_body(char* start) {
+	int term_count = count_body_terms(start);
+
+	Term** body = calloc(sizeof(Term*), term_count);
+	
+	bool ended = false;
+	while (!ended) {
+		ended = true;
+	}
 	Term* body_term = parse_term_no_whitespace(start);
 
 	BodyNode* body = calloc(sizeof(BodyNode), 1);
