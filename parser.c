@@ -278,8 +278,9 @@ int count_body_terms(char* start) {
 	return count;
 }
 
-BodyNode* parse_rule_body(char* start) {
+Term** parse_rule_body(char* start, int* body_count) {
 	int term_count = count_body_terms(start);
+	*body_count = term_count;
 
 	Term** body = calloc(sizeof(Term*), term_count);
 	
@@ -288,11 +289,11 @@ BodyNode* parse_rule_body(char* start) {
 		ended = true;
 	}
 	Term* body_term = parse_term_no_whitespace(start);
-
-	BodyNode* body = calloc(sizeof(BodyNode), 1);
-	body->term = body_term;
-	body->left = NULL;
-	body->right = NULL;
+	body[0] = body_term;
+	// BodyNode* body = calloc(sizeof(BodyNode), 1);
+	// body->term = body_term;
+	// body->left = NULL;
+	// body->right = NULL;
 
 	return body;
 }
@@ -300,12 +301,14 @@ BodyNode* parse_rule_body(char* start) {
 Rule* parse_rule(char* start) {
 	printf("parsing rule: %s\n", start);
 
+	int body_count;
 	Term* head = parse_term_no_whitespace(start);
-	BodyNode* body = parse_rule_body(start + distance_to_next_char(start, '-') + 1);
+	Term** body = parse_rule_body(start + distance_to_next_char(start, '-') + 1, &body_count);
 	
 	Rule* rule = calloc(sizeof(Rule), 1);
 	rule->head = head;
 	rule->body = body;
+	rule->body_count = body_count;
 	
 	return rule;
 }

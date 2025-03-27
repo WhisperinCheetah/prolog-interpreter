@@ -31,7 +31,7 @@ typedef enum { CONJUNCTION, DISJUNCTION } BodyType;
 typedef struct Rule {
     Term* head;
 	Term** body;
-	int body_count
+	int body_count;
 } Rule;
 
 typedef struct BodyNode {
