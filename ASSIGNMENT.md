@@ -2,12 +2,13 @@
 
 Er is een nijpend tekort aan Prolog-implementaties. Om dit probleem op te lossen, is het jouw taak om een eigen Prolog-interpreter *Ghent Prolog* te bouwen. Deze interpreter moet een subset van Prolog ondersteunen en in staat zijn om eenvoudige logische regels en queries uit te voeren alsook minstens één complexere Prolog constructie ondersteunen. 
 
-Je bent volledig vrij om de programmeertaal waarin je de Prolog-interpreter maakt zelf te kiezen. Let er echter op dat je code beoordeeld zal worden op leesbaarheid en dat je de implementatie moet kunnen uitleggen tijdens je verdediging. Gebruik van esoterische programmeertalen, zoals gesuggereerd tijdens het hoorcollege, wordt daarom ten zeerste afgeraden.
+Je bent volledig vrij om de programmeertaal waarin je de Prolog-interpreter maakt zelf te kiezen (Prolog zelf is niet toegestaan). Let er echter op dat je code beoordeeld zal worden op leesbaarheid en dat je de implementatie moet kunnen uitleggen tijdens je verdediging. Gebruik van esoterische programmeertalen, zoals gesuggereerd tijdens het hoorcollege, wordt daarom ten zeerste afgeraden.
 
 In dit document geven we een overzicht van de basis functionaliteit van deze interpreter. 
 Verder geven we de vereisten waaraan je project moet voldoen.
 
 ## Doel van de Opgave
+
 Het doel van de opgave is om een basisimplementatie van een Prolog-interpreter maken, we testen hiermee dat je kennis hebt van de volgende Prolog concepten. 
 
 * Unificatie.
@@ -25,17 +26,17 @@ Om ervoor te zorgen dat we alle interpreters op dezelfde manier kunnen testen zu
 
 Veronderstel dat de onderstaande code  in een bestand `test.pl` staat. 
 
-```
+```pl
 :- initialization(main). 
 
 main :- write(10),
         nl,
-		write(hello(world)).
+        write(hello(world)).
 ```
 
 Dan zal je interpreter *gpl* moeten gestart kunnen worden op de command line als volgt:
 
-```
+```bash
 gpl -s test.pl 
 10
 hello(world)
@@ -43,14 +44,12 @@ hello(world)
 
 In onze testen zullen we interpreter testen door *swipl* uit te voeren als volgt:
 
-```
+```bash
 swipl  -t halt -q -s test.pl
 10
 hello(world)
 ```
 Onze test zal dan simpelweg bekijken of de uitvoer van *gpl* overeenkomt met deze van *swipl*.
-
-
 
 ## Functionaliteit
 
@@ -60,7 +59,7 @@ Hieronder volgt een lijst met de meest voor de hand liggende functionaliteiten d
 
 Je interpreter moet minimaal de volgende twee modi ondersteunen:
 
-- [ ] een script mode (gpl -s)
+- [ ] een script mode (`gpl -s`)
 - [ ] een read-eval-print loop (`gpl --repl` of `gpl -r`)
 
 
@@ -68,9 +67,10 @@ Je interpreter moet minimaal de volgende twee modi ondersteunen:
 
 Deze functionaliteit is bijzonder belangrijk gezien de automatische testen hiervan gebruik zullen maken. Het gebruik van `initalization` is om Goal op te roepen direct na het inladen van de file, SWIPL heeft ook ondersteuning voor saved states, dit moet je niet implementeren. 
 
-- [ ] write(+Term) 
-- [ ] read(-Term)
-- [ ] :- initialization(:Goal) 
+- [ ] `write(+Term)`
+- [ ] `nl/0`
+- [ ] `read(-Term)`
+- [ ] `:- initialization(:Goal)`
 
 
 **Control Constructs**
@@ -100,6 +100,7 @@ Deze functionaliteit is bijzonder belangrijk gezien de automatische testen hierv
 
 **database operations**
 
+- [ ] `dynamic/1`
 - [ ] `assert/1` 
 - [ ] `asserta/1` 
 - [ ] `assertz/1` 
@@ -122,13 +123,11 @@ Een leuke uitbreiding voor je Prolog-interpreter is de ondersteuning van lijsten
 
 Zorg voor een set van testen die je predicaten testen.  
 
-
 ### DCG support 
 
 Een interessante uitbreiding voor je Prolog-interpreter is de ondersteuning van Definite Clause Grammars (DCG), een ingebouwde manier om grammatica’s en parsers te definiëren in Prolog. DCG’s worden vaak gebruikt voor het verwerken van natuurlijke taal en het bouwen van parsers voor programmeertalen. Hint: Het boek legt uit hoe je DCG's syntax kan omzetten naar traditionele Prolog regels.
 
 Voor meer info raadpleeg de Prolog documentatie [DCG](https://www.swi-prolog.org/pldoc/man?section=DCG).
-
 
 ### Meta abstracties
 Een krachtige uitbreiding voor je Prolog-interpreter is de ondersteuning van meta-abstracties, waarmee Prolog-code zichzelf kan inspecteren. Meta-abstracties maken het mogelijk om programma’s te schrijven die andere Prolog-programma’s manipuleren, analyseren of zelfs uitbreiden. Implementeer hiervoor minstens de volgende predicaten: 
@@ -183,6 +182,21 @@ Voeg aan je verslag je code toe met lijnnummers zodat je in de uitleg van je ver
 Op het einde van het semester zal je ook jouw project mondeling moeten voorstellen.
 De dag van de verdedigingen zal later worden meegedeeld.
 
+# Testen
+
+Een deel van de automatische testen die we zullen gebruiken om je project te evalueren zijn beschikbaar in de map `examples/`.
+Bovendien kan je de basis testen (`examples/basics/`) ook runnen via de docker:
+
+```bash
+docker pull tolauwae/lp-project-2024-2025:latest
+docker run --rm --mount type=bind,source={PROJECT REPO}/src,target=/staging/project tolauwae/lp-project-2024-2025:latest ./project/gpl
+```
+
+Waarbij {PROJECT REPO} de locatie van je project repository is.
+
+De docker image gebruikt de officiële SWI-Prolog image net als de automatische testen bij het verbeteren van je project.
+De image gebruikt swipl versie 9.2.9 (laatste stable versie).
+
 # Indienen
 
 Het indienen van het project gebeurd via **GitHub Classroom**.
@@ -198,7 +212,22 @@ Als hiermee iets fout loopt, contacteer ons dan zo snel mogelijk.
 > [!IMPORTANT]
 > De laatste commit op de branch `main` van je fork op de deadline geldt als je indiening.
 
-## Vorm 
+### GitHub Actions
+
+GitHub actions gebruiken op de indien repo is niet toegestaan (disabled voor alle repos). Je kan echter een eigen private fork van je indien-repo maken en daar je code testen met GitHub Actions. Lokaal op je eigen machine werk je dan met twee remotes:
+
+```bash
+git remote -v
+indien	git@github.com:Logisch-Programmeren/project2425-tolauwae.git (fetch)
+indien  git@github.com:Logisch-Programmeren/project2425-tolauwae.git (push)
+origin  git@github.com:tolauwae/project2425-tolauwae.git (fetch)
+origin  git@github.com:tolauwae/project2425-tolauwae.git (push)
+```
+
+We maken wel een uitzondering voor self-hosted runners, als je dit hebt opgezet stuur ons dan een mailtje en dan laten we actions weer toe voor jouw repo.
+
+## Vorm
+
 Je project moet volgende structuur hebben:
 
   - `src/` bevat alle broncode (inclusief `gpl`).
