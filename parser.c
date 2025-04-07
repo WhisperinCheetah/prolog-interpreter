@@ -261,7 +261,7 @@ bool isrule(char* line) {
 }
 
 int count_body_terms(char* start) {
-	int count = 0;
+	int count = 1;
 	int i = 0;
 	while (start[i] != '.' && start[i] != '\0') {
 		if (start[i] == ',') {
@@ -278,22 +278,28 @@ int count_body_terms(char* start) {
 	return count;
 }
 
+int distance_to_next_body_term(char* start) {
+	int i = 0;
+	while (start[i] != ',' && start[i] != '.' && start[i] != '\0') {
+		if (start[i] == '(') {
+			i += distance_to_next_char(&start[i], ')');
+		}
+		i++;
+	}
+
+	return i;
+}
+
 Term** parse_rule_body(char* start, int* body_count) {
 	int term_count = count_body_terms(start);
 	*body_count = term_count;
 
 	Term** body = calloc(sizeof(Term*), term_count);
-	
-	bool ended = false;
-	while (!ended) {
-		ended = true;
+
+	for (int i = 0; i < term_count; i++) {
+		body[i] = parse_term_no_whitespace(start);
+		start += distance_to_next_body_term(start) + 1;
 	}
-	Term* body_term = parse_term_no_whitespace(start);
-	body[0] = body_term;
-	// BodyNode* body = calloc(sizeof(BodyNode), 1);
-	// body->term = body_term;
-	// body->left = NULL;
-	// body->right = NULL;
 
 	return body;
 }
@@ -304,7 +310,6 @@ Rule* parse_rule(char* start) {
 	int body_count;
 	Term* head = parse_term_no_whitespace(start);
 	Term** body = parse_rule_body(start + distance_to_next_char(start, '-') + 1, &body_count);
-	
 	Rule* rule = calloc(sizeof(Rule), 1);
 	rule->head = head;
 	rule->body = body;

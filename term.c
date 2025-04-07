@@ -122,6 +122,17 @@ bool termcmp(Term* t1, Term* t2) {
 	return false;
 }
 
+void print_rule(Rule* rule) {
+	print_term(rule->head);
+	printf(" :- ");
+	print_term(rule->body[0]);
+	for (int i = 1; i < rule->body_count; i++) {
+		printf(", ");
+		print_term(rule->body[i]);
+	}
+	printf("\n");
+}
+
 void print_database(TermDatabase* db) {
 	printf("TermDatabase {\n");
 	printf("\tint term_count = %d\n", db->term_count);

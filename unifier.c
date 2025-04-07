@@ -52,6 +52,7 @@ bool evaluate_rules(Rule* rule, Term* query) {
 	}
 
 	// unify every body variable with eachother
+	
 }
 
 // the database should use a hashmap to speed this up
