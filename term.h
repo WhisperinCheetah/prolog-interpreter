@@ -38,6 +38,7 @@ typedef struct BodyNode {
 } BodyNode;
 
 void print_rule(Rule* rule);
+Rule* duplicate_rule(Rule* rule);
 
 /** DATABASE **/
 typedef struct CandidateList {
