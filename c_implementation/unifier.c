@@ -46,12 +46,56 @@ bool structures_eq(Term* s1, Term* s2) {
 		&& s1->structure.arity == s2->structure.arity;
 }
 
-bool evaluate_rules(Rule* rule, Term* query) {
+// will not work yet on e.g. loves(X,X,Y)
+Rule* fill_rule(Rule* rule, Term* query) {
+	Rule* filled_rule = duplicate_rule(rule);
+	Term* head = filled_rule->head;
+	
+	for (int i = 0; i < query->structure.arity; i++) {
+		Term* arg = head->structure.args[i];
+		if (arg->type == VARIABLE) {
+			// replace with value from query
+			head->structure.args[i] = duplicate_term(query->structure.args[i]);
+
+			// replace variables with same name (TODO: RECURSIVE)
+			for (int j = i+1; j < head->structure.arity; j++) {
+				Term* other_arg = head->structure.args[j];
+				if (other_arg->type == VARIABLE && termcmp(arg, other_arg)) {
+					head->structure.args[j] = duplicate_term(query->structure.args[i]);
+				}
+			}
+
+			for (int body_idx = 0; body_idx < rule->body_count; body_idx++) {
+				Term* body_term = rule->body[body_idx];
+				for (int j = 0; j < body_term->structure.arity; j++) {
+					Term* other_arg = body_term->structure.args[j];
+					if (other_arg->type == VARIABLE && termcmp(arg, other_arg)) {
+						filled_rule->body[body_idx]->structure.args[j] = duplicate_term(query->structure.args[i]);
+					}
+				}
+			}
+		}
+	}
+
+	return filled_rule;
+}
+
+bool resolve(Term* query, TermDatabase* db);
+
+bool evaluate_rules(Rule* rule, Term* query, TermDatabase* db) {
 	if (!structures_eq(rule->head, query)) {
 		return false;
 	}
 
-	// unify every body variable with eachother
+	Rule* filled = fill_rule(rule, query);
+
+	for (int i = 0; i < filled->body_count; i++) {
+		if (!resolve(filled->body[i], db)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 // the database should use a hashmap to speed this up
@@ -71,7 +115,7 @@ bool resolve(Term* query, TermDatabase* db) {
 	for (int i = 0; i < db->rule_count; i++) {
 		Rule* rule = db->rules[i];
 
-		if (evaluate_rules(rule, query)) {
+		if (evaluate_rules(rule, query, db)) {
 			return true;
 		}
 	}
@@ -186,6 +230,7 @@ Term* branch_and_bound(TermDatabase* db, Term* query, int varc) {
 
 // currently assuming only 1 variable
 // should return response in form of VAR = ATOM
+// return some kind of iterator
 Term* unify(TermDatabase* db, Term* query) {
 	int varc = count_vars(query);
 

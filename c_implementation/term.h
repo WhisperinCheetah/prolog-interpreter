@@ -3,9 +3,7 @@
 
 #include <stdbool.h>
 
-  /***********/
- /** TERMS **/
-/***********/
+/** TERMS **/
 typedef enum { ATOM, NUMBER, VARIABLE, STRUCTURE } TermType;
 
 typedef struct Term {
@@ -23,14 +21,13 @@ void copy_term(Term* dest, Term* src);
 Term* duplicate_term(Term* src);
 bool termcmp(Term* t1, Term* t2);
 
-  /***********/
- /** RULES **/
-/***********/
+/** RULES **/
 typedef enum { CONJUNCTION, DISJUNCTION } BodyType;
 
 typedef struct Rule {
-    Term *head;
-    struct BodyNode *body;
+    Term* head;
+	Term** body;
+	int body_count;
 } Rule;
 
 typedef struct BodyNode {
@@ -40,9 +37,10 @@ typedef struct BodyNode {
     struct BodyNode *right;
 } BodyNode;
 
-  /**************/
- /** DATABASE **/
-/**************/
+void print_rule(Rule* rule);
+Rule* duplicate_rule(Rule* rule);
+
+/** DATABASE **/
 typedef struct CandidateList {
 	Term** candidates;
 	int count;

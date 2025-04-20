@@ -122,6 +122,32 @@ bool termcmp(Term* t1, Term* t2) {
 	return false;
 }
 
+void print_rule(Rule* rule) {
+	print_term(rule->head);
+	printf(" :- ");
+	print_term(rule->body[0]);
+	for (int i = 1; i < rule->body_count; i++) {
+		printf(", ");
+		print_term(rule->body[i]);
+	}
+	printf("\n");
+}
+
+Rule* duplicate_rule(Rule* rule) {
+	Rule* copy = calloc(sizeof(Rule), 1);
+	
+	copy->head = duplicate_term(rule->head);
+
+	Term** body_copy = calloc(sizeof(Term*), rule->body_count);
+	for (int i = 0; i < rule->body_count; i++) {
+		body_copy[i] = duplicate_term(rule->body[i]);
+	}
+	copy->body = body_copy;
+	copy->body_count = rule->body_count;
+
+	return copy;
+}
+
 void print_database(TermDatabase* db) {
 	printf("TermDatabase {\n");
 	printf("\tint term_count = %d\n", db->term_count);
