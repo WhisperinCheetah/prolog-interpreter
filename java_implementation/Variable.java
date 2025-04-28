@@ -9,6 +9,10 @@ public class Variable implements Term {
         this.name = name;
     }
 
+    public void fillVariable(Variable _var, Term _fill) {
+        return;
+    }
+
     @Override
     public String toString() {
         return this.name;

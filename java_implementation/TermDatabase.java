@@ -36,12 +36,17 @@ public class TermDatabase {
 
     public boolean resolve(Fact query) {
         for (Term term : this.terms) {
+
+            term.resolve(this, query);
+
             if (term instanceof Fact fact && fact.equalsIgnoreVars(query))  {
                 return true;
             }
 
             if (term instanceof Rule rule && query.shallowEquals(rule.head)) {
-                
+                Rule copy = new Rule(rule);
+                copy.fill(query);
+
             }
         }
 
@@ -61,8 +66,9 @@ public class TermDatabase {
         List<Term> candidates = this.candidateLists.get(query.functor).get(argi);
 
         for (Term candidate : candidates) {
-            Fact filledFact = query.fillVariable(argi, candidate);
-            Fact bnbResult = fillVariablesAndResolve(filledFact, varc-1);
+            Fact copy = new Fact(query);
+            copy.fillVariable(argi, candidate);
+            Fact bnbResult = fillVariablesAndResolve(copy, varc-1);
 
             if (bnbResult != null) {
                 return bnbResult;

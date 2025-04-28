@@ -12,6 +12,11 @@ public class Rule implements Term {
         this.body = body;
     }
 
+    public Rule(Rule other) {
+        this.head = new Fact(other.head);
+        this.body = new ArrayList<>(other.body);
+    }
+
     public static boolean isRule(String line) {
         return line.matches("[a-z]+[a-zA-Z]*\\([^\\-:]*\\):-([a-z]+[a-zA-Z]*\\([^\\-:]*\\),?)+");
     }
@@ -45,6 +50,34 @@ public class Rule implements Term {
         List<Term> body = bodyParts.stream().map(Parser::parseChunk).toList();
 
         return new Rule(head, body);
+    }
+
+    public boolean resolve(TermDatabase db, Fact query) {
+        if (this.head.shallowEquals(query)) {
+            Rule copy = new Rule(this);
+            copy.fill(query);
+
+            return copy.body.stream().allMatch(t -> t.resolve(db, query));
+        }
+    }
+
+    public void fillVariable(Variable var, Term fill) {
+        this.head.fillVariable(var, fill);
+
+        for (Term term : body) {
+            term.fillVariable(var, fill);
+        }
+    }
+
+    // TODO: recursive for fact
+    public void fill(Fact fills) {
+        Fact head = this.head;
+        for (int i = 0; i < this.head.args.size(); i++) {
+            if (head.args.get(i) instanceof Variable var) {
+                Term fill = fills.args.get(i);
+                this.fillVariable(var, fill);
+            }
+        }
     }
 
     @Override

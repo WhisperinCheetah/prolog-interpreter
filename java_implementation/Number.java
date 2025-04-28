@@ -9,6 +9,10 @@ public class Number implements Term {
         this.value = value;
     }
 
+    public void fillVariable(Variable _var, Term _fill) {
+        return;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(value);

@@ -9,6 +9,8 @@ public class Atom implements Term {
         this.value = value;
     }
 
+    public void fillVariable(Variable _var, Term _fill) {}
+
     @Override
     public String toString() {
         return value;

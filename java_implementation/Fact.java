@@ -39,6 +39,10 @@ public class Fact implements Term {
         return new Fact(functor, args, arity);
     }
 
+    public boolean resolve(TermDatabase db, Fact query) {
+        return this.equalsIgnoreVars(query);
+    }
+
     public boolean containsVariables() {
         for (Term term : args) {
             if (term instanceof Variable) {
@@ -76,20 +80,26 @@ public class Fact implements Term {
         return -1;
     }
 
-    public Fact fillVariable(int argi, Term fill) {
+    public void fillVariable(Variable var, Term fill) {
+        for (int i = 0; i < args.size(); i++) {
+            Term term = args.get(i);
+            if (term.equals(var)) {
+                this.args.set(i, fill);
+            }
+        }
+    }
+
+    public void fillVariable(int argi, Term fill) {
         Variable var = (Variable) this.args.get(argi);
 
-        Fact copy = new Fact(this);
-        copy.args.set(argi, fill);
+        this.args.set(argi, fill);
 
         for (int i = argi; i < args.size(); i++) {
             Term arg = args.get(i);
             if (arg.equals(var)) {
-                copy.args.set(i, fill);
+                this.args.set(i, fill);
             }
         }
-
-        return copy;
     }
 
     public HashMap<Variable, Term> filledVariables(Fact other) {
