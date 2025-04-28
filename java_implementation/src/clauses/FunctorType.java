@@ -1,3 +1,5 @@
+package src.clauses;
+
 public class FunctorType {
     final String functor;
     final int arity;

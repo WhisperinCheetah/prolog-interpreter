@@ -125,7 +125,7 @@ Zorg voor een set van testen die je predicaten testen.
 
 ### DCG support 
 
-Een interessante uitbreiding voor je Prolog-interpreter is de ondersteuning van Definite Clause Grammars (DCG), een ingebouwde manier om grammatica’s en parsers te definiëren in Prolog. DCG’s worden vaak gebruikt voor het verwerken van natuurlijke taal en het bouwen van parsers voor programmeertalen. Hint: Het boek legt uit hoe je DCG's syntax kan omzetten naar traditionele Prolog regels.
+Een interessante uitbreiding voor je Prolog-interpreter is de ondersteuning van Definite clauses.Clause Grammars (DCG), een ingebouwde manier om grammatica’s en parsers te definiëren in Prolog. DCG’s worden vaak gebruikt voor het verwerken van natuurlijke taal en het bouwen van parsers voor programmeertalen. Hint: Het boek legt uit hoe je DCG's syntax kan omzetten naar traditionele Prolog regels.
 
 Voor meer info raadpleeg de Prolog documentatie [DCG](https://www.swi-prolog.org/pldoc/man?section=DCG).
 

@@ -1,28 +1,30 @@
+package src.clauses;
+
+import src.Structure;
+import src.parser.Parser;
+import src.Term;
+import src.TermDatabase;
+import src.simples.Variable;
+
 import java.util.*;
 
-public class Fact implements Term {
-    public FunctorType functor;
+public class Fact extends Clause {
     public List<Term> args;
 
     public Fact(String functor, List<Term> args, int arity) {
-        this.functor = new FunctorType(functor, arity);
+        super(new FunctorType(functor, arity));
         this.args = args;
     }
 
     public Fact(Fact other) {
-        this.functor = other.functor;
-        this.args = new ArrayList<>(other.args);
+        super(other.getFunctorType());
+        this.args = new ArrayList<>();
+        for (Term arg : other.args) {
+            this.args.add(arg.copy());
+        }
     }
 
-    public int getArity() {
-        return this.functor.arity;
-    }
-
-    public String getFunctorName() {
-        return this.functor.functor;
-    }
-
-    public static boolean isStructure(String line) {
+    public static boolean isFact(String line) {
         return line.matches("[a-z]+[a-zA-Z]*\\([^\\-:]*\\)");
     }
 
@@ -39,13 +41,9 @@ public class Fact implements Term {
         return new Fact(functor, args, arity);
     }
 
+    @Override
     public boolean resolve(TermDatabase db, Fact query) {
         return this.equalsIgnoreVars(query);
-    }
-
-    @Override
-    public Fact unify(TermDatabase db, Fact query) {
-        return null;
     }
 
     public boolean containsVariables() {
@@ -64,8 +62,8 @@ public class Fact implements Term {
         int count = 0;
         for (Term term : args) {
             if (term instanceof Variable var) {
-                if (!seen.contains(var.name)) {
-                    seen.add(var.name);
+                if (!seen.contains(var.name())) {
+                    seen.add(var.name());
                     count++;
                 }
             }
@@ -85,6 +83,7 @@ public class Fact implements Term {
         return -1;
     }
 
+    @Override
     public void fillVariable(Variable var, Term fill) {
         for (int i = 0; i < args.size(); i++) {
             Term term = args.get(i);
@@ -137,14 +136,19 @@ public class Fact implements Term {
     }
 
     @Override
+    public Fact copy() {
+        return new Fact(this);
+    }
+
+    @Override
     public String toString() {
-        return String.format("%s(%s)/%d", functor.functor, args, functor.arity);
+        return String.format("%s(%s)/%d", getFunctorType().functor, args, getArity());
     }
 
     @Override
     public boolean equals(Object other) {
         if (other instanceof Fact otherFact) {
-            if (!this.functor.equals(otherFact.functor)) {
+            if (!this.getFunctorType().equals(otherFact.getFunctorType())) {
                 return false;
             }
 
@@ -162,7 +166,7 @@ public class Fact implements Term {
     }
 
     public boolean equalsIgnoreVars(Fact other) {
-        if (!this.functor.equals(other.functor)) {
+        if (!this.getFunctorType().equals(other.getFunctorType())) {
             return false;
         }
 
@@ -176,6 +180,7 @@ public class Fact implements Term {
     }
 
     public boolean shallowEquals(Fact other) {
-        return this.functor.equals(other.functor);
+        return this.getFunctorType().equals(other.getFunctorType());
     }
+
 }

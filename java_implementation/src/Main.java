@@ -1,27 +1,24 @@
+package src;
+
+import src.parser.Parser;
+
 import java.io.IOException;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        final String path = "main.pl";
+        final String path = "java_implementation/src/main.pl";
         Parser parser = new Parser(path);
 
-        List<Term> terms;
+        TermDatabase db;
         try {
-            terms = parser.parse();
+            db = parser.parseProgram(true);
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
             throw new AssertionError("Failed to parse terms from path: " + path);
         }
-
-        System.out.println("Parsing complete");
-        System.out.println("Parsed " + terms.size() + " terms");
-
-        TermDatabase db = new TermDatabase(terms);
-        System.out.println(db);
 
         Scanner scanner = new Scanner(System.in);
         while (true) {

@@ -1,20 +1,61 @@
+package src;
+
+import src.clauses.Clause;
+import src.clauses.Fact;
+import src.clauses.FunctorType;
+import src.clauses.Rule;
+import src.directives.Initialization;
+import src.parser.Parser;
+import src.simples.Variable;
+
 import java.util.*;
 
 public class TermDatabase {
 
-    List<Term> terms;
+    Initialization init;
+
+    List<Clause> clauses;
+    Map<FunctorType, List<Structure>> functorToStructures;
+
     Map<FunctorType, List<List<Term>>> candidateLists;
 
     Fact lastQuery;
     List<Iterator<Term>> lastQueryCandidateStates;
 
-    public TermDatabase(List<Term> terms) {
-        this.terms = terms;
+    public TermDatabase(List<Clause> clauses) {
+        this.clauses = clauses;
         this.initialiseCandidateLists();
     }
 
+    public TermDatabase() {
+        this.init = null;
+
+        this.clauses = new ArrayList<>();
+        this.functorToStructures = new HashMap<>();
+        this.candidateLists = new HashMap<>();
+
+        this.lastQuery = null;
+        this.lastQueryCandidateStates = new ArrayList<>();
+    }
+
+    public void addClause(Clause clause) {
+        this.clauses.add(clause);
+    }
+
+    public void addInitialization(Initialization init) {
+        this.init = init;
+    }
+
+    public int size() {
+        return this.clauses.size();
+    }
+
+    public List<Clause> getClauses() {
+        return this.clauses;
+    }
+
     private List<List<Term>> getOrCreateCandidateLists(Fact fact) {
-        return this.candidateLists.computeIfAbsent(fact.functor, f -> {
+        return this.candidateLists.computeIfAbsent(fact.getFunctorType(), f -> {
             List<List<Term>> newLists = new ArrayList<>();
             for (int j = 0; j < fact.getArity(); j++) {
                 newLists.add(new ArrayList<>());
@@ -28,8 +69,8 @@ public class TermDatabase {
             Term arg = bodyPart.args.get(i);
             if (arg instanceof Variable var) {
 
-                for (int ruleIndex : rule.head.getVariableIndices(var)) {
-                    lists.get(ruleIndex).addAll(candidateLists.getOrDefault(bodyPart.functor, new ArrayList<>()).get(i));
+                for (int ruleIndex : rule.getHead().getVariableIndices(var)) {
+                    lists.get(ruleIndex).addAll(candidateLists.getOrDefault(bodyPart.getFunctorType(), new ArrayList<>()).get(i));
                 }
             }
         }
@@ -38,8 +79,8 @@ public class TermDatabase {
     private void initialiseCandidateLists() {
         this.candidateLists = new HashMap<>();
 
-        for (Term term : terms) {
-            if (term instanceof Fact fact) {
+        for (Clause clause : clauses) {
+            if (clause instanceof Fact fact) {
                 List<List<Term>> lists = getOrCreateCandidateLists(fact);
 
                 List<Term> args = fact.args;
@@ -51,24 +92,37 @@ public class TermDatabase {
             }
         }
 
-        for (Term term : terms) {
-            if (term instanceof Rule rule) {
-                List<List<Term>> lists = getOrCreateCandidateLists(rule.head);
+        for (Clause clause : clauses) {
+            if (clause instanceof Rule rule) {
+                List<List<Term>> lists = getOrCreateCandidateLists(rule.getHead());
 
-                for (Term bodyTerm : rule.body) {
+                for (Clause bodyTerm : rule.getBody()) {
                     if (bodyTerm instanceof Fact bodyPart) {
                         appendRuleListFromBodyPart(rule, bodyPart, lists);
                     }
                 }
 
-                System.out.println(this.candidateLists.get(rule.head.functor));
+                System.out.println(this.candidateLists.get(rule.getFunctorType()));
             }
         }
     }
 
+    private void initialiseFunctorToStructuresMap() {
+        for (Clause clause : clauses) {
+            this.functorToStructures
+                    .computeIfAbsent(clause.getFunctorType(), k -> new ArrayList<>())
+                    .add(clause);
+        }
+    }
+
+    public void finalizeDatabase() {
+        this.initialiseCandidateLists();
+        this.initialiseFunctorToStructuresMap();
+    }
+
     public boolean resolveQuery(Fact query) {
-        for (Term term : this.terms) {
-            if (term.resolve(this, query)) {
+        for (Clause clause : this.clauses) {
+            if (clause.resolve(this, query)) {
                 return true;
             }
         }
@@ -119,7 +173,7 @@ public class TermDatabase {
 
     private List<Iterator<Term>> initialiseIterators(Fact query) {
         List<Iterator<Term>> iterators = new ArrayList<>();
-        for (List<Term> candidateList : this.candidateLists.get(query.functor)) {
+        for (List<Term> candidateList : this.candidateLists.get(query.getFunctorType())) {
             iterators.add(candidateList.iterator());
         }
 
@@ -165,7 +219,7 @@ public class TermDatabase {
     public String toString() {
 
         return "TermDatabase\n" +
-                terms +
+                clauses +
                 "\n" +
                 candidateLists;
     }

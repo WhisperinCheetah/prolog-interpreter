@@ -1,25 +1,44 @@
+package src.clauses;
+
+import src.Structure;
+import src.parser.Parser;
+import src.Term;
+import src.TermDatabase;
+import src.parser.StructureParser;
+import src.simples.Variable;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Rule implements Term {
+public class Rule extends Clause {
     Fact head;
-    List<Fact> body;
+    List<Structure> body;
 
-    public Rule(Fact head, List<Fact> body) {
+    public Rule(Fact head, List<Structure> body) {
+        super(head.getFunctorType());
         this.head = head;
         this.body = body;
     }
 
     public Rule(Rule other) {
-        this.head = new Fact(other.head);
-        this.body = other.body.stream()
-                .map(Fact::new)
-                .toList();
+    }
+
+    public Rule copy() {
+        return null;
     }
 
     public static boolean isRule(String line) {
         return line.matches("[a-z]+[a-zA-Z]*\\([^\\-:]*\\):-([a-z]+[a-zA-Z]*\\([^\\-:]*\\),?)+");
+    }
+
+    public Fact getHead() {
+        return head;
+    }
+
+    public List<Fact> getBody() {
+        return body;
     }
 
     private static ArrayList<String> splitBodyString(String body) {
@@ -48,13 +67,15 @@ public class Rule implements Term {
         Fact head = Fact.fromString(parts[0]);
         ArrayList<String> bodyParts = splitBodyString(parts[1]);
 
-        List<Fact> body = bodyParts.stream().map(Parser::parseChunk)
-                .filter(t -> t instanceof Fact)
-                .map(t -> (Fact) t).collect(Collectors.toList());
+        List<Structure> body = bodyParts.stream().map(StructureParser::parseStructure)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
 
         return new Rule(head, body);
     }
 
+    @Override
     public boolean resolve(TermDatabase db, Fact query) {
         if (!this.head.shallowEquals(query)) {
             return false;
@@ -67,15 +88,11 @@ public class Rule implements Term {
     }
 
     @Override
-    public Fact unify(TermDatabase db, Fact query) {
-        return null;
-    }
-
     public void fillVariable(Variable var, Term fill) {
         this.head.fillVariable(var, fill);
 
-        for (Term term : body) {
-            term.fillVariable(var, fill);
+        for (Fact fact : body) {
+            fact.fillVariable(var, fill);
         }
     }
 
