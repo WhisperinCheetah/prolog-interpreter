@@ -5,9 +5,34 @@ public class TermDatabase {
     List<Term> terms;
     Map<FunctorType, List<List<Term>>> candidateLists;
 
+    Fact lastQuery;
+    List<Iterator<Term>> lastQueryCandidateStates;
+
     public TermDatabase(List<Term> terms) {
         this.terms = terms;
         this.initialiseCandidateLists();
+    }
+
+    private List<List<Term>> getOrCreateCandidateLists(Fact fact) {
+        return this.candidateLists.computeIfAbsent(fact.functor, f -> {
+            List<List<Term>> newLists = new ArrayList<>();
+            for (int j = 0; j < fact.getArity(); j++) {
+                newLists.add(new ArrayList<>());
+            }
+            return newLists;
+        });
+    }
+
+    private void appendRuleListFromBodyPart(Rule rule, Fact bodyPart, List<List<Term>> lists) {
+        for (int i = 0; i < bodyPart.getArity(); i++) {
+            Term arg = bodyPart.args.get(i);
+            if (arg instanceof Variable var) {
+
+                for (int ruleIndex : rule.head.getVariableIndices(var)) {
+                    lists.get(ruleIndex).addAll(candidateLists.getOrDefault(bodyPart.functor, new ArrayList<>()).get(i));
+                }
+            }
+        }
     }
 
     private void initialiseCandidateLists() {
@@ -15,47 +40,45 @@ public class TermDatabase {
 
         for (Term term : terms) {
             if (term instanceof Fact fact) {
-
-                if (!this.candidateLists.containsKey(fact.functor)) {
-                    List<List<Term>> lists = new ArrayList<>();
-                    for (int j = 0; j < fact.getArity(); j++) {
-                        lists.add(new ArrayList<>());
-                    }
-                    this.candidateLists.put(fact.functor, lists);
-                }
+                List<List<Term>> lists = getOrCreateCandidateLists(fact);
 
                 List<Term> args = fact.args;
                 for (int i = 0; i < args.size(); i++) {
                     if (!(args.get(i) instanceof Variable)) {
-                        this.candidateLists.get(fact.functor).get(i).add(args.get(i));
+                        lists.get(i).add(args.get(i));
                     }
                 }
             }
         }
+
+        for (Term term : terms) {
+            if (term instanceof Rule rule) {
+                List<List<Term>> lists = getOrCreateCandidateLists(rule.head);
+
+                for (Term bodyTerm : rule.body) {
+                    if (bodyTerm instanceof Fact bodyPart) {
+                        appendRuleListFromBodyPart(rule, bodyPart, lists);
+                    }
+                }
+
+                System.out.println(this.candidateLists.get(rule.head.functor));
+            }
+        }
     }
 
-    public boolean resolve(Fact query) {
+    public boolean resolveQuery(Fact query) {
         for (Term term : this.terms) {
-
-            term.resolve(this, query);
-
-            if (term instanceof Fact fact && fact.equalsIgnoreVars(query))  {
+            if (term.resolve(this, query)) {
                 return true;
-            }
-
-            if (term instanceof Rule rule && query.shallowEquals(rule.head)) {
-                Rule copy = new Rule(rule);
-                copy.fill(query);
-
             }
         }
 
         return false;
     }
 
-    private Fact fillVariablesAndResolve(Fact query, int varc) {
+    private Fact fillVariablesAndResolve(Fact query, List<Iterator<Term>> iterators, int varc) {
         if (varc == 0) {
-            if (resolve(query)) return query;
+            if (resolveQuery(query)) return query;
             return null;
         }
 
@@ -63,12 +86,12 @@ public class TermDatabase {
 
         if (argi < 0) return null;
 
-        List<Term> candidates = this.candidateLists.get(query.functor).get(argi);
+        Iterator<Term> it = iterators.get(argi);
 
-        for (Term candidate : candidates) {
+        while (it.hasNext()) {
             Fact copy = new Fact(query);
-            copy.fillVariable(argi, candidate);
-            Fact bnbResult = fillVariablesAndResolve(copy, varc-1);
+            copy.fillVariable(argi, it.next());
+            Fact bnbResult = fillVariablesAndResolve(copy, iterators, varc-1);
 
             if (bnbResult != null) {
                 return bnbResult;
@@ -78,10 +101,29 @@ public class TermDatabase {
         return null;
     }
 
-    public Fact unify(Fact query) {
+    public Fact unifyQuery(Fact query, List<Iterator<Term>> iterators) {
         int varc = query.countUniqueVariables();
 
-        return fillVariablesAndResolve(query, varc);
+        return fillVariablesAndResolve(query, iterators, varc);
+    }
+
+    private void printResults(Fact query, Fact result) {
+        Map<Variable, Term> variableMap = query.filledVariables(result);
+
+        if (variableMap == null) {
+            System.out.println("FAIL");
+        } else {
+            variableMap.forEach((variable, term) -> System.out.println(variable + " = " + term));
+        }
+    }
+
+    private List<Iterator<Term>> initialiseIterators(Fact query) {
+        List<Iterator<Term>> iterators = new ArrayList<>();
+        for (List<Term> candidateList : this.candidateLists.get(query.functor)) {
+            iterators.add(candidateList.iterator());
+        }
+
+        return iterators;
     }
 
     public void runQuery(String queryString) {
@@ -97,26 +139,34 @@ public class TermDatabase {
         Fact queryFact = (Fact) query;
 
         if (queryFact.containsVariables()) {
-            Fact result = this.unify(queryFact);
-            Map<Variable, Term> variableMap = queryFact.filledVariables(result);
+            List<Iterator<Term>> iterators = initialiseIterators(queryFact);
+            this.lastQuery = queryFact;
+            this.lastQueryCandidateStates = iterators;
 
-            variableMap.forEach((variable, term) -> {
-                System.out.println(variable + " = " + term);
-            });
+            Fact result = this.unifyQuery(queryFact, iterators);
+            this.printResults(queryFact, result);
         } else {
-            boolean isTrue = this.resolve(queryFact);
+            boolean isTrue = this.resolveQuery(queryFact);
             System.out.println(isTrue);
         }
     }
 
+    public void nextState() {
+        if (this.lastQuery == null) {
+            return;
+        }
+
+        Fact res = this.unifyQuery(this.lastQuery, this.lastQueryCandidateStates);
+
+        this.printResults(this.lastQuery, res);
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("TermDatabase\n");
-        sb.append(terms);
-        sb.append("\n");
-        sb.append(candidateLists);
 
-        return sb.toString();
+        return "TermDatabase\n" +
+                terms +
+                "\n" +
+                candidateLists;
     }
 }

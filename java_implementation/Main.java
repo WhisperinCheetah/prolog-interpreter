@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         final String path = "main.pl";
         Parser parser = new Parser(path);
 
@@ -29,9 +29,11 @@ public class Main {
 
             if (input.equalsIgnoreCase("exit")) {
                 break;
+            } else if (input.equalsIgnoreCase("")) {
+                db.nextState();
+            } else {
+                db.runQuery(input);
             }
-
-            db.runQuery(input);
         }
     }
 }

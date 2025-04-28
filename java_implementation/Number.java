@@ -9,8 +9,16 @@ public class Number implements Term {
         this.value = value;
     }
 
-    public void fillVariable(Variable _var, Term _fill) {
-        return;
+    public void fillVariable(Variable _var, Term _fill) {}
+
+    @Override
+    public boolean resolve(TermDatabase db, Fact query) {
+        return false;
+    }
+
+    @Override
+    public Fact unify(TermDatabase db, Fact query) {
+        return null;
     }
 
     @Override

@@ -43,6 +43,11 @@ public class Fact implements Term {
         return this.equalsIgnoreVars(query);
     }
 
+    @Override
+    public Fact unify(TermDatabase db, Fact query) {
+        return null;
+    }
+
     public boolean containsVariables() {
         for (Term term : args) {
             if (term instanceof Variable) {
@@ -103,6 +108,10 @@ public class Fact implements Term {
     }
 
     public HashMap<Variable, Term> filledVariables(Fact other) {
+        if (other == null) {
+            return null;
+        }
+
         HashMap<Variable, Term> map = new HashMap<>();
         for (int i = 0; i < args.size(); i++) {
             Term arg = args.get(i);
@@ -112,6 +121,19 @@ public class Fact implements Term {
         }
 
         return map;
+    }
+
+    public List<Integer> getVariableIndices(Variable var) {
+        List<Integer> indices = new ArrayList<>();
+
+        for (int i = 0; i < args.size(); i++) {
+            Term arg = args.get(i);
+            if (arg.equals(var)) {
+                indices.add(i);
+            }
+        }
+
+        return indices;
     }
 
     @Override

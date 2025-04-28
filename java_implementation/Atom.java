@@ -12,6 +12,16 @@ public class Atom implements Term {
     public void fillVariable(Variable _var, Term _fill) {}
 
     @Override
+    public boolean resolve(TermDatabase db, Fact query) {
+        return false;
+    }
+
+    @Override
+    public Fact unify(TermDatabase db, Fact query) {
+        return null;
+    }
+
+    @Override
     public String toString() {
         return value;
     }
