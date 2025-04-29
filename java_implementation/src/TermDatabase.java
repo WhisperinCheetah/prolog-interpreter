@@ -96,7 +96,7 @@ public class TermDatabase {
             if (clause instanceof Rule rule) {
                 List<List<Term>> lists = getOrCreateCandidateLists(rule.getHead());
 
-                for (Clause bodyTerm : rule.getBody()) {
+                for (Structure bodyTerm : rule.getBody()) {
                     if (bodyTerm instanceof Fact bodyPart) {
                         appendRuleListFromBodyPart(rule, bodyPart, lists);
                     }
@@ -120,10 +120,16 @@ public class TermDatabase {
         this.initialiseFunctorToStructuresMap();
     }
 
-    public boolean resolveQuery(Fact query) {
-        for (Clause clause : this.clauses) {
-            if (clause.resolve(this, query)) {
-                return true;
+    public boolean resolveQuery(Structure query) {
+        if (query instanceof Fact queryFact) {
+            for (Structure struct : this.functorToStructures.get(queryFact.getFunctorType())) {
+
+            }
+
+            for (Clause clause : this.clauses) {
+                if (clause.resolve(this, (Fact) query)) {
+                    return true;
+                }
             }
         }
 
@@ -186,21 +192,17 @@ public class TermDatabase {
         }
 
         String cleanQueryString = queryString.substring(2).replaceAll("\\s+", "");
-        Term query = Parser.parseChunk(cleanQueryString);
+        Fact query = Fact.fromString(cleanQueryString);
 
-        assert query instanceof Fact;
-
-        Fact queryFact = (Fact) query;
-
-        if (queryFact.containsVariables()) {
-            List<Iterator<Term>> iterators = initialiseIterators(queryFact);
-            this.lastQuery = queryFact;
+        if (query.containsVariables()) {
+            List<Iterator<Term>> iterators = initialiseIterators(query);
+            this.lastQuery = query;
             this.lastQueryCandidateStates = iterators;
 
-            Fact result = this.unifyQuery(queryFact, iterators);
-            this.printResults(queryFact, result);
+            Fact result = this.unifyQuery(query, iterators);
+            this.printResults(query, result);
         } else {
-            boolean isTrue = this.resolveQuery(queryFact);
+            boolean isTrue = this.resolveQuery(query);
             System.out.println(isTrue);
         }
     }

@@ -23,21 +23,26 @@ public class Rule extends Clause {
     }
 
     public Rule(Rule other) {
+        super(other.head.getFunctorType());
+        this.head = other.head.copy();
+        this.body = new ArrayList<>(other.body.size());
+        other.body.forEach(s -> this.body.add(s.copy()));
     }
 
     public Rule copy() {
-        return null;
+        return new Rule(this);
     }
 
     public static boolean isRule(String line) {
-        return line.matches("[a-z]+[a-zA-Z]*\\([^\\-:]*\\):-([a-z]+[a-zA-Z]*\\([^\\-:]*\\),?)+");
+        return line.matches("[a-z]+[a-zA-Z]*:-([a-z]+[a-zA-Z]*\\([^\\-:]*\\),?)+");
+        // return line.matches("[a-z]+[a-zA-Z]*\\([^\\-:]*\\):-([a-z]+[a-zA-Z]*\\([^\\-:]*\\),?)+");
     }
 
     public Fact getHead() {
         return head;
     }
 
-    public List<Fact> getBody() {
+    public List<Structure> getBody() {
         return body;
     }
 
@@ -91,7 +96,7 @@ public class Rule extends Clause {
     public void fillVariable(Variable var, Term fill) {
         this.head.fillVariable(var, fill);
 
-        for (Fact fact : body) {
+        for (Structure fact : body) {
             fact.fillVariable(var, fill);
         }
     }

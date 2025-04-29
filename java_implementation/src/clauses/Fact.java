@@ -35,10 +35,14 @@ public class Fact extends Clause {
 
     public static Fact fromString(String line) {
         String functor = line.split("\\(")[0];
-        List<Term> args = parseArgs(line.substring(line.indexOf("(") + 1, line.indexOf(")")));
-        int arity = args.size();
 
-        return new Fact(functor, args, arity);
+        try {
+            List<Term> args = parseArgs(line.substring(line.indexOf("(") + 1, line.indexOf(")")));
+            int arity = args.size();
+            return new Fact(functor, args, arity);
+        } catch (IndexOutOfBoundsException e) {
+            return new Fact(functor, new ArrayList<>(), 0);
+        }
     }
 
     @Override
