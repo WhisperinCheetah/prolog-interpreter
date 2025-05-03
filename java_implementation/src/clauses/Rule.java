@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Rule extends Clause {
+    public static final String ruleRegex = Fact.factRegex + ":-" + Fact.factRegex + "(," + Fact.factRegex + ")*";
+
     Fact head;
     List<Structure> body;
 
@@ -34,8 +36,7 @@ public class Rule extends Clause {
     }
 
     public static boolean isRule(String line) {
-        return line.matches("[a-z]+[a-zA-Z]*:-([a-z]+[a-zA-Z]*\\([^\\-:]*\\),?)+");
-        // return line.matches("[a-z]+[a-zA-Z]*\\([^\\-:]*\\):-([a-z]+[a-zA-Z]*\\([^\\-:]*\\),?)+");
+        return line.matches(ruleRegex);
     }
 
     public Fact getHead() {
@@ -81,15 +82,12 @@ public class Rule extends Clause {
     }
 
     @Override
-    public boolean resolve(TermDatabase db, Fact query) {
-        if (!this.head.shallowEquals(query)) {
+    public boolean execute(TermDatabase db) {
+        if (this.head.containsVariables()) {
             return false;
         }
 
-        Rule copy = new Rule(this);
-        copy.fill(query);
-
-        return copy.body.stream().allMatch(db::resolveQuery);
+        return body.stream().allMatch(s -> s.execute(db));
     }
 
     @Override
@@ -115,5 +113,10 @@ public class Rule extends Clause {
     @Override
     public String toString() {
         return head.toString() + " :- " + body.toString();
+    }
+
+    @Override
+    public boolean equalsIgnoreVars(Fact other) {
+        return this.head.equalsIgnoreVars(other);
     }
 }

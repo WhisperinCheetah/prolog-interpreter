@@ -1,8 +1,8 @@
 package src.simples;
 
-public class Number extends Constant<Double> {
-    double value;
+import java.util.Objects;
 
+public class Number extends Constant<Double> {
     public Number(double value) {
         super(value);
     }
@@ -19,7 +19,7 @@ public class Number extends Constant<Double> {
     @Override
     public boolean equals(Object other) {
         if (other instanceof Number otherNumber) {
-            return value == otherNumber.value;
+            return Objects.equals(value, otherNumber.value);
         }
 
         return false;

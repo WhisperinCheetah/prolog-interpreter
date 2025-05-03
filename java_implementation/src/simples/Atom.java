@@ -6,7 +6,7 @@ public class Atom extends Constant<String> {
     }
 
     public static boolean isAtom(String line) {
-        return line.matches("[a-z][a-zA-Z]*");
+        return line.matches("[a-z][a-zA-Z]*") || line.matches("'.*'");
     }
 
     @Override

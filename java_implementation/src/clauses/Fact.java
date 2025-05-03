@@ -9,6 +9,8 @@ import src.simples.Variable;
 import java.util.*;
 
 public class Fact extends Clause {
+    public static final String factRegex = "[a-z]+[a-zA-Z]*(\\(.*\\))?";
+
     public List<Term> args;
 
     public Fact(String functor, List<Term> args, int arity) {
@@ -25,7 +27,7 @@ public class Fact extends Clause {
     }
 
     public static boolean isFact(String line) {
-        return line.matches("[a-z]+[a-zA-Z]*\\([^\\-:]*\\)");
+        return line.matches(factRegex);
     }
 
     private static List<Term> parseArgs(String body) {
@@ -43,11 +45,6 @@ public class Fact extends Clause {
         } catch (IndexOutOfBoundsException e) {
             return new Fact(functor, new ArrayList<>(), 0);
         }
-    }
-
-    @Override
-    public boolean resolve(TermDatabase db, Fact query) {
-        return this.equalsIgnoreVars(query);
     }
 
     public boolean containsVariables() {
@@ -85,6 +82,18 @@ public class Fact extends Clause {
         }
 
         return -1;
+    }
+
+    @Override
+    public boolean execute(TermDatabase db) {
+        List<Clause> candidates = db.getFunctorToStructuresMapItem(this.functorType);
+        for (Clause candidate : candidates) {
+            if (this.resolvesWith(candidate)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -149,6 +158,14 @@ public class Fact extends Clause {
         return String.format("%s(%s)/%d", getFunctorType().functor, args, getArity());
     }
 
+    public boolean resolvesWith(Clause other) {
+        if (this.containsVariables()) {
+            return false;
+        }
+
+        return other.equalsIgnoreVars(this);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Fact otherFact) {
@@ -169,6 +186,7 @@ public class Fact extends Clause {
         return false;
     }
 
+    @Override
     public boolean equalsIgnoreVars(Fact other) {
         if (!this.getFunctorType().equals(other.getFunctorType())) {
             return false;

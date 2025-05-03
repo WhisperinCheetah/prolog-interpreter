@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        final String path = "java_implementation/src/write.pl";
+        final String path = "examples/basics/write.pl";
         Parser parser = new Parser(path);
 
         TermDatabase db;

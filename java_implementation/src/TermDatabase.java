@@ -5,7 +5,6 @@ import src.clauses.Fact;
 import src.clauses.FunctorType;
 import src.clauses.Rule;
 import src.directives.Initialization;
-import src.parser.Parser;
 import src.simples.Variable;
 
 import java.util.*;
@@ -15,12 +14,17 @@ public class TermDatabase {
     Initialization init;
 
     List<Clause> clauses;
-    Map<FunctorType, List<Structure>> functorToStructures;
+    Map<FunctorType, List<Clause>> functorToStructures;
 
     Map<FunctorType, List<List<Term>>> candidateLists;
 
     Fact lastQuery;
     List<Iterator<Term>> lastQueryCandidateStates;
+
+    FunctorType lastFunctor;
+    int lastFunctorIndex;
+
+    boolean lastQueryHadVariables;
 
     public TermDatabase(List<Clause> clauses) {
         this.clauses = clauses;
@@ -36,6 +40,10 @@ public class TermDatabase {
 
         this.lastQuery = null;
         this.lastQueryCandidateStates = new ArrayList<>();
+
+        this.lastFunctor = null;
+        this.lastFunctorIndex = -1;
+        this.lastQueryHadVariables = false;
     }
 
     public void addClause(Clause clause) {
@@ -52,6 +60,12 @@ public class TermDatabase {
 
     public List<Clause> getClauses() {
         return this.clauses;
+    }
+
+    public void runInitialization() {
+        if (this.init != null) {
+            this.init.run(this);
+        }
     }
 
     private List<List<Term>> getOrCreateCandidateLists(Fact fact) {
@@ -115,30 +129,47 @@ public class TermDatabase {
         }
     }
 
+    private void setInitializationGoalReference() {
+        if (this.init != null) {
+            List<Clause> actualGoalCandidates = this.functorToStructures.get(init.getGoal().getFunctorType());
+            if (actualGoalCandidates != null && !actualGoalCandidates.isEmpty()) {
+                this.init.setGoal(actualGoalCandidates.getFirst());
+            }
+        }
+    }
+
     public void finalizeDatabase() {
         this.initialiseCandidateLists();
         this.initialiseFunctorToStructuresMap();
+        this.setInitializationGoalReference();
     }
 
-    public boolean resolveQuery(Structure query) {
-        if (query instanceof Fact queryFact) {
-            for (Structure struct : this.functorToStructures.get(queryFact.getFunctorType())) {
+    public Map<FunctorType, List<Clause>> getFunctorToStructuresMap() {
+        return this.functorToStructures;
+    }
 
-            }
+    public List<Clause> getFunctorToStructuresMapItem(FunctorType type) {
+        return this.functorToStructures.getOrDefault(type, new ArrayList<>());
+    }
 
-            for (Clause clause : this.clauses) {
-                if (clause.resolve(this, (Fact) query)) {
-                    return true;
-                }
+    private boolean hasUnified(Fact query) {
+        List<Clause> candidates = this.getFunctorToStructuresMapItem(query.getFunctorType());
+        for (int i = 0; i < candidates.size(); i++) {
+            Clause candidate = candidates.get(i);
+            if (query.resolvesWith(candidate)) {
+                this.lastFunctor = query.getFunctorType();
+                this.lastFunctorIndex = i;
+
+                return true;
             }
         }
 
         return false;
     }
 
-    private Fact fillVariablesAndResolve(Fact query, List<Iterator<Term>> iterators, int varc) {
+    private Fact fillVariablesAndExecute(Fact query, List<Iterator<Term>> iterators, int varc) {
         if (varc == 0) {
-            if (resolveQuery(query)) return query;
+            if (this.hasUnified(query)) return query;
             return null;
         }
 
@@ -151,7 +182,7 @@ public class TermDatabase {
         while (it.hasNext()) {
             Fact copy = new Fact(query);
             copy.fillVariable(argi, it.next());
-            Fact bnbResult = fillVariablesAndResolve(copy, iterators, varc-1);
+            Fact bnbResult = fillVariablesAndExecute(copy, iterators, varc-1);
 
             if (bnbResult != null) {
                 return bnbResult;
@@ -164,26 +195,51 @@ public class TermDatabase {
     public Fact unifyQuery(Fact query, List<Iterator<Term>> iterators) {
         int varc = query.countUniqueVariables();
 
-        return fillVariablesAndResolve(query, iterators, varc);
+        return fillVariablesAndExecute(query, iterators, varc);
+    }
+
+    private void executePostUnification() {
+        List<Clause> possibleClauses = this.functorToStructures.get(this.lastFunctor);
+        if (possibleClauses != null && !possibleClauses.isEmpty()) {
+            possibleClauses.get(this.lastFunctorIndex).execute(this);
+        }
     }
 
     private void printResults(Fact query, Fact result) {
-        Map<Variable, Term> variableMap = query.filledVariables(result);
-
-        if (variableMap == null) {
-            System.out.println("FAIL");
+        if (!lastQueryHadVariables) {
+            this.executePostUnification();
+            System.out.println();
+            if (result != null) {
+                System.out.println("true");
+            } else {
+                System.out.println("false");
+            }
         } else {
-            variableMap.forEach((variable, term) -> System.out.println(variable + " = " + term));
+            System.out.println();
+            if (result == null) {
+                System.out.println("FAIL");
+            } else {
+                Map<Variable, Term> variableMap = query.filledVariables(result);
+                variableMap.forEach((variable, term) -> System.out.println(variable + " = " + term));
+            }
         }
     }
 
     private List<Iterator<Term>> initialiseIterators(Fact query) {
         List<Iterator<Term>> iterators = new ArrayList<>();
-        for (List<Term> candidateList : this.candidateLists.get(query.getFunctorType())) {
+        for (List<Term> candidateList : this.candidateLists.getOrDefault(query.getFunctorType(), new ArrayList<>())) {
             iterators.add(candidateList.iterator());
         }
 
         return iterators;
+    }
+
+    public void setState(Fact query) {
+        List<Iterator<Term>> iterators = initialiseIterators(query);
+        this.lastQuery = query;
+        this.lastQueryCandidateStates = iterators;
+
+        this.lastQueryHadVariables = query.containsVariables();
     }
 
     public void runQuery(String queryString) {
@@ -191,20 +247,15 @@ public class TermDatabase {
             return;
         }
 
+        this.runInitialization();
+
         String cleanQueryString = queryString.substring(2).replaceAll("\\s+", "");
         Fact query = Fact.fromString(cleanQueryString);
 
-        if (query.containsVariables()) {
-            List<Iterator<Term>> iterators = initialiseIterators(query);
-            this.lastQuery = query;
-            this.lastQueryCandidateStates = iterators;
+        this.setState(query);
 
-            Fact result = this.unifyQuery(query, iterators);
-            this.printResults(query, result);
-        } else {
-            boolean isTrue = this.resolveQuery(query);
-            System.out.println(isTrue);
-        }
+        Fact result = this.unifyQuery(query, this.lastQueryCandidateStates);
+        this.printResults(query, result);
     }
 
     public void nextState() {
@@ -213,7 +264,6 @@ public class TermDatabase {
         }
 
         Fact res = this.unifyQuery(this.lastQuery, this.lastQueryCandidateStates);
-
         this.printResults(this.lastQuery, res);
     }
 

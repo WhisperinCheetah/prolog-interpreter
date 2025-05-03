@@ -46,6 +46,8 @@ public class Parser {
         String program = new String(Files.readAllBytes(Paths.get(path))).replaceAll("\\s+","");
         ArrayList<String> lines = new ArrayList<>(Arrays.asList(program.split("\\.")));
 
+        System.out.println("Program: " + program);
+
         TermDatabase db = new TermDatabase();
 
         for (String line : lines) {
@@ -62,6 +64,8 @@ public class Parser {
                 db.addClause(structure.get());
                 continue;
             }
+
+            System.out.println("Unknown statement: " + line);
         }
 
         db.finalizeDatabase();
