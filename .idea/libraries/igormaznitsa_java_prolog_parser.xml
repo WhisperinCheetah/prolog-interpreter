@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="igormaznitsa.java.prolog.parser" type="repository">
+    <properties maven-id="com.igormaznitsa:java-prolog-parser:2.2.0" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/igormaznitsa/java-prolog-parser/2.2.0/java-prolog-parser-2.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

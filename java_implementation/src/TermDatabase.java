@@ -1,12 +1,10 @@
 package src;
 
-import src.clauses.Clause;
-import src.clauses.Fact;
-import src.clauses.FunctorType;
-import src.clauses.Rule;
+import src.complex.ComplexTerm;
 import src.directives.Initialization;
+import src.parser.ComplexTermParser;
 import src.parser.Parser;
-import src.simples.Variable;
+import src.simple.Variable;
 
 import java.util.*;
 
@@ -14,23 +12,22 @@ public class TermDatabase {
 
     Initialization init;
 
-    List<Clause> clauses;
+    List<Fact> facts;
     Map<FunctorType, List<Structure>> functorToStructures;
 
     Map<FunctorType, List<List<Term>>> candidateLists;
 
-    Fact lastQuery;
+    ComplexTerm lastQuery;
     List<Iterator<Term>> lastQueryCandidateStates;
 
-    public TermDatabase(List<Clause> clauses) {
-        this.clauses = clauses;
-        this.initialiseCandidateLists();
+    public TermDatabase(List<Fact> facts) {
+        this.facts = facts;
     }
 
     public TermDatabase() {
         this.init = null;
 
-        this.clauses = new ArrayList<>();
+        this.facts = new ArrayList<>();
         this.functorToStructures = new HashMap<>();
         this.candidateLists = new HashMap<>();
 
@@ -38,8 +35,8 @@ public class TermDatabase {
         this.lastQueryCandidateStates = new ArrayList<>();
     }
 
-    public void addClause(Clause clause) {
-        this.clauses.add(clause);
+    public void addFact(Fact fact) {
+        facts.add(fact);
     }
 
     public void addInitialization(Initialization init) {
@@ -47,180 +44,40 @@ public class TermDatabase {
     }
 
     public int size() {
-        return this.clauses.size();
+        return this.facts.size();
     }
 
-    public List<Clause> getClauses() {
-        return this.clauses;
+    public List<Fact> getFacts() {
+        return this.facts;
     }
 
-    private List<List<Term>> getOrCreateCandidateLists(Fact fact) {
-        return this.candidateLists.computeIfAbsent(fact.getFunctorType(), f -> {
-            List<List<Term>> newLists = new ArrayList<>();
-            for (int j = 0; j < fact.getArity(); j++) {
-                newLists.add(new ArrayList<>());
-            }
-            return newLists;
-        });
-    }
+    public void finalizeDatabase() {}
 
-    private void appendRuleListFromBodyPart(Rule rule, Fact bodyPart, List<List<Term>> lists) {
-        for (int i = 0; i < bodyPart.getArity(); i++) {
-            Term arg = bodyPart.args.get(i);
-            if (arg instanceof Variable var) {
+    private Substitution parseAndRunQuery(String queryString) {
+        Optional<ComplexTerm> maybeQuery = ComplexTermParser.parse(Parser.cleanString(queryString));
 
-                for (int ruleIndex : rule.getHead().getVariableIndices(var)) {
-                    lists.get(ruleIndex).addAll(candidateLists.getOrDefault(bodyPart.getFunctorType(), new ArrayList<>()).get(i));
-                }
-            }
-        }
-    }
-
-    private void initialiseCandidateLists() {
-        this.candidateLists = new HashMap<>();
-
-        for (Clause clause : clauses) {
-            if (clause instanceof Fact fact) {
-                List<List<Term>> lists = getOrCreateCandidateLists(fact);
-
-                List<Term> args = fact.args;
-                for (int i = 0; i < args.size(); i++) {
-                    if (!(args.get(i) instanceof Variable)) {
-                        lists.get(i).add(args.get(i));
-                    }
-                }
-            }
+        if (maybeQuery.isEmpty()) {
+            return Substitution.failure();
         }
 
-        for (Clause clause : clauses) {
-            if (clause instanceof Rule rule) {
-                List<List<Term>> lists = getOrCreateCandidateLists(rule.getHead());
+        ComplexTerm query = maybeQuery.get();
 
-                for (Clause bodyTerm : rule.getBody()) {
-                    if (bodyTerm instanceof Fact bodyPart) {
-                        appendRuleListFromBodyPart(rule, bodyPart, lists);
-                    }
-                }
-
-                System.out.println(this.candidateLists.get(rule.getFunctorType()));
-            }
-        }
-    }
-
-    private void initialiseFunctorToStructuresMap() {
-        for (Clause clause : clauses) {
-            this.functorToStructures
-                    .computeIfAbsent(clause.getFunctorType(), k -> new ArrayList<>())
-                    .add(clause);
-        }
-    }
-
-    public void finalizeDatabase() {
-        this.initialiseCandidateLists();
-        this.initialiseFunctorToStructuresMap();
-    }
-
-    public boolean resolveQuery(Fact query) {
-        for (Clause clause : this.clauses) {
-            if (clause.resolve(this, query)) {
-                return true;
-            }
+        for (Fact fact : functorToStructures.get(query.getType())) {
+            // TODO
         }
 
-        return false;
-    }
-
-    private Fact fillVariablesAndResolve(Fact query, List<Iterator<Term>> iterators, int varc) {
-        if (varc == 0) {
-            if (resolveQuery(query)) return query;
-            return null;
-        }
-
-        int argi = query.firstVariableIndex();
-
-        if (argi < 0) return null;
-
-        Iterator<Term> it = iterators.get(argi);
-
-        while (it.hasNext()) {
-            Fact copy = new Fact(query);
-            copy.fillVariable(argi, it.next());
-            Fact bnbResult = fillVariablesAndResolve(copy, iterators, varc-1);
-
-            if (bnbResult != null) {
-                return bnbResult;
-            }
-        }
-
-        return null;
-    }
-
-    public Fact unifyQuery(Fact query, List<Iterator<Term>> iterators) {
-        int varc = query.countUniqueVariables();
-
-        return fillVariablesAndResolve(query, iterators, varc);
-    }
-
-    private void printResults(Fact query, Fact result) {
-        Map<Variable, Term> variableMap = query.filledVariables(result);
-
-        if (variableMap == null) {
-            System.out.println("FAIL");
-        } else {
-            variableMap.forEach((variable, term) -> System.out.println(variable + " = " + term));
-        }
-    }
-
-    private List<Iterator<Term>> initialiseIterators(Fact query) {
-        List<Iterator<Term>> iterators = new ArrayList<>();
-        for (List<Term> candidateList : this.candidateLists.get(query.getFunctorType())) {
-            iterators.add(candidateList.iterator());
-        }
-
-        return iterators;
+        return Substitution.success();
     }
 
     public void runQuery(String queryString) {
-        if (!queryString.startsWith("?-")) {
-            return;
-        }
-
-        String cleanQueryString = queryString.substring(2).replaceAll("\\s+", "");
-        Term query = Parser.parseChunk(cleanQueryString);
-
-        assert query instanceof Fact;
-
-        Fact queryFact = (Fact) query;
-
-        if (queryFact.containsVariables()) {
-            List<Iterator<Term>> iterators = initialiseIterators(queryFact);
-            this.lastQuery = queryFact;
-            this.lastQueryCandidateStates = iterators;
-
-            Fact result = this.unifyQuery(queryFact, iterators);
-            this.printResults(queryFact, result);
-        } else {
-            boolean isTrue = this.resolveQuery(queryFact);
-            System.out.println(isTrue);
-        }
+        Substitution result = parseAndRunQuery(queryString);
     }
 
-    public void nextState() {
-        if (this.lastQuery == null) {
-            return;
-        }
-
-        Fact res = this.unifyQuery(this.lastQuery, this.lastQueryCandidateStates);
-
-        this.printResults(this.lastQuery, res);
-    }
+    public void nextState() {}
 
     @Override
     public String toString() {
 
-        return "TermDatabase\n" +
-                clauses +
-                "\n" +
-                candidateLists;
+        return "TermDatabase " + facts;
     }
 }

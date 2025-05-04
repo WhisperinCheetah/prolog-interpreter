@@ -1,4 +1,4 @@
-package src.clauses;
+package src;
 
 public class FunctorType {
     final String functor;
@@ -7,6 +7,14 @@ public class FunctorType {
     public FunctorType(String functor, int arity) {
         this.functor = functor;
         this.arity = arity;
+    }
+
+    public String getFunctor() {
+        return functor;
+    }
+
+    public int getArity() {
+        return arity;
     }
 
     @Override

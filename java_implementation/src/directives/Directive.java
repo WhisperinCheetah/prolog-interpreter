@@ -1,17 +1,15 @@
 package src.directives;
 
-import src.Structure;
-
-import java.util.Optional;
+import src.complex.ComplexTerm;
 
 public abstract class Directive {
-    protected final Structure goal;
+    protected final ComplexTerm goal;
 
-    public Directive(Structure goal) {
+    public Directive(ComplexTerm goal) {
         this.goal = goal;
     }
 
-    public Structure getGoal() {
+    public ComplexTerm getGoal() {
         return goal;
     }
 

@@ -1,14 +1,9 @@
 package src.directives;
 
-import src.Structure;
-import src.Term;
-import src.parser.StructureParser;
-
-import java.util.List;
-import java.util.Optional;
+import src.complex.ComplexTerm;
 
 public class Initialization extends Directive {
-    public Initialization(Structure goal) {
+    public Initialization(ComplexTerm goal) {
         super(goal);
     }
 }

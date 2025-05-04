@@ -1,7 +1,7 @@
 package src.predicates;
 
-import src.Structure;
 import src.Term;
+import src.TermType;
 
 import java.util.List;
 
@@ -14,8 +14,7 @@ public class Write extends BuiltinPredicate {
         return true;
     }
 
-    @Override
-    public Structure copy() {
+    public Write copy() {
         return new Write();
     }
 }

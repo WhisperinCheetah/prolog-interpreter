@@ -1,16 +1,7 @@
 package src.parser;
 
-import src.Structure;
-import src.Term;
+import src.Fact;
 import src.TermDatabase;
-import src.clauses.Clause;
-import src.clauses.Fact;
-import src.clauses.Rule;
-import src.directives.Initialization;
-import src.predicates.Predicate;
-import src.simples.Atom;
-import src.simples.Number;
-import src.simples.Variable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,18 +18,27 @@ public class Parser {
         this.path = path;
     }
 
-    public static Term parseChunk(String line) {
-        if (Variable.isVariable(line)) {
-            return new Variable(line);
-        } else if (Fact.isFact(line)) {
-            return Fact.fromString(line);
-        } else if (Atom.isAtom(line)) {
-            return new Atom(line);
-        } else if (Rule.isRule(line)) {
-            return Rule.fromString(line);
-        } else {
-            return Number.fromString(line);
+    public static ArrayList<String> splitByComma(String input) {
+        ArrayList<String> splitArgsStrings = new ArrayList<>();
+        int openBracketCounter = 0;
+        int lastSplit = 0;
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == '(') openBracketCounter++;
+            if (input.charAt(i) == ')') openBracketCounter--;
+
+            if (openBracketCounter == 0 && input.charAt(i) == ',') {
+                splitArgsStrings.add(input.substring(lastSplit, i));
+                lastSplit = i + 1;
+            }
         }
+
+        splitArgsStrings.add(input.substring(lastSplit));
+
+        return splitArgsStrings;
+    }
+
+    public static String cleanString(String input) {
+        return input.replaceAll("\\s+", "");
     }
 
     // TODO parse by . but ignore "" and numbers
@@ -49,26 +49,24 @@ public class Parser {
         TermDatabase db = new TermDatabase();
 
         for (String line : lines) {
-            Optional<Initialization> init = InitializationParser.parseInitialization(line);
+             Optional<Fact> fact = StructureParser.parse(line).map(s -> s);
 
-            if (init.isPresent()) {
-                db.addInitialization(init.get());
-                continue;
-            }
+             if (fact.isEmpty()) {
+                 fact = ComplexTermParser.parse(line).map(s -> s);
+             }
 
-            Optional<Clause> structure = ClauseParser.parseClause(line);
+             if (fact.isEmpty()) {
+                 throw new AssertionError("Cannot parse " + line);
+             }
 
-            if (structure.isPresent()) {
-                db.addClause(structure.get());
-                continue;
-            }
+             db.addFact(fact.get());
         }
 
         db.finalizeDatabase();
 
         if (verbose) {
             System.out.println("Parsed " + db.size() + " clauses");
-            System.out.println(db.getClauses());
+            System.out.println(db.getFacts());
         }
 
         return db;
