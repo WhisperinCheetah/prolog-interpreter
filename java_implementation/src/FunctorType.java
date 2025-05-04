@@ -1,8 +1,8 @@
 package src;
 
 public class FunctorType {
-    final String functor;
-    final int arity;
+    public final String functor;
+    public final int arity;
 
     public FunctorType(String functor, int arity) {
         this.functor = functor;

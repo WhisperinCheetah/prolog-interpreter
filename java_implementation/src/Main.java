@@ -18,7 +18,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        final String path = "java_implementation/src/main.pl";
+        final String path = "examples/basics/write.pl";
         Parser parser = new Parser(path);
 
         TermDatabase db;
@@ -37,6 +37,7 @@ public class Main {
             if (input.equalsIgnoreCase("exit")) {
                 break;
             } else if (input.equalsIgnoreCase("")) {
+                System.out.print("\r");
                 db.nextState();
             } else {
                 db.runQuery(input);
