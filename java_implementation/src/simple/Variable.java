@@ -4,6 +4,8 @@ import src.Substitution;
 import src.Term;
 import src.TermType;
 
+import java.util.HashMap;
+
 public class Variable extends SimpleTerm {
     String name;
 
@@ -21,31 +23,34 @@ public class Variable extends SimpleTerm {
 
     @Override
     public String toString() {
-        return this.name;
+        return this.name + "[" + super.toString().split("@")[1] + "]";
     }
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof Variable otherVar) {
-            return this.name.equals(otherVar.getName());
-        }
-
-        return false;
+        return super.equals(other);
     }
 
     @Override
     public Substitution unify(Term other) {
-        return Substitution.ofEntry(this, other);
+        return Substitution.fromEntry(this, other);
+    }
+
+    @Override
+    public Term renameVariables(HashMap<String, Variable> map) {
+        if (!map.containsKey(this.name)) map.put(this.name, this.copy());
+
+        return map.get(this.name);
     }
 
     @Override
     public Term substituteVariables(Substitution substitution) {
-        return substitution.getMap().getOrDefault(this, this.copy());
+        return substitution.getMap().getOrDefault(this, this);
     }
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+        return super.hashCode();
     }
 
     @Override

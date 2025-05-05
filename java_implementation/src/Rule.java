@@ -1,27 +1,44 @@
 package src;
 
 import src.complex.ComplexTerm;
+import src.simple.Variable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Structure implements Fact {
+public class Rule implements Fact {
     ComplexTerm head;
-    List<Fact> body;
+    List<Term> body;
 
-    public Structure(ComplexTerm head, List<Fact> body) {
+    public Rule(ComplexTerm head, List<Term> body) {
         this.head = head;
         this.body = body;
     }
 
-    public Structure(Structure other) {
+    public Rule(Rule other) {
         this.head = other.head.copy();
-        this.body = other.body.stream().map(Fact::copy).collect(Collectors.toList());
+        this.body = other.body.stream().map(Term::copy).collect(Collectors.toList());
     }
 
-    public Structure copy() {
-        return new Structure(this);
+    @Override
+    public Substitution unify(Term other) {
+        return head.unify(other);
+    }
+
+    @Override
+    public Fact renameVariables(HashMap<String, Variable> map) {
+        Rule copy = this.copy();
+
+        copy.head = copy.head.renameVariables(map);
+        copy.body = copy.body.stream().map(t -> t.renameVariables(map)).toList();
+
+        return copy;
+    }
+
+    public Rule copy() {
+        return new Rule(this);
     }
 
     @Override
@@ -37,7 +54,7 @@ public class Structure implements Fact {
         return head;
     }
 
-    public List<Fact> getBody() {
+    public List<Term> getBody() {
         return body;
     }
 

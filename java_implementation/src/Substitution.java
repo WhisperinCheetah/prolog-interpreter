@@ -22,7 +22,7 @@ public class Substitution {
         return new Substitution(false, new HashMap<>());
     }
 
-    public static Substitution ofEntry(Variable var, Term term) {
+    public static Substitution fromEntry(Variable var, Term term) {
         HashMap<Variable, Term> varTermMap = new HashMap<>();
         varTermMap.put(var, term);
         return new Substitution(true, varTermMap);
@@ -56,5 +56,20 @@ public class Substitution {
 
     public void insert(Variable var, Term term) {
         varTermMap.put(var, term);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append("Substitution[").append(success).append("]\n");
+        for (Map.Entry<Variable, Term> entry : varTermMap.entrySet()) {
+            s.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+
+        if (varTermMap.isEmpty()) {
+            s.append("{ no entries }");
+        }
+
+        return s.toString();
     }
 }

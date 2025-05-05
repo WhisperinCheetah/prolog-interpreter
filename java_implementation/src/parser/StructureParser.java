@@ -1,29 +1,41 @@
 package src.parser;
 
-import src.Fact;
-import src.Structure;
+import src.Rule;
 import src.Term;
 import src.complex.ComplexTerm;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class StructureParser {
 
-    public static Structure parseStructure(String input) {
+    public static Rule parseStructure(String input) {
         String[] headAndBody = input.split(":-");
         ComplexTerm head = ComplexTermParser.parseComplexTerm(headAndBody[0]);
 
         ArrayList<String> bodyParts = Parser.splitByComma(headAndBody[1]);
-        List<Fact> body = bodyParts.stream().map(s -> (Fact)ComplexTermParser.parseComplexTerm(s)).toList();
+        List<Term> body = new ArrayList<>();
+        for (String bodyPart : bodyParts) {
+            Optional<Term> term = TermParser.parse(bodyPart);
 
-        return new Structure(head, body);
+            try {
+                if (term.isEmpty()) {
+                    throw new ParseException("Could not parse " + input, 0);
+                }
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+            body.add(term.get());
+        }
+
+        return new Rule(head, body);
     }
 
-    public static Optional<Structure> parse(String input) {
-        if (Structure.isRule(input)) {
+    public static Optional<Rule> parse(String input) {
+        if (Rule.isRule(input)) {
             return Optional.of(parseStructure(input));
         }
 

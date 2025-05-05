@@ -38,6 +38,10 @@ public class Parser {
     }
 
     public static String cleanString(String input) {
+        if (input.charAt(input.length() - 1) == '.') {
+            input = input.substring(0, input.length() - 1);
+        }
+
         return input.replaceAll("\\s+", "");
     }
 

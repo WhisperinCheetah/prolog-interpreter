@@ -10,7 +10,7 @@ import java.util.*;
 public class ComplexTerm implements Term {
 
     FunctorType type;
-    private final List<Term> args;
+    private List<Term> args;
 
     public ComplexTerm(String functor, List<Term> args, int arity) {
         this.type = new FunctorType(functor, arity);
@@ -94,18 +94,23 @@ public class ComplexTerm implements Term {
         return -1;
     }
 
+    public Term getArg(int i) {
+        return args.get(i);
+    }
+
     @Override
     public Substitution unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
         if (other instanceof SimpleTerm) return Substitution.failure();
+
         ComplexTerm otherComplex = (ComplexTerm) other;
 
         if (!this.type.equals(otherComplex.getType())) return Substitution.failure();
 
         Substitution substitution = Substitution.success();
-        for (Term arg : args) {
-            Term argl = arg.substituteVariables(substitution);
-            Term argr = otherComplex.substituteVariables(substitution);
+        for (int i = 0; i < getArity(); i++) {
+            Term argl = this.getArg(i).substituteVariables(substitution);
+            Term argr = otherComplex.getArg(i).substituteVariables(substitution);
             Substitution argSubstitution = argl.unify(argr);
             substitution = substitution.unify(argSubstitution);
         }
@@ -114,8 +119,17 @@ public class ComplexTerm implements Term {
     }
 
     @Override
+    public ComplexTerm renameVariables(HashMap<String, Variable> map) {
+        ComplexTerm copy = this.copy();
+
+        copy.args = copy.args.stream().map(t -> t.renameVariables(map)).toList();
+
+        return copy;
+    }
+
+    @Override
     public Term substituteVariables(Substitution substitution) {
-        List<Term> filledArgs = this.args.stream().map(t -> t.copy().substituteVariables(substitution)).toList();
+        List<Term> filledArgs = this.args.stream().map(t -> t.substituteVariables(substitution)).toList();
         return new ComplexTerm(this.type, filledArgs);
     }
 

@@ -4,6 +4,8 @@ import src.Substitution;
 import src.Term;
 import src.TermType;
 
+import java.util.HashMap;
+
 public class Number extends SimpleTerm {
     double value;
 
@@ -31,11 +33,15 @@ public class Number extends SimpleTerm {
 
     @Override
     public Substitution unify(Term other) {
-        if (other instanceof Number num && value == num.value) {
-            return Substitution.success();
-        }
+        if (other instanceof Variable) return other.unify(this);
+        if (other instanceof Number num && value == num.value) return Substitution.success();
 
         return Substitution.failure();
+    }
+
+    @Override
+    public Term renameVariables(HashMap<String, Variable> map) {
+        return this.copy();
     }
 
     @Override

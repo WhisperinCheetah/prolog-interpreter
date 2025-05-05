@@ -2,10 +2,11 @@ package src;
 
 import src.complex.ComplexTerm;
 import src.directives.Initialization;
-import src.parser.ComplexTermParser;
 import src.parser.Parser;
+import src.parser.TermParser;
 import src.simple.Variable;
 
+import java.text.ParseException;
 import java.util.*;
 
 public class TermDatabase {
@@ -13,7 +14,8 @@ public class TermDatabase {
     Initialization init;
 
     List<Fact> facts;
-    Map<FunctorType, List<Structure>> functorToStructures;
+    Iterator<Fact> queryState;
+    Map<FunctorType, List<Rule>> functorToStructures;
 
     Map<FunctorType, List<List<Term>>> candidateLists;
 
@@ -53,24 +55,43 @@ public class TermDatabase {
 
     public void finalizeDatabase() {}
 
-    private Substitution parseAndRunQuery(String queryString) {
-        Optional<ComplexTerm> maybeQuery = ComplexTermParser.parse(Parser.cleanString(queryString));
 
-        if (maybeQuery.isEmpty()) {
-            return Substitution.failure();
-        }
+    private Term parseQuery(String queryString) throws ParseException {
+        String cleanString = Parser.cleanString(queryString);
+        Optional<Term> maybeQuery = TermParser.parse(cleanString);
 
-        ComplexTerm query = maybeQuery.get();
+        if (maybeQuery.isEmpty()) throw new ParseException("Failed to parse " + cleanString, 0);
 
-        for (Fact fact : functorToStructures.get(query.getType())) {
-            // TODO
-        }
-
-        return Substitution.success();
+        return maybeQuery.get();
     }
 
-    public void runQuery(String queryString) {
-        Substitution result = parseAndRunQuery(queryString);
+    public Substitution backtrack(Term query) {
+        Substitution res = Substitution.failure();
+        for (Fact fact : facts) {
+            Fact renamedFact = fact.renameVariables(new HashMap<>());
+
+            res = renamedFact.unify(query);
+
+            if (res.isSuccess() && renamedFact instanceof Rule struct) {
+                for (Term term : struct.body) {
+                    Term filledTerm = term.substituteVariables(res);
+                    res = res.unify(backtrack(filledTerm));
+                }
+            }
+
+            if (res.isSuccess()) break;
+        }
+
+        return res;
+    }
+
+    // TODO query's kunnen komma's hebben
+    public void runQuery(String queryString) throws ParseException {
+        Term query = this.parseQuery(queryString);
+
+        Substitution res = backtrack(query);
+
+        System.out.println(res);
     }
 
     public void nextState() {}
