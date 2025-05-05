@@ -1,10 +1,9 @@
-package test;
-
+import engine.Substitution;
+import engine.complex.ComplexTerm;
+import engine.simple.Atom;
+import engine.simple.Variable;
 import org.junit.jupiter.api.Test;
-import src.Substitution;
-import src.complex.ComplexTerm;
-import src.simple.Atom;
-import src.simple.Variable;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -18,8 +17,6 @@ public class TestMain {
         ComplexTerm f2 = new ComplexTerm("f", List.of(new Atom("a"), B));
 
         Substitution sub = f1.unify(f2);
-
-        System.out.println(sub);
     }
 
     @Test

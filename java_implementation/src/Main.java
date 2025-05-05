@@ -1,6 +1,5 @@
-package src;
-
-import src.parser.Parser;
+import engine.TermDatabase;
+import engine.parser.Parser;
 
 import java.io.IOException;
 import java.util.Scanner;
