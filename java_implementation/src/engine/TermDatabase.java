@@ -56,7 +56,7 @@ public class TermDatabase {
     public void finalizeDatabase() {}
 
 
-    private Term parseQuery(String queryString) throws ParseException {
+    public Term parseQuery(String queryString) throws ParseException {
         String cleanString = Parser.cleanString(queryString);
         Optional<Term> maybeQuery = TermParser.parse(cleanString);
 
@@ -65,24 +65,38 @@ public class TermDatabase {
         return maybeQuery.get();
     }
 
-    public Substitution backtrack(Term query) {
-        Substitution res = Substitution.failure();
-        for (Fact fact : facts) {
-            Fact renamedFact = fact.renameVariables(new HashMap<>());
-
-            res = renamedFact.unify(query);
-
-            if (res.isSuccess() && renamedFact instanceof Rule struct) {
-                for (Term term : struct.body) {
-                    Term filledTerm = term.substituteVariables(res);
-                    res = res.unify(backtrack(filledTerm));
-                }
-            }
-
-            if (res.isSuccess()) break;
+    public Substitution backtrackRecursive(List<Term> queries, int index, Substitution substitution) {
+        if (index == queries.size() || substitution.isFailure()) {
+            return substitution;
         }
 
-        return res;
+        Term query = queries.get(index).substituteVariables(substitution);
+
+        for (Fact fact : facts) {
+            Fact rfact = fact.renameVariables(new HashMap<>());
+
+            Substitution res = rfact.unify(query);
+
+            if (res.isSuccess() && rfact instanceof Rule rule) {
+                Substitution ruleRes = backtrackRecursive(rule.getBody(), index + 1, res);
+
+                res = res.unify(ruleRes);
+            }
+
+            if (res.isSuccess()) {
+                Substitution recursiveRes = backtrackRecursive(queries, index+1, substitution.unify(res));
+
+                if (recursiveRes.isSuccess()) {
+                    return recursiveRes;
+                }
+            }
+        }
+
+        return Substitution.failure();
+    }
+
+    public Substitution backtrack(Term query) {
+        return backtrackRecursive(List.of(query), 0, Substitution.success());
     }
 
     // TODO query's kunnen komma's hebben
