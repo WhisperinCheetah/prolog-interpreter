@@ -1,4 +1,4 @@
-package engine.parser;
+package engine.parser.predicates;
 
 import engine.complex.Fail;
 

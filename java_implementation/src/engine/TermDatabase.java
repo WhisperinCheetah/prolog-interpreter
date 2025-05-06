@@ -17,7 +17,6 @@ public class TermDatabase {
     Initialization init;
 
     List<Fact> facts;
-    Iterator<Fact> queryState;
     Map<FunctorType, List<Rule>> functorToStructures;
 
     Map<FunctorType, List<List<Term>>> candidateLists;

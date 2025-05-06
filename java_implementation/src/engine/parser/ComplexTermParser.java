@@ -2,7 +2,7 @@ package engine.parser;
 
 import engine.Term;
 import engine.complex.ComplexTerm;
-import engine.complex.Predicate;
+import engine.parser.predicates.PredicateParser;
 
 import java.util.ArrayList;
 import java.util.List;

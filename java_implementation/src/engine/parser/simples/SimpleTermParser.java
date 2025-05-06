@@ -1,4 +1,4 @@
-package engine.parser;
+package engine.parser.simples;
 
 import engine.simple.SimpleTerm;
 

@@ -1,7 +1,8 @@
-package engine.parser;
+package engine.parser.predicates;
 
 import engine.Term;
 import engine.complex.Write;
+import engine.parser.TermParser;
 
 import java.util.Optional;
 
