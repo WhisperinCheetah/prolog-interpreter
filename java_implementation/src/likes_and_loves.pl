@@ -1,1 +1,1 @@
-run :- read(X), write(X).
+:- dynamic likes/2

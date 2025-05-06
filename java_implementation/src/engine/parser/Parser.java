@@ -2,6 +2,7 @@ package engine.parser;
 
 import engine.Fact;
 import engine.TermDatabase;
+import engine.directives.DynamicDirective;
 import engine.directives.Initialization;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class Parser {
@@ -39,17 +41,23 @@ public class Parser {
     }
 
     public static String cleanString(String input) {
-        if (input.charAt(input.length() - 1) == '.') {
-            input = input.substring(0, input.length() - 1);
-        }
+        String noDot = input.charAt(input.length() - 1) == '.' ? input.substring(0, input.length() - 1) : input;
 
-        return input.replaceAll("\\s+", "");
+        String noOtherWhitespace = noDot.replaceAll("\\s&&[^ ]+", "");
+        String singleSpaced = noOtherWhitespace.replaceAll(" {2,}", " ").trim();
+
+        String dynamicWithBrackets = singleSpaced.replaceAll("^:- ?dynamic ([a-z]+/\\d+)", ":-dynamic($1)");
+
+        return dynamicWithBrackets.replaceAll("\\s+", "");
     }
 
     // TODO parse by . but ignore "" and numbers
     public TermDatabase parseProgram(boolean verbose) throws IOException {
-        String program = new String(Files.readAllBytes(Paths.get(path))).replaceAll("\\s+","");
-        ArrayList<String> lines = new ArrayList<>(Arrays.asList(program.split("\\.")));
+        // String program = new String(Files.readAllBytes(Paths.get(path))).replaceAll("\\s+","");
+        // ArrayList<String> lines = new ArrayList<>(Arrays.asList(program.split("\\.")));
+
+        String dirtyProgram = new String(Files.readAllBytes(Paths.get(path)));
+        List<String> lines = new ArrayList<>(Arrays.asList(dirtyProgram.split("\\."))).stream().map(Parser::cleanString).toList();
 
         TermDatabase db = new TermDatabase();
 
@@ -58,6 +66,13 @@ public class Parser {
 
             if (initialization.isPresent()) {
                 db.addInitialization(initialization.get());
+                continue;
+            }
+
+            Optional<DynamicDirective> dynamicDirective = DynamicDirectiveParser.parse(line);
+
+            if (dynamicDirective.isPresent()) {
+                db.addDynamic(dynamicDirective.get());
                 continue;
             }
 
@@ -79,6 +94,7 @@ public class Parser {
         if (verbose) {
             System.out.println("Parsed " + db.size() + " clauses");
             System.out.println(db.getFacts());
+            System.out.println("Dynamic statements: " + db.getDynamicsList());
         }
 
         return db;

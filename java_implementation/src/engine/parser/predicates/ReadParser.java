@@ -1,7 +1,7 @@
 package engine.parser.predicates;
 
 import engine.Term;
-import engine.complex.Read;
+import engine.complex.predicate.Read;
 import engine.parser.TermParser;
 
 import java.util.Optional;

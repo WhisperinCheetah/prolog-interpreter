@@ -4,7 +4,7 @@ import engine.Rule;
 import engine.Substitution;
 import engine.TermDatabase;
 import engine.complex.ComplexTerm;
-import engine.complex.Write;
+import engine.complex.predicate.Write;
 import engine.simple.Atom;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

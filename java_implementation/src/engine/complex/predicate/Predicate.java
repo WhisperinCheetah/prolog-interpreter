@@ -1,8 +1,9 @@
-package engine.complex;
+package engine.complex.predicate;
 
 import engine.FunctorType;
 import engine.Substitution;
 import engine.Term;
+import engine.complex.ComplexTerm;
 import engine.simple.Variable;
 
 import java.util.HashMap;

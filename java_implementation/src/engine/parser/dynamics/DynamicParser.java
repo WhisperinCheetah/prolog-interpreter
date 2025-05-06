@@ -1,6 +1,6 @@
 package engine.parser.dynamics;
 
-import engine.complex.Dynamic;
+import engine.complex.dynamic.Dynamic;
 
 import java.util.Optional;
 

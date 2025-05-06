@@ -1,6 +1,7 @@
-package engine.complex;
+package engine.complex.dynamic;
 
 import engine.*;
+import engine.complex.ComplexTerm;
 import engine.simple.Variable;
 
 import java.util.HashMap;

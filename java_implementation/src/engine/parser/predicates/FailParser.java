@@ -1,6 +1,6 @@
 package engine.parser.predicates;
 
-import engine.complex.Fail;
+import engine.complex.predicate.Fail;
 
 import java.util.Optional;
 

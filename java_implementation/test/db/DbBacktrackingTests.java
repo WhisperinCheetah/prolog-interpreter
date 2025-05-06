@@ -5,7 +5,6 @@ import engine.Rule;
 import engine.Substitution;
 import engine.TermDatabase;
 import engine.complex.ComplexTerm;
-import engine.complex.Write;
 import engine.simple.Atom;
 import engine.simple.Variable;
 import org.junit.jupiter.api.Test;

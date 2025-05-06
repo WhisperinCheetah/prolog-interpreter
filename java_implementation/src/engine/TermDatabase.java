@@ -1,7 +1,9 @@
 package engine;
 
-import engine.complex.Dynamic;
-import engine.complex.Predicate;
+import engine.complex.ComplexTerm;
+import engine.complex.dynamic.Dynamic;
+import engine.complex.predicate.Predicate;
+import engine.directives.DynamicDirective;
 import engine.parser.Parser;
 import engine.parser.TermParser;
 import engine.directives.Initialization;
@@ -37,12 +39,33 @@ public class TermDatabase {
         this.init = init;
     }
 
+    public void addDynamic(DynamicDirective dynamic) {
+        this.dynamics.add(dynamic.getGoal().getType());
+    }
+
+    public boolean isDynamic(Fact fact) {
+        if (fact instanceof Rule rule) return dynamics.contains(rule.head.getType());
+        if (fact instanceof Predicate) return false;
+        if (fact instanceof Dynamic) return false;
+        if (fact instanceof ComplexTerm complexTerm) return dynamics.contains(complexTerm.getType());
+
+        return false;
+    }
+
     public int size() {
         return this.facts.size();
     }
 
     public List<Fact> getFacts() {
         return this.facts;
+    }
+
+    public Set<FunctorType> getDynamics() {
+        return this.dynamics;
+    }
+
+    public List<FunctorType> getDynamicsList() {
+        return new ArrayList<>(this.dynamics);
     }
 
     public void finalizeDatabase() {}

@@ -1,6 +1,6 @@
 package engine.parser.predicates;
 
-import engine.complex.NL;
+import engine.complex.predicate.NL;
 
 import java.util.Optional;
 

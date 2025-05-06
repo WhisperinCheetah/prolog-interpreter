@@ -2,7 +2,7 @@ package engine.parser.dynamics;
 
 import engine.Fact;
 import engine.Term;
-import engine.complex.Asserta;
+import engine.complex.dynamic.Asserta;
 import engine.parser.RuleParser;
 import engine.parser.TermParser;
 

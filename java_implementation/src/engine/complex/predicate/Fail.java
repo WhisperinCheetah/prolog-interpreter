@@ -1,7 +1,6 @@
-package engine.complex;
+package engine.complex.predicate;
 
 import engine.Substitution;
-import engine.Term;
 
 import java.util.List;
 

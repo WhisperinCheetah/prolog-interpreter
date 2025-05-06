@@ -1,8 +1,7 @@
-package engine.complex;
+package engine.complex.dynamic;
 
 import engine.Fact;
 import engine.Substitution;
-import engine.Term;
 import engine.TermDatabase;
 
 public class Asserta extends Dynamic {
@@ -17,6 +16,10 @@ public class Asserta extends Dynamic {
 
     @Override
     public Substitution execute(TermDatabase db) {
+        if (!db.isDynamic(this.arg)) {
+            throw new RuntimeException("Argument is not a dynamic type");
+        }
+
         db.insertFact(this.arg, 0);
 
         return Substitution.success();
