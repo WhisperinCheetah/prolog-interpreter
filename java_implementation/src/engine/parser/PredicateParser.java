@@ -14,6 +14,10 @@ public class PredicateParser {
             predicate = NLParser.parse(input).map(n -> n);
         }
 
+        if (predicate.isEmpty()) {
+            predicate = FailParser.parse(input).map(f -> f);
+        }
+
         return predicate;
     }
 }

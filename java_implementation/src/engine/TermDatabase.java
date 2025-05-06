@@ -10,6 +10,7 @@ import engine.directives.Initialization;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TermDatabase {
 
@@ -57,14 +58,21 @@ public class TermDatabase {
 
     public void finalizeDatabase() {}
 
+    public List<Term> parseQuery(String queryString) throws ParseException {
+        List<String> cleanString = Parser.splitByComma(Parser.cleanString(queryString));
 
-    public Term parseQuery(String queryString) throws ParseException {
-        String cleanString = Parser.cleanString(queryString);
-        Optional<Term> maybeQuery = TermParser.parse(cleanString);
+        List<Term> queryTerms = new ArrayList<>();
+        for (String cleanTerm : cleanString) {
+            Optional<Term> term = TermParser.parse(cleanTerm);
 
-        if (maybeQuery.isEmpty()) throw new ParseException("Failed to parse " + cleanString, 0);
+            if (term.isEmpty()) {
+                throw new ParseException("Could not parse query", 0);
+            }
 
-        return maybeQuery.get();
+            queryTerms.add(term.get());
+        }
+
+        return queryTerms;
     }
 
     public Substitution backtrackRecursive(List<Term> queries, int index, Substitution substitution) {
@@ -105,11 +113,14 @@ public class TermDatabase {
         return backtrackRecursive(List.of(query), 0, Substitution.success());
     }
 
-    // TODO query's kunnen komma's hebben
-    public void runQuery(String queryString) throws ParseException {
-        Term query = this.parseQuery(queryString);
+    public Substitution backtrackMultiple(List<Term> queries) {
+        return backtrackRecursive(queries, 0, Substitution.success());
+    }
 
-        Substitution res = backtrack(query);
+    public void runQuery(String queryString) throws ParseException {
+        List<Term> query = this.parseQuery(queryString);
+
+        Substitution res = backtrackMultiple(query);
 
         System.out.println(res);
     }
