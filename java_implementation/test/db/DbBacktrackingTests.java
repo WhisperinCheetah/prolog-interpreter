@@ -5,6 +5,7 @@ import engine.Rule;
 import engine.Substitution;
 import engine.TermDatabase;
 import engine.complex.ComplexTerm;
+import engine.complex.Write;
 import engine.simple.Atom;
 import engine.simple.Variable;
 import org.junit.jupiter.api.Test;
@@ -164,4 +165,5 @@ public class DbBacktrackingTests {
         assertTrue(result.isSuccess());
         assertEquals(new Atom("mary"), result.getMap().get(X));
     }
+
 }

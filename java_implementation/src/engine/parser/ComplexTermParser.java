@@ -2,6 +2,7 @@ package engine.parser;
 
 import engine.Term;
 import engine.complex.ComplexTerm;
+import engine.complex.Predicate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class ComplexTermParser {
 
         return term.get();
     }
+
     // TODO
     public static ComplexTerm parseComplexTerm(String input) {
         String functor = input.substring(0, input.indexOf('('));
@@ -25,11 +27,21 @@ public class ComplexTermParser {
         return new ComplexTerm(functor, args);
     }
 
-    public static Optional<ComplexTerm> parse(String input) {
+    public static Optional<ComplexTerm> parseComplexTermOptional(String input) {
         if (ComplexTerm.isComplexTerm(input)) {
             return Optional.of(parseComplexTerm(input));
         }
 
         return Optional.empty();
+    }
+
+    public static Optional<ComplexTerm> parse(String input) {
+        Optional<ComplexTerm> term = PredicateParser.parse(input).map(p -> p);
+
+        if (term.isEmpty()) {
+            term = parseComplexTermOptional(input);
+        }
+
+        return term;
     }
 }

@@ -2,6 +2,8 @@ package engine;
 
 import engine.complex.ComplexTerm;
 
+import engine.complex.Predicate;
+import engine.complex.Write;
 import engine.parser.Parser;
 import engine.parser.TermParser;
 import engine.directives.Initialization;
@@ -72,13 +74,17 @@ public class TermDatabase {
 
         Term query = queries.get(index).substituteVariables(substitution);
 
+        if (query instanceof Predicate predicate) {
+            return backtrackRecursive(queries, index + 1, substitution.unify(predicate.execute()));
+        }
+
         for (Fact fact : facts) {
             Fact rfact = fact.renameVariables(new HashMap<>());
 
             Substitution res = rfact.unify(query);
 
             if (res.isSuccess() && rfact instanceof Rule rule) {
-                Substitution ruleRes = backtrackRecursive(rule.getBody(), index + 1, res);
+                Substitution ruleRes = backtrackRecursive(rule.getBody(), 0, res);
 
                 res = res.unify(ruleRes);
             }

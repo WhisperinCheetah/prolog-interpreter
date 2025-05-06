@@ -53,7 +53,7 @@ public class Parser {
         TermDatabase db = new TermDatabase();
 
         for (String line : lines) {
-             Optional<Fact> fact = StructureParser.parse(line).map(s -> s);
+             Optional<Fact> fact = RuleParser.parse(line).map(s -> s);
 
              if (fact.isEmpty()) {
                  fact = ComplexTermParser.parse(line).map(s -> s);

@@ -36,6 +36,11 @@ public class ComplexTerm implements Term {
         this.args = other.args.stream().map(Term::copy).toList();
     }
 
+    public ComplexTerm() {
+        this.type = new FunctorType("", 0);
+        this.args = new ArrayList<>();
+    }
+
     public FunctorType getType() {
         return type;
     }
@@ -52,49 +57,16 @@ public class ComplexTerm implements Term {
         return line.matches("[a-z]+[a-zA-Z]*(\\([^:-]*\\))?");
     }
 
-    public boolean resolve(TermDatabase db, ComplexTerm query) {
-        return this.equalsIgnoreVars(query);
-    }
-
-    public boolean containsVariables() {
-        for (Term term : args) {
-            if (term instanceof Variable) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public int countUniqueVariables() {
-        Set<String> seen = new HashSet<>();
-
-        int count = 0;
-        for (Term term : args) {
-            if (term instanceof Variable var) {
-                if (!seen.contains(var.getName())) {
-                    seen.add(var.getName());
-                    count++;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    public int firstVariableIndex() {
-        for (int i = 0; i < args.size(); i++) {
-            Term term = args.get(i);
-            if (term instanceof Variable) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     public Term getArg(int i) {
         return args.get(i);
+    }
+
+    public List<Term> getArgs() {
+        return args;
+    }
+
+    public void setArgs(List<Term> args) {
+        this.args = args;
     }
 
     @Override
@@ -127,7 +99,7 @@ public class ComplexTerm implements Term {
     }
 
     @Override
-    public Term substituteVariables(Substitution substitution) {
+    public ComplexTerm substituteVariables(Substitution substitution) {
         List<Term> filledArgs = this.args.stream().map(t -> t.substituteVariables(substitution)).toList();
         return new ComplexTerm(this.type, filledArgs);
     }
