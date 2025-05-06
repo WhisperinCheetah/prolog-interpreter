@@ -2,6 +2,7 @@ package engine.parser;
 
 import engine.Fact;
 import engine.TermDatabase;
+import engine.directives.Initialization;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -53,17 +54,24 @@ public class Parser {
         TermDatabase db = new TermDatabase();
 
         for (String line : lines) {
-             Optional<Fact> fact = RuleParser.parse(line).map(s -> s);
+            Optional<Initialization> initialization = InitializationParser.parse(line);
 
-             if (fact.isEmpty()) {
-                 fact = ComplexTermParser.parse(line).map(s -> s);
-             }
+            if (initialization.isPresent()) {
+                db.addInitialization(initialization.get());
+                continue;
+            }
 
-             if (fact.isEmpty()) {
-                 throw new AssertionError("Cannot parse " + line);
-             }
+            Optional<Fact> fact = RuleParser.parse(line).map(s -> s);
 
-             db.addFact(fact.get());
+            if (fact.isEmpty()) {
+                fact = ComplexTermParser.parse(line).map(s -> s);
+            }
+
+            if (fact.isEmpty()) {
+                throw new AssertionError("Cannot parse " + line);
+            }
+
+            db.addFact(fact.get());
         }
 
         db.finalizeDatabase();

@@ -8,6 +8,8 @@ import engine.simple.Variable;
 
 public class ComplexTerm implements Term {
 
+    public static final String COMPLEX_TERM_REGEX = "[a-z]+[a-zA-Z]*(\\([^:-]*\\))?";
+
     FunctorType type;
     private List<Term> args;
 
@@ -54,7 +56,7 @@ public class ComplexTerm implements Term {
     }
 
     public static boolean isComplexTerm(String line) {
-        return line.matches("[a-z]+[a-zA-Z]*(\\([^:-]*\\))?");
+        return line.matches(COMPLEX_TERM_REGEX);
     }
 
     public Term getArg(int i) {

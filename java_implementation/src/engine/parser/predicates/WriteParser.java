@@ -9,7 +9,7 @@ import java.util.Optional;
 public class WriteParser {
 
     private static Write parseWrite(String input) {
-        String argString = input.substring(input.indexOf('(') + 1, input.indexOf(')'));
+        String argString = input.substring(input.indexOf('(') + 1, input.lastIndexOf(')'));
 
         Optional<Term> arg = TermParser.parse(argString);
 

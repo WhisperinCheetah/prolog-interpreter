@@ -117,11 +117,27 @@ public class TermDatabase {
     }
 
     public void runQuery(String queryString) throws ParseException {
+        Substitution initializationResult = this.runInitialization();
+
+        if (initializationResult.isFailure()) {
+            System.out.println("Initialization goal failed");
+            System.out.println(initializationResult);
+            return;
+        }
+
         List<Term> query = this.parseQuery(queryString);
 
         Substitution res = backtrackMultiple(query);
 
         System.out.println(res);
+    }
+
+    public Substitution runInitialization() {
+        if (this.init == null) {
+            return Substitution.success();
+        }
+
+        return this.backtrack(this.init.getGoal());
     }
 
     public void nextState() {}
