@@ -98,7 +98,6 @@ public class TermDatabase {
 
     @Override
     public String toString() {
-
-        return "engine.TermDatabase " + facts;
+        return "TermDatabase " + facts;
     }
 }
