@@ -3,6 +3,7 @@ package engine.complex;
 import java.util.*;
 
 import engine.*;
+import engine.simple.Atom;
 import engine.simple.SimpleTerm;
 import engine.simple.Variable;
 
@@ -74,6 +75,7 @@ public class ComplexTerm implements Term {
     @Override
     public Substitution unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
+        if (other instanceof Atom atom && this.getArity() == 0 && this.getFunctor().equals(atom.getValue())) return Substitution.success();
         if (other instanceof SimpleTerm) return Substitution.failure();
 
         ComplexTerm otherComplex = (ComplexTerm) other;

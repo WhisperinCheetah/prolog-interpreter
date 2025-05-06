@@ -5,6 +5,7 @@ import java.util.HashMap;
 import engine.Substitution;
 import engine.Term;
 import engine.TermType;
+import engine.complex.ComplexTerm;
 import engine.simple.SimpleTerm;
 
 public class Atom extends SimpleTerm {
@@ -16,6 +17,10 @@ public class Atom extends SimpleTerm {
 
     public static boolean isAtom(String line) {
         return line.matches("[a-z][a-zA-Z]*");
+    }
+
+    public String getValue() {
+        return value;
     }
 
     @Override
@@ -36,6 +41,7 @@ public class Atom extends SimpleTerm {
     public Substitution unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
         if (other instanceof Atom atom && this.value.equals(atom.value)) return Substitution.success();
+        if (other instanceof ComplexTerm) return other.unify(this);
 
         return Substitution.failure();
     }

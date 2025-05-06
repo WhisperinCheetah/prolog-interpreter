@@ -10,6 +10,10 @@ public class PredicateParser {
         Optional<Predicate> predicate = WriteParser.parse(input).map(w -> w);
 
         if (predicate.isEmpty()) {
+            predicate = ReadParser.parse(input).map(r -> r);
+        }
+
+        if (predicate.isEmpty()) {
             predicate = NLParser.parse(input).map(n -> n);
         }
 
