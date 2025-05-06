@@ -39,6 +39,14 @@ public class Rule implements Fact {
         return copy;
     }
 
+    @Override
+    public Rule substituteVariables(Substitution substitution) {
+        ComplexTerm head = this.head.substituteVariables(substitution);
+        List<Term> body = this.body.stream().map(t -> t.substituteVariables(substitution)).toList();
+
+        return new Rule(head, body);
+    }
+
     public Rule copy() {
         return new Rule(this);
     }

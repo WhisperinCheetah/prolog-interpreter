@@ -1,28 +1,19 @@
 package engine;
 
-import engine.complex.ComplexTerm;
-
+import engine.complex.Dynamic;
 import engine.complex.Predicate;
-import engine.complex.Write;
 import engine.parser.Parser;
 import engine.parser.TermParser;
 import engine.directives.Initialization;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TermDatabase {
 
     Initialization init;
-
     List<Fact> facts;
-    Map<FunctorType, List<Rule>> functorToStructures;
-
-    Map<FunctorType, List<List<Term>>> candidateLists;
-
-    ComplexTerm lastQuery;
-    List<Iterator<Term>> lastQueryCandidateStates;
+    Set<FunctorType> dynamics;
 
     public TermDatabase(List<Fact> facts) {
         this.facts = facts;
@@ -30,13 +21,12 @@ public class TermDatabase {
 
     public TermDatabase() {
         this.init = null;
-
         this.facts = new ArrayList<>();
-        this.functorToStructures = new HashMap<>();
-        this.candidateLists = new HashMap<>();
+        this.dynamics = new HashSet<>();
+    }
 
-        this.lastQuery = null;
-        this.lastQueryCandidateStates = new ArrayList<>();
+    public void insertFact(Fact fact, int index) {
+        this.facts.add(index, fact);
     }
 
     public void addFact(Fact fact) {
@@ -83,6 +73,10 @@ public class TermDatabase {
 
         if (query instanceof Predicate predicate) {
             return backtrackRecursive(queries, index + 1, substitution.unify(predicate.execute()));
+        }
+
+        if (query instanceof Dynamic dynamic) {
+            return backtrackRecursive(queries, index + 1, substitution.unify(dynamic.execute(this)));
         }
 
         for (Fact fact : facts) {

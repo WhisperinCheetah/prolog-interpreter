@@ -2,6 +2,7 @@ package engine.parser;
 
 import engine.Term;
 import engine.complex.ComplexTerm;
+import engine.parser.dynamics.DynamicParser;
 import engine.parser.predicates.PredicateParser;
 
 import java.util.ArrayList;
@@ -42,6 +43,10 @@ public class ComplexTermParser {
 
     public static Optional<ComplexTerm> parse(String input) {
         Optional<ComplexTerm> term = PredicateParser.parse(input).map(p -> p);
+
+        if (term.isEmpty()) {
+            term = DynamicParser.parse(input).map(p -> p);
+        }
 
         if (term.isEmpty()) {
             term = parseComplexTermOptional(input);
