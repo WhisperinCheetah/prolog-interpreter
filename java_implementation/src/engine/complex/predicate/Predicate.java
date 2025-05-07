@@ -4,6 +4,7 @@ import engine.FunctorType;
 import engine.Substitution;
 import engine.Term;
 import engine.complex.ComplexTerm;
+import engine.complex.dynamic.Dynamic;
 import engine.simple.Variable;
 
 import java.util.HashMap;
@@ -31,7 +32,13 @@ public abstract class Predicate extends ComplexTerm {
     }
 
     @Override
-    public abstract Predicate substituteVariables(Substitution substitution);
+    public Predicate substituteVariables(Substitution substitution) {
+        Predicate copy = this.copy();
+
+        copy.setArgs(copy.getArgs().stream().map(t -> t.substituteVariables(substitution)).toList());
+
+        return copy;
+    }
 
     @Override
     public abstract Predicate copy();

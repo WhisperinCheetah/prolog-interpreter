@@ -17,13 +17,14 @@ public class DbUtilTests {
         TermDatabase db = new TermDatabase();
         String query = "likes(john,mary)";
 
-        Term parsedQuery = null;
+        List<Term> parsedQuery = null;
         try {
             parsedQuery = db.parseQuery(query);
         } catch (ParseException e) {
             fail("Failed to parse query: " + e.getMessage());
         }
 
-        assertEquals(parsedQuery, new ComplexTerm("likes", List.of(new Atom("john"), new Atom("mary"))));
+        assertEquals(1, parsedQuery.size());
+        assertEquals(parsedQuery.getFirst(), new ComplexTerm("likes", List.of(new Atom("john"), new Atom("mary"))));
     }
 }

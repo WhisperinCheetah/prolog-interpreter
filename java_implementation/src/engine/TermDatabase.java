@@ -7,9 +7,11 @@ import engine.directives.DynamicDirective;
 import engine.parser.Parser;
 import engine.parser.TermParser;
 import engine.directives.Initialization;
+import engine.simple.Variable;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TermDatabase {
 
@@ -71,10 +73,10 @@ public class TermDatabase {
     public void finalizeDatabase() {}
 
     public List<Term> parseQuery(String queryString) throws ParseException {
-        List<String> cleanString = Parser.splitByComma(Parser.cleanString(queryString));
+        List<String> cleanStrings = Parser.splitByComma(queryString).stream().map(Parser::cleanString).toList();
 
         List<Term> queryTerms = new ArrayList<>();
-        for (String cleanTerm : cleanString) {
+        for (String cleanTerm : cleanStrings) {
             Optional<Term> term = TermParser.parse(cleanTerm);
 
             if (term.isEmpty()) {
@@ -84,7 +86,10 @@ public class TermDatabase {
             queryTerms.add(term.get());
         }
 
-        return queryTerms;
+        HashMap<String, Variable> varMap = new HashMap<>();
+        List<Term> renamedQueryTerms = queryTerms.stream().map(t -> t.renameVariables(varMap)).toList();
+
+        return renamedQueryTerms;
     }
 
     public Substitution backtrackRecursive(List<Term> queries, int index, Substitution substitution) {

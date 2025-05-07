@@ -21,6 +21,10 @@ public class PredicateParser {
             predicate = FailParser.parse(input).map(f -> f);
         }
 
+        if (predicate.isEmpty()) {
+            predicate = OperatorParser.parse(input);
+        }
+
         return predicate;
     }
 }
