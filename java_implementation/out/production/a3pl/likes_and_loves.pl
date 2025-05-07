@@ -1,1 +1,3 @@
-:- dynamic likes/2
+:- dynamic likes/2.
+
+likes(john,mary).

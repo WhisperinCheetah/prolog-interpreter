@@ -3,6 +3,8 @@
     <words>
       <w>argi</w>
       <w>asserta</w>
+      <w>assertz</w>
+      <w>retractall</w>
       <w>varc</w>
     </words>
   </dictionary>
