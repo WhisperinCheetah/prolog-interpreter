@@ -1,17 +1,17 @@
 package engine.parser.predicates;
 
-import engine.Fact;
 import engine.Term;
-import engine.complex.dynamic.Dynamic;
 import engine.complex.predicate.Predicate;
-import engine.complex.predicate.Unify;
+import engine.complex.predicate.operator.Equality;
+import engine.complex.predicate.operator.NotEquality;
+import engine.complex.predicate.operator.NotUnify;
+import engine.complex.predicate.operator.Unify;
 import engine.parser.Parser;
-import engine.parser.RuleParser;
 import engine.parser.TermParser;
-import engine.parser.dynamics.DynamicParser;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class OperatorParser {
@@ -35,19 +35,41 @@ public class OperatorParser {
         return List.of(argl.get(), argr.get());
     }
 
-    private static Optional<Predicate> parseUnify(String input) {
-        if (!Unify.isUnify(input)) {
+    private static Optional<Predicate> parseBinaryOperator(
+            String input,
+            Function<String, Boolean> test,
+            BiFunction<Term, Term, Predicate> constructor
+    ) {
+        if (!test.apply(input)) {
             return Optional.empty();
         }
 
         List<Term> args = parseOperatorArgs(input);
+        return Optional.of(constructor.apply(args.getFirst(), args.getLast()));
+    }
 
-        return Optional.of(new Unify(args.getFirst(), args.getLast()));
+    private static Optional<Predicate> parseUnify(String input) {
+        return parseBinaryOperator(input, Unify::isUnify, Unify::new);
+    }
+
+    private static Optional<Predicate> parseNotUnify(String input) {
+        return parseBinaryOperator(input, NotUnify::isNotUnify, NotUnify::new);
+    }
+
+    private static Optional<Predicate> parseEquality(String input) {
+        return parseBinaryOperator(input, Equality::isEquality, Equality::new);
+    }
+
+    private static Optional<Predicate> parseNotEquality(String input) {
+        return parseBinaryOperator(input, NotEquality::isNotEquality, NotEquality::new);
     }
 
     public static Optional<Predicate> parse(String input) {
         List<Function<String, Optional<Predicate>>> parsers = List.of(
-                OperatorParser::parseUnify
+                OperatorParser::parseUnify,
+                OperatorParser::parseNotUnify,
+                OperatorParser::parseEquality,
+                OperatorParser::parseNotEquality
         );
 
         return parsers.stream()

@@ -14,6 +14,11 @@ public class Substitution {
         this.varTermMap = varTermMap;
     }
 
+    public Substitution(boolean success) {
+        this.success = success;
+        this.varTermMap = new HashMap<>();
+    }
+
     public static Substitution success() {
         return new Substitution(true, new HashMap<>());
     }
