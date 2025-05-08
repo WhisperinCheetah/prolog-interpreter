@@ -16,7 +16,7 @@ public class Atom extends SimpleTerm {
     }
 
     public static boolean isAtom(String line) {
-        return line.matches("[a-z][a-zA-Z]*");
+        return line.matches("[a-z][a-zA-Z]*") || line.matches("\"[^\"]*\"") || line.matches("'[^']*'");
     }
 
     public String getValue() {

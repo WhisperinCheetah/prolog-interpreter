@@ -1,1 +1,1 @@
-sick(X) :- Y is X + 1, write(Y).
+succ(X, Y) :- Y is X + 1.

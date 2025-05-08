@@ -21,17 +21,13 @@ public class RuleParser {
 
         ComplexTerm head = maybeHead.get();
 
-        ArrayList<String> bodyParts = Parser.splitByComma(headAndBody[1]);
+        List<String> bodyParts = Parser.splitByComma(headAndBody[1]);
         List<Term> body = new ArrayList<>();
         for (String bodyPart : bodyParts) {
             Optional<Term> term = TermParser.parseWithComplexTermPriority(bodyPart);
 
-            try {
-                if (term.isEmpty()) {
-                    throw new ParseException("Could not parse " + input, 0);
-                }
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
+            if (term.isEmpty()) {
+                throw new RuntimeException("Could not parse " + input);
             }
 
             body.add(term.get());

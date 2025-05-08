@@ -145,6 +145,10 @@ public class StringCleaner {
             return _convertToPrefix(input);
         }
 
+        if (input.contains("\n")) {
+            throw new AssertionError("Input string contains line breaks");
+        }
+
         String[] headAndBody = input.split(":-");
         String head = headAndBody[0];
 
@@ -159,14 +163,89 @@ public class StringCleaner {
         return input.replaceAll("\\s+", "");
     }
 
+    public static String removeNonSingleSpaces(String input) {
+        StringBuilder output = new StringBuilder();
+
+        boolean inQuotes = false;
+        char quoteChar = '\0';
+
+        for (int i = 0; i < input.length() - 1; i++) {
+            char c = input.charAt(i);
+
+            // Handle quotes
+            if ((c == '\'' || c == '"') && (i == 0 || input.charAt(i - 1) != '\\')) {
+                if (inQuotes && c == quoteChar) {
+                    inQuotes = false;
+                } else if (!inQuotes) {
+                    inQuotes = true;
+                    quoteChar = c;
+                }
+            }
+
+            if (inQuotes) {
+                output.append(c);
+                continue;
+            } else {
+                if (c == ' ' && input.charAt(i + 1) == ' ') {
+                    continue;
+                } else {
+                    output.append(c);
+                }
+            }
+        }
+
+        output.append(input.charAt(input.length() - 1));
+
+        return output.toString(); // TODO
+    }
+
+    public static String removeSingleSpaces(String input) {
+        StringBuilder output = new StringBuilder();
+
+        boolean inQuotes = false;
+        char quoteChar = '\0';
+
+        for (int i = 0; i < input.length() - 1; i++) {
+            char c = input.charAt(i);
+
+            // Handle quotes
+            if ((c == '\'' || c == '"') && (i == 0 || input.charAt(i - 1) != '\\')) {
+                if (inQuotes && c == quoteChar) {
+                    inQuotes = false;
+                } else if (!inQuotes) {
+                    inQuotes = true;
+                    quoteChar = c;
+                }
+            }
+
+            if (inQuotes) {
+                output.append(c);
+                continue;
+            } else {
+                if (c == ' ') {
+                    continue;
+                } else {
+                    output.append(c);
+                }
+            }
+        }
+
+        output.append(input.charAt(input.length() - 1));
+
+        return output.toString();
+    }
+
     public static String cleanString(String input) {
+        if (input.trim().isEmpty()) return input;
+
         List<Function<String, String>> functionStack = List.of(
+                String::trim,
                 s -> s.charAt(s.length() - 1) == '.' ? s.substring(0, s.length() - 1) : s, // remove '.'
-                s -> s.replaceAll("\\s&&[^ ]+", ""), // remove non-space whitespace
-                s -> s.replaceAll(" {2,}", " ").trim(), // remove duplicate spaces
-                s -> s.replaceAll("^:- ?dynamic ([a-z]+/\\d+)", ":-dynamic($1)"), // add brackets to dynamic directive
+                s -> s.replaceAll("[\\s&&[^ ]]+", ""), // remove non-space whitespace
+                StringCleaner::removeNonSingleSpaces, // remove duplicate spaces
+                s -> s.replaceAll("^:- ?dynamic ?([a-z]+/\\d+)", ":-dynamic($1)"), // add brackets to dynamic directive
                 StringCleaner::convertToPrefix, // convert operators to prefix
-                StringCleaner::removeAllWhitespaces
+                StringCleaner::removeSingleSpaces
         );
 
         return functionStack.stream()

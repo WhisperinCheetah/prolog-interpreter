@@ -133,4 +133,22 @@ public class CleanStringTests {
             assertEquals(actual, solution);
         }
     }
+
+    @Test
+    public void multiSpaceRemoverTest() {
+        String s = "a  b  c, d,  e";
+        String actual = StringCleaner.removeNonSingleSpaces(s);
+        String expected = "a b c, d, e";
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void singleSpaceRemoverTest() {
+        String s = "a  b  c, d,  e";
+        String actual = StringCleaner.removeSingleSpaces(s);
+        String expected = "abc,d,e";
+
+        assertEquals(expected, actual);
+    }
 }

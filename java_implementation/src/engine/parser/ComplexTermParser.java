@@ -27,8 +27,15 @@ public class ComplexTermParser {
         String functor = input.substring(0, input.indexOf('('));
         String argsString = input.substring(input.indexOf('(') + 1, input.lastIndexOf(')'));
 
-        ArrayList<String> argsStringList = Parser.splitByComma(argsString);
-        List<Term> args = argsStringList.stream().map(TermParser::parse).map(ComplexTermParser::getOrFail).toList();
+        List<String> argsStringList = Parser.splitByComma(argsString);
+        List<Optional<Term>> maybeArgs = argsStringList.stream().map(TermParser::parse).toList();
+        List<Term> args = new ArrayList<>();
+        for (int i = 0; i < maybeArgs.size(); i++) {
+            Optional<Term> term = maybeArgs.get(i);
+            if (term.isEmpty()) throw new AssertionError("Parsed argument returned empty: " + argsStringList.get(i));
+
+            args.add(term.get());
+        }
 
         return new ComplexTerm(functor, args);
     }

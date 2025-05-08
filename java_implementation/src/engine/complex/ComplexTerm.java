@@ -9,7 +9,7 @@ import engine.simple.Variable;
 
 public class ComplexTerm implements Term {
 
-    public static final String COMPLEX_TERM_REGEX = "[a-z]+[a-zA-Z]*(\\([^:-]*\\))?";
+    public static final String COMPLEX_TERM_REGEX = "[a-z]+[a-zA-Z_]*(\\([^:-]*\\))?";
 
     FunctorType type;
     private List<Term> args;

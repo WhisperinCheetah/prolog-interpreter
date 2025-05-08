@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class Parser {
 
@@ -30,15 +31,29 @@ public class Parser {
                 .findFirst();
     }
 
-    public static ArrayList<String> splitByComma(String input) {
+    public static List<String> splitByChar(String input, char delimiter) {
         ArrayList<String> splitArgsStrings = new ArrayList<>();
         int openBracketCounter = 0;
         int lastSplit = 0;
+        char quoteChar = '\0';
+        boolean inQuotes = false;
         for (int i = 0; i < input.length(); i++) {
-            if (input.charAt(i) == '(') openBracketCounter++;
-            if (input.charAt(i) == ')') openBracketCounter--;
+            char c = input.charAt(i);
 
-            if (openBracketCounter == 0 && input.charAt(i) == ',') {
+            if (!inQuotes && (c == '\'' || c == '"')) {
+                inQuotes = true;
+                quoteChar = c;
+            } else if (inQuotes && c == quoteChar) {
+                inQuotes = false;
+                quoteChar = '\0';
+            }
+
+            if (inQuotes) continue;
+
+            if (c == '(') openBracketCounter++;
+            if (c == ')') openBracketCounter--;
+
+            if (openBracketCounter == 0 && input.charAt(i) == delimiter) {
                 splitArgsStrings.add(input.substring(lastSplit, i));
                 lastSplit = i + 1;
             }
@@ -49,13 +64,14 @@ public class Parser {
         return splitArgsStrings;
     }
 
+    public static List<String> splitByComma(String input) {
+        return splitByChar(input, ',');
+    }
+
     // TODO parse by . but ignore "" and numbers
     public TermDatabase parseProgram(boolean verbose) throws IOException {
-        // String program = new String(Files.readAllBytes(Paths.get(path))).replaceAll("\\s+","");
-        // ArrayList<String> lines = new ArrayList<>(Arrays.asList(program.split("\\.")));
-
-        String dirtyProgram = new String(Files.readAllBytes(Paths.get(path)));
-        List<String> lines = new ArrayList<>(Arrays.asList(dirtyProgram.split("\\."))).stream().map(StringCleaner::cleanString).toList();
+        String dirtyProgram = new String(Files.readAllBytes(Paths.get(path))).trim();
+        List<String> lines = Parser.splitByChar(dirtyProgram, '.').stream().map(StringCleaner::cleanString).filter(s -> !s.isEmpty()).toList();
 
         TermDatabase db = new TermDatabase();
 
