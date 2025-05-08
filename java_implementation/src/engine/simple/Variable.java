@@ -24,8 +24,8 @@ public class Variable extends SimpleTerm implements EvaluableExpression {
 
     @Override
     public String toString() {
-        // return this.name + "[" + super.toString().split("@")[1] + "]";
-        return name;
+        return this.name + "[" + super.toString().split("@")[1] + "]";
+        // return name;
     }
 
     @Override

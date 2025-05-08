@@ -1,6 +1,5 @@
 package parser;
 
-import engine.parser.Parser;
 import engine.parser.StringCleaner;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +43,7 @@ public class CleanStringTests {
             for (List<String> argPair : argPairs) {
                 String infix = argPair.get(0) + op + argPair.get(1);
                 String expectedPrefix = op.trim() + "(" + argPair.get(0) + "," + argPair.get(1) + ")";
-                String actualPrefix = StringCleaner.convertToPrefix(infix);
+                String actualPrefix = StringCleaner._convertToPrefix(infix);
 
                 assertEquals(expectedPrefix, actualPrefix);
             }
@@ -54,42 +53,42 @@ public class CleanStringTests {
     @Test
     public void convertToPrefix1() {
         String s = "a=b";
-        String asPrefix = StringCleaner.convertToPrefix(s);
+        String asPrefix = StringCleaner._convertToPrefix(s);
         assertEquals("=(a,b)", asPrefix);
     }
 
     @Test
     public void convertToPrefix2() {
         String s = "likes(john,mary)=X";
-        String asPrefix = StringCleaner.convertToPrefix(s);
+        String asPrefix = StringCleaner._convertToPrefix(s);
         assertEquals("=(likes(john,mary),X)", asPrefix);
     }
 
     @Test
     public void convertToPrefix3() {
         String s = "'='='='";
-        String asPrefix = StringCleaner.convertToPrefix(s);
+        String asPrefix = StringCleaner._convertToPrefix(s);
         assertEquals("=('=','=')", asPrefix);
     }
 
     @Test
     public void convertToPrefix4() {
         String s = "\"=\"=\"=\"";
-        String asPrefix = StringCleaner.convertToPrefix(s);
+        String asPrefix = StringCleaner._convertToPrefix(s);
         assertEquals("=(\"=\",\"=\")", asPrefix);
     }
 
     @Test
     public void convertToPrefix5() {
         String s = "(=)=(=)";
-        String asPrefix = StringCleaner.convertToPrefix(s);
+        String asPrefix = StringCleaner._convertToPrefix(s);
         assertEquals("=((=),(=))", asPrefix);
     }
 
     @Test
     public void convertToPrefix6() {
         String s = "X is Y * 3";
-        String asPrefix = StringCleaner.convertToPrefix(s);
+        String asPrefix = StringCleaner._convertToPrefix(s);
         System.out.println(asPrefix);
     }
 

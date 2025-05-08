@@ -26,7 +26,7 @@ public abstract class Predicate extends ComplexTerm {
     public Predicate renameVariables(HashMap<String, Variable> map) {
         Predicate copy = (Predicate) this.copy();
 
-        copy.setArgs(copy.getArgs().stream().map(t -> t.renameVariables(map)).toList());
+        copy.setArgs(this.getArgs().stream().map(t -> t.renameVariables(map)).toList());
 
         return copy;
     }
@@ -35,7 +35,7 @@ public abstract class Predicate extends ComplexTerm {
     public Predicate substituteVariables(Substitution substitution) {
         Predicate copy = this.copy();
 
-        copy.setArgs(copy.getArgs().stream().map(t -> t.substituteVariables(substitution)).toList());
+        copy.setArgs(this.getArgs().stream().map(t -> t.substituteVariables(substitution)).toList());
 
         return copy;
     }

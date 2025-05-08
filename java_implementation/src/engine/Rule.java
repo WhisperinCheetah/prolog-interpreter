@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Rule implements Fact {
-    public static String RULE_REGEX = ComplexTerm.COMPLEX_TERM_REGEX + ":-" + ComplexTerm.COMPLEX_TERM_REGEX + "(," + ComplexTerm.COMPLEX_TERM_REGEX + ")*";
+    public static String RULE_REGEX = ComplexTerm.COMPLEX_TERM_REGEX + ":-.+";
 
     ComplexTerm head;
     List<Term> body;
@@ -57,7 +57,7 @@ public class Rule implements Fact {
     }
 
     public static boolean isRule(String line) {
-        return line.matches(RULE_REGEX);
+        return line.replaceAll("\\s+", "").matches(RULE_REGEX);
     }
 
     public ComplexTerm getHead() {

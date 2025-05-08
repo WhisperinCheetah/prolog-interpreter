@@ -1,8 +1,11 @@
 package engine.parser;
 
+import engine.Rule;
+
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class StringCleaner {
 
@@ -75,7 +78,7 @@ public class StringCleaner {
                 operators.push(c);
                 i++;
             } else {
-                throw new IllegalArgumentException("Invalid character: " + c);
+                throw new IllegalArgumentException("Invalid character: " + c + " while parsing " + expr);
             }
         }
 
@@ -94,7 +97,7 @@ public class StringCleaner {
     }
 
 
-    public static String convertToPrefix(String input) {
+    public static String _convertToPrefix(String input) {
         String[] operators = {"==", "\\==", "=", "\\=", " is "};
         int parenDepth = 0;
         boolean inQuotes = false;
@@ -135,6 +138,21 @@ public class StringCleaner {
         }
 
         return input; // No top-level operator found; return as-is
+    }
+
+    public static String convertToPrefix(String input) {
+        if (!Rule.isRule(input)) {
+            return _convertToPrefix(input);
+        }
+
+        String[] headAndBody = input.split(":-");
+        String head = headAndBody[0];
+
+        String body = headAndBody[1];
+        List<String> bodyParts = Parser.splitByComma(body);
+        String cleanedBody = bodyParts.stream().map(StringCleaner::_convertToPrefix).collect(Collectors.joining(","));
+
+        return head + ":-" + cleanedBody;
     }
 
     private static String removeAllWhitespaces(String input) {
