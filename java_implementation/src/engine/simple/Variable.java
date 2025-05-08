@@ -3,10 +3,11 @@ package engine.simple;
 import engine.Substitution;
 import engine.Term;
 import engine.TermType;
+import engine.complex.expression.EvaluableExpression;
 
 import java.util.HashMap;
 
-public class Variable extends SimpleTerm {
+public class Variable extends SimpleTerm implements EvaluableExpression {
     String name;
 
     public Variable(String name) {
@@ -23,7 +24,8 @@ public class Variable extends SimpleTerm {
 
     @Override
     public String toString() {
-        return this.name + "[" + super.toString().split("@")[1] + "]";
+        // return this.name + "[" + super.toString().split("@")[1] + "]";
+        return name;
     }
 
     @Override
@@ -61,5 +63,14 @@ public class Variable extends SimpleTerm {
     @Override
     public TermType getTermType() {
         return TermType.VAR;
+    }
+
+    public Variable get() {
+        return this;
+    }
+
+    @Override
+    public Number evaluate() {
+        throw new RuntimeException("Variable " + this.name + " not instantiated when executing expression");
     }
 }

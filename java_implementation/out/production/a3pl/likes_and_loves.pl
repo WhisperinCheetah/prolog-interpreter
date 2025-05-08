@@ -1,3 +1,1 @@
-:- dynamic likes/2.
-
-likes(john,mary).
+sick(X) :- Y is X + 1, write(Y).

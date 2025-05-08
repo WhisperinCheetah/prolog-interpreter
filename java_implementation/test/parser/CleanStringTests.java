@@ -96,8 +96,6 @@ public class CleanStringTests {
     public static List<List<String>> isArgPairs = List.of(
             List.of("X", "Y * 3"),
             List.of("X", "Y*3"),
-            // List.of("X", "ceiling(32)"),
-            // List.of("John", "fucking(sick)"),
             List.of("John", "Right + 2"),
             List.of("John", "Right - 2"),
             List.of("John", "Right / 2")
@@ -109,7 +107,7 @@ public class CleanStringTests {
         for (List<String> argPair : isArgPairs) {
             String infix = argPair.get(0) + op + argPair.get(1);
             String postfix = StringCleaner.cleanString(infix);
-            String expectedPostfix = op.trim() + "(" + argPair.get(0) + "," + StringCleaner.cleanString(argPair.get(1)) + ")";
+            String expectedPostfix = op.trim() + "(" + argPair.get(0) + "," + StringCleaner.infixToFunctionalPrefix(argPair.get(1)) + ")";
 
             assertEquals(expectedPostfix, postfix);
         }
@@ -123,7 +121,8 @@ public class CleanStringTests {
                 List.of("5 - 3", "-(5,3)"),
                 List.of("5 / 3", "/(5,3)"),
                 List.of("5 + 3 * 2", "+(5,*(3,2))"),
-                List.of("(5 + 3) * 2", "*(+(5,3),2)")
+                List.of("(5 + 3) * 2", "*(+(5,3),2)"),
+                List.of("3*2-15*Y", "-(*(3,2),*(15,Y))")
         );
 
         for (List<String> expressionAndSolution : expressions) {

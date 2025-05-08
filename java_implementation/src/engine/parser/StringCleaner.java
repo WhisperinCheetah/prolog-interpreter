@@ -95,7 +95,7 @@ public class StringCleaner {
 
 
     public static String convertToPrefix(String input) {
-        String[] operators = {"==", "\\==", "=", "\\=", " is ", "*", "+", "-", "/"};
+        String[] operators = {"==", "\\==", "=", "\\=", " is "};
         int parenDepth = 0;
         boolean inQuotes = false;
         char quoteChar = '\0';

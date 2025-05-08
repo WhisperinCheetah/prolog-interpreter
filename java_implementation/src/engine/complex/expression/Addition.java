@@ -1,19 +1,26 @@
 package engine.complex.expression;
 
+import engine.Term;
+import engine.TermType;
 import engine.simple.Number;
 
-public class Addition extends Expression {
+public class Addition extends BinaryExpression {
 
-    public Addition(Expression argl, Expression argr) {
+    public Addition(Term argl, Term argr) {
         super("+", argl, argr);
     }
 
     public static boolean isAddition(String input) {
-        return Expression.isExpression("+", input);
+        return BinaryExpression.isExpression("\\+", input);
     }
 
     @Override
     public Number evaluate() {
-        return argl.evaluate().add(argr.evaluate());
+        return getSafeArgl().evaluate().add(getSafeArgr().evaluate());
+    }
+
+    @Override
+    public BinaryExpression copy() {
+        return new Addition(argl.copy(), argr.copy());
     }
 }

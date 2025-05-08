@@ -3,11 +3,12 @@ package engine.simple;
 import engine.Substitution;
 import engine.Term;
 import engine.TermType;
-import engine.complex.expression.Expression;
+import engine.complex.expression.BinaryExpression;
+import engine.complex.expression.EvaluableExpression;
 
 import java.util.HashMap;
 
-public class Number extends SimpleTerm, Expression {
+public class Number extends SimpleTerm implements EvaluableExpression {
     double value;
 
     public Number(double value) {
