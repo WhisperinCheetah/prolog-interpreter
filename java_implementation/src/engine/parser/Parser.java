@@ -68,7 +68,6 @@ public class Parser {
         return splitByChar(input, ',');
     }
 
-    // TODO parse by . but ignore "" and numbers
     public TermDatabase parseProgram(boolean verbose) throws IOException {
         String dirtyProgram = new String(Files.readAllBytes(Paths.get(path))).trim();
         List<String> lines = Parser.splitByChar(dirtyProgram, '.').stream().map(StringCleaner::cleanString).filter(s -> !s.isEmpty()).toList();
