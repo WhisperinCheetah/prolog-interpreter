@@ -72,10 +72,6 @@ public class OperatorParser {
                 OperatorParser::parseNotEquality
         );
 
-        return parsers.stream()
-                .map(parser -> parser.apply(input))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+        return Parser.parseStack(input, parsers);
     }
 }

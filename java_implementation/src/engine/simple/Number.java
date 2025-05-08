@@ -3,10 +3,11 @@ package engine.simple;
 import engine.Substitution;
 import engine.Term;
 import engine.TermType;
+import engine.complex.expression.Expression;
 
 import java.util.HashMap;
 
-public class Number extends SimpleTerm {
+public class Number extends SimpleTerm, Expression {
     double value;
 
     public Number(double value) {
@@ -57,5 +58,26 @@ public class Number extends SimpleTerm {
     @Override
     public TermType getTermType() {
         return TermType.NUMBER;
+    }
+
+    @Override
+    public Number evaluate() {
+        return this;
+    }
+
+    public Number add(Number other) {
+        return new Number(this.value + other.value);
+    }
+
+    public Number subtract(Number other) {
+        return new Number(this.value - other.value);
+    }
+
+    public Number multiply(Number other) {
+        return new Number(this.value * other.value);
+    }
+
+    public Number divide(Number other) {
+        return new Number(this.value / other.value);
     }
 }

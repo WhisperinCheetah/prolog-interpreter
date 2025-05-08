@@ -5,6 +5,7 @@ import engine.complex.dynamic.Dynamic;
 import engine.complex.predicate.Predicate;
 import engine.directives.DynamicDirective;
 import engine.parser.Parser;
+import engine.parser.StringCleaner;
 import engine.parser.TermParser;
 import engine.directives.Initialization;
 import engine.simple.Variable;
@@ -73,7 +74,7 @@ public class TermDatabase {
     public void finalizeDatabase() {}
 
     public List<Term> parseQuery(String queryString) throws ParseException {
-        List<String> cleanStrings = Parser.splitByComma(queryString).stream().map(Parser::cleanString).toList();
+        List<String> cleanStrings = Parser.splitByComma(queryString).stream().map(StringCleaner::cleanString).toList();
 
         List<Term> queryTerms = new ArrayList<>();
         for (String cleanTerm : cleanStrings) {
