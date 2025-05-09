@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Succ extends Predicate {
 
-    privati void checkArg(Term arg) {
+    private void checkArg(Term arg) {
         if (!(arg instanceof Number || arg instanceof Variable)) throw new IllegalArgumentException("succ argument must be a Variable or a Number not " + arg);
     }
 
