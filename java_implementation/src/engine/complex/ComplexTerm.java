@@ -12,7 +12,7 @@ public class ComplexTerm implements Term {
     public static final String COMPLEX_TERM_REGEX = "[a-z]+[a-zA-Z_]*(\\([^:-]*\\))?";
 
     FunctorType type;
-    private List<Term> args;
+    protected List<Term> args;
 
     public ComplexTerm(String functor, List<Term> args, int arity) {
         this.type = new FunctorType(functor, arity);

@@ -27,6 +27,10 @@ public class Substitution {
         return new Substitution(false, new HashMap<>());
     }
 
+    public static Substitution fromBoolean(boolean success) {
+        return new Substitution(success, new HashMap<>());
+    }
+
     public static Substitution fromEntry(Variable var, Term term) {
         HashMap<Variable, Term> varTermMap = new HashMap<>();
         varTermMap.put(var, term);

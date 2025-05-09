@@ -61,6 +61,10 @@ public class Number extends SimpleTerm implements EvaluableExpression {
         return TermType.NUMBER;
     }
 
+    public double getValue() {
+        return value;
+    }
+
     @Override
     public Number evaluate() {
         return this;
