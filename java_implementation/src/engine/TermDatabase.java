@@ -12,7 +12,6 @@ import engine.simple.Variable;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TermDatabase {
 
@@ -142,6 +141,8 @@ public class TermDatabase {
     public void runQuery(String queryString) throws ParseException {
         Substitution initializationResult = this.runInitialization();
 
+        // System.out.println(initializationResult);
+
         if (initializationResult.isFailure()) {
             System.out.println("Initialization goal failed");
             System.out.println(initializationResult);
@@ -151,6 +152,8 @@ public class TermDatabase {
         List<Term> query = this.parseQuery(queryString);
 
         Substitution res = backtrackMultiple(query);
+
+        System.out.println(res);
 
         System.out.println(res.toPrettyString(query));
     }

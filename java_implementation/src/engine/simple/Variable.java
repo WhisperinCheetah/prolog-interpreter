@@ -24,8 +24,8 @@ public class Variable extends SimpleTerm implements EvaluableExpression {
 
     @Override
     public String toString() {
-        return this.name + "[" + super.toString().split("@")[1] + "]";
-        // return name;
+        // return this.name + "[" + super.toString().split("@")[1] + "]";
+        return name;
     }
 
     @Override
@@ -47,7 +47,13 @@ public class Variable extends SimpleTerm implements EvaluableExpression {
 
     @Override
     public Term substituteVariables(Substitution substitution) {
-        return substitution.getMap().getOrDefault(this, this);
+        Term newTerm = substitution.getMap().getOrDefault(this, this);
+
+        if (newTerm instanceof Variable var && var.equals(this)) {
+            return this;
+        }
+
+        return newTerm.substituteVariables(substitution);
     }
 
     @Override

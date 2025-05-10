@@ -39,16 +39,16 @@ public class Substitution {
 
     public Substitution unify(Substitution other) {
         if (this.isFailure() || other.isFailure()) return Substitution.failure();
-        Substitution newSub = new Substitution(true, new HashMap<>(this.varTermMap));
+        HashMap<Variable, Term> map = new HashMap<>(this.varTermMap);
         for (Map.Entry<Variable, Term> entry : other.varTermMap.entrySet()) {
             if (!varTermMap.containsKey(entry.getKey()) || varTermMap.get(entry.getKey()).equals(entry.getValue())) {
-                newSub.insert(entry.getKey(), entry.getValue());
+                map.put(entry.getKey(), entry.getValue());
             }
 
             else return Substitution.failure();
         }
 
-        return newSub;
+        return new Substitution(true, map);
     }
 
     public boolean isSuccess() {
