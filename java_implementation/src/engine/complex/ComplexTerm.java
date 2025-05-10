@@ -72,6 +72,17 @@ public class ComplexTerm implements Term {
         this.args = args;
     }
 
+    public List<Variable> getVariables() {
+        List<Variable> vars = new ArrayList<>();
+        for (Term arg : this.args) {
+            if (arg instanceof Variable var) {
+                vars.add(var);
+            }
+        }
+
+        return vars;
+    }
+
     @Override
     public Substitution unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
@@ -142,23 +153,4 @@ public class ComplexTerm implements Term {
 
         return false;
     }
-
-    public boolean equalsIgnoreVars(ComplexTerm other) {
-        if (!this.getType().equals(other.getType())) {
-            return false;
-        }
-
-        for (int i = 0; i < this.getArity(); i++) {
-            if (! (other.args.get(i) instanceof Variable || this.args.get(i) instanceof Variable || this.args.get(i).equals(other.args.get(i))) ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public boolean shallowEquals(ComplexTerm other) {
-        return this.getType().equals(other.getType());
-    }
-
 }

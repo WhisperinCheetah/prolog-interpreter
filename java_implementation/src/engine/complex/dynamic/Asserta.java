@@ -17,7 +17,7 @@ public class Asserta extends Dynamic {
     @Override
     public Substitution execute(TermDatabase db) {
         if (!db.isDynamic(this.arg)) {
-            throw new RuntimeException("Argument is not a dynamic type");
+            throw new RuntimeException("Argument " + this.arg + " is not a dynamic type");
         }
 
         db.insertFact(this.arg, 0);

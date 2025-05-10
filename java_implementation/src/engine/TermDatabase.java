@@ -152,7 +152,7 @@ public class TermDatabase {
 
         Substitution res = backtrackMultiple(query);
 
-        System.out.println(res);
+        System.out.println(res.toPrettyString(query));
     }
 
     public Substitution runInitialization() {

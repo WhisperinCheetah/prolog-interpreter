@@ -1,9 +1,9 @@
 package engine;
 
+import engine.complex.ComplexTerm;
 import engine.simple.Variable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Substitution {
     private final boolean success;
@@ -65,6 +65,27 @@ public class Substitution {
 
     public void insert(Variable var, Term term) {
         varTermMap.put(var, term);
+    }
+
+    public String toPrettyString(List<Term> queries) {
+        if (varTermMap.isEmpty()) {
+            return success ? "true" : "false";
+        }
+
+        Set<Variable> queryVariables = new HashSet<>();
+        for (Term query : queries) {
+            if (query instanceof ComplexTerm complexQuery) {
+                queryVariables.addAll(complexQuery.getVariables());
+            }
+        }
+
+        StringBuilder str = new StringBuilder();
+        for (Variable var: queryVariables) {
+            Term varRes = this.varTermMap.get(var);
+            str.append(var.getName()).append("=").append(varRes.toString());
+        }
+
+        return str.toString();
     }
 
     @Override

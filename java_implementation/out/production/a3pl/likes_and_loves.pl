@@ -1,1 +1,4 @@
-succ(X, Y) :- Y is X + 1.
+likes(john,mary).
+likes(mary,john).
+
+loves(X,Y) :- likes(X,Y), likes(Y,X).

@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        final String path = "examples/basics/liberty.pl";
+        final String path = "src/likes_and_loves.pl";
         Parser parser = new Parser(path);
 
         TermDatabase db;
