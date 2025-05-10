@@ -2,6 +2,7 @@ package engine.parser.predicates;
 
 import engine.Term;
 import engine.complex.expression.EvaluableExpression;
+import engine.complex.predicate.Between;
 import engine.complex.predicate.Is;
 import engine.complex.predicate.Predicate;
 import engine.complex.predicate.Succ;
@@ -34,22 +35,26 @@ public class PredicateParser {
         return List.of(argl.get(), argr.get());
     }
 
-    private static List<Term> parseSuccArgs(String input) {
+    private static Term parseArg(String input) {
+        Optional<Term> arg = TermParser.parse(input);
+
+        if (arg.isEmpty()) throw new IllegalArgumentException("Invalid argument: " + arg);
+
+        return arg.get();
+    }
+
+    private static List<Term> parseArgs(String input, int n) {
         String argString = input.substring(input.indexOf("(") + 1, input.lastIndexOf(")"));
 
         List<String> argStrings = Parser.splitByComma(argString);
 
-        if (argStrings.size() != 2) {
-            throw new IllegalArgumentException("Invalid number of arguments in succ/2: " + argString);
+        if (argStrings.size() != n) {
+            throw new IllegalArgumentException("Invalid number of arguments: found " + argStrings.size() + " but expected " + n);
         }
 
-        Optional<Term> argl = TermParser.parse(argStrings.get(1));
-        Optional<Term> argr = TermParser.parse(argStrings.get(2));
+        List<Term> args = argStrings.stream().map(PredicateParser::parseArg).toList();
 
-        if (argl.isEmpty()) throw new IllegalArgumentException("Invalid argument in is/2: " + argStrings.getFirst());
-        if (argr.isEmpty()) throw new IllegalArgumentException("Invalid argument in is/2: " + argStrings.getLast());
-
-        return List.of(argl.get(), argr.get());
+        return args;
     }
 
     public static Optional<Predicate> parseIs(String input) {
@@ -67,9 +72,19 @@ public class PredicateParser {
             return Optional.empty();
         }
 
-        List<Term> args = parseSuccArgs(input);
+        List<Term> args = parseArgs(input, 2);
 
         return Optional.of(new Succ(args));
+    }
+
+    public static Optional<Predicate> parseBetween(String input) {
+        if (!Between.isBetween(input)) {
+            return Optional.empty();
+        }
+
+        List<Term> args = parseArgs(input, 3);
+
+        return Optional.of(new Between(args));
     }
 
     public static Optional<Predicate> parse(String input) {
@@ -97,6 +112,10 @@ public class PredicateParser {
 
         if (predicate.isEmpty()) {
             predicate = parseSucc(input);
+        }
+
+        if (predicate.isEmpty()) {
+            predicate = parseBetween(input);
         }
 
         return predicate;
