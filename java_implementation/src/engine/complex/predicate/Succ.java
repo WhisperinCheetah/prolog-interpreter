@@ -32,6 +32,10 @@ public class Succ extends Predicate {
         checkArgs(argl, argr);
     }
 
+    public static boolean isSucc(String input) {
+        return input.matches("succ\\(.*,.*\\)");
+    }
+
     @Override
     public Substitution execute() {
         Term argl = args.getFirst();
