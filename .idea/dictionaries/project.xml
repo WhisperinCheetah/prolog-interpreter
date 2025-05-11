@@ -4,6 +4,10 @@
       <w>argi</w>
       <w>argl</w>
       <w>argr</w>
+      <w>asserta</w>
+      <w>assertz</w>
+      <w>retractall</w>
+      <w>succ</w>
       <w>varc</w>
     </words>
   </dictionary>
