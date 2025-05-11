@@ -18,7 +18,7 @@ public class Between extends Predicate {
     }
 
     public static boolean isBetween(String input) {
-        return input.matches("between\\(.*,.*,.*,\\)");
+        return input.matches("^between\\(.*,.*,.*\\)");
     }
 
     @Override

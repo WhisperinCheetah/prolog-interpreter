@@ -27,7 +27,7 @@ public class RuleParser {
             Optional<Term> term = TermParser.parseWithComplexTermPriority(bodyPart);
 
             if (term.isEmpty()) {
-                throw new RuntimeException("Could not parse " + input);
+                throw new RuntimeException("Could not parse " + bodyPart + " from " + input);
             }
 
             body.add(term.get());

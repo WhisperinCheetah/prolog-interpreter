@@ -1,9 +1,17 @@
-leq(0, _).
-leq(s(X), s(Y)) :- leq(X, Y).
+age(robespierre, 25).
+age(danton, 29).
+age(marat, 35).
+age(camus, 22).
+age(desmoulins, 19).
 
-:- initialization(main).
+eligible_for_event(Person) :-
+    age(Person, Age),
+    between(20, 30, Age).
 
-main :-
-    leq(X, s(s(s(0)))),
-    write(X), nl,
+:- initialization(list_eligible_members).
+
+list_eligible_members :-
+    eligible_for_event(Person),
+    write('Citizen '), write(Person), write(' is eligible for the event.'), nl,
     fail.
+
