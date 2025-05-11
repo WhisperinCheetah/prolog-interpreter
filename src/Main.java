@@ -2,6 +2,7 @@ import engine.TermDatabase;
 import engine.parser.Parser;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import picocli.CommandLine;
@@ -17,6 +18,8 @@ public class Main implements Runnable {
     boolean repl;
 
     public static void main(String[] args) throws Exception {
+        System.out.println("Args: " + Arrays.toString(args));
+
         int exitCode = new CommandLine(new Main()).execute(args);
         System.exit(exitCode);
     }
@@ -31,17 +34,30 @@ public class Main implements Runnable {
         }
     }
 
-    public void _run() throws Exception {
+    private TermDatabase setupDb() {
+        if (inputFile == null) {
+            return new TermDatabase();
+        }
+
         Parser parser = new Parser(inputFile);
 
         TermDatabase db;
         try {
-            db = parser.parseProgram(true);
+            return parser.parseProgram(true);
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
-            throw new AssertionError("Failed to parse terms from path: " + inputFile);
+            throw new RuntimeException("Failed to parse terms from path: " + inputFile);
         }
+    }
+
+    private void runScript() throws Exception {
+        TermDatabase db = setupDb();
+        db.runInitialization();
+    }
+
+    private void runRepl() throws Exception {
+        TermDatabase db = setupDb();
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -55,6 +71,14 @@ public class Main implements Runnable {
             } else if (input.startsWith("?-")) {
                 db.runQuery(input.substring(input.indexOf("?-") + 2));
             }
+        }
+    }
+
+    public void _run() throws Exception {
+        if (repl) {
+            runRepl();
+        } else {
+            runScript();
         }
     }
 }

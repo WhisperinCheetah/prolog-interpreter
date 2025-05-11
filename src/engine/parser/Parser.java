@@ -19,6 +19,10 @@ public class Parser {
 
     public Parser(String path) {
         this.path = path;
+
+        if (path == null) {
+            throw new IllegalArgumentException("No path provided");
+        }
     }
 
     public static <T> Optional<T> parseStack(String input, List<Function<String, Optional<T>>> parserStack) {

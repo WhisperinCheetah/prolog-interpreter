@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd ..
+
+mkdir -p out
+
+javac -cp lib/*:. -d out $(find ./src -name "*.java")
+java -cp lib/*:out:. Main "$@"
