@@ -2,7 +2,7 @@ package interpreter.simple;
 
 import java.util.HashMap;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.ComplexTerm;
 
@@ -36,12 +36,12 @@ public class Atom extends SimpleTerm {
     }
 
     @Override
-    public Substitution unify(Term other) {
+    public Unification unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
-        if (other instanceof Atom atom && this.value.equals(atom.value)) return Substitution.success();
+        if (other instanceof Atom atom && this.value.equals(atom.value)) return Unification.success();
         if (other instanceof ComplexTerm) return other.unify(this);
 
-        return Substitution.failure();
+        return Unification.failure();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class Atom extends SimpleTerm {
     }
 
     @Override
-    public Term substituteVariables(Substitution substitution) {
+    public Term substituteVariables(Unification unification) {
         return this.copy();
     }
 

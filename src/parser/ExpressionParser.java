@@ -63,6 +63,19 @@ public class ExpressionParser {
         return parseBinaryExpression(input, Division::isDivision, Division::new);
     }
 
+
+    /**
+     * Tries to parse an expression, which occurs on the right side of is/2, in following order:
+     * 1. +
+     * 2. -
+     * 3. *
+     * 4. /
+     * 5. Variable
+     * 6. Number
+     *
+     * @param input A line of input
+     * @return An EvaluableExpression
+     */
     public static Optional<EvaluableExpression> parse(String input) {
         List<Function<String, Optional<EvaluableExpression>>> parsers = List.of(
                 ExpressionParser::parseAddition,

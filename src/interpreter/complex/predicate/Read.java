@@ -1,6 +1,6 @@
 package interpreter.complex.predicate;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import parser.TermParser;
 
@@ -18,7 +18,7 @@ public class Read extends Predicate {
     }
 
     @Override
-    public Substitution execute() {
+    public Unification execute() {
         Scanner scanner = new Scanner(System.in); // create a scanner
         System.out.print("Enter a prolog term: ");
         String input = scanner.nextLine(); // read a line of text
@@ -35,8 +35,8 @@ public class Read extends Predicate {
     }
 
     @Override
-    public Read substituteVariables(Substitution substitution) {
-        Term filledArg = this.getArg(0).substituteVariables(substitution);
+    public Read substituteVariables(Unification unification) {
+        Term filledArg = this.getArg(0).substituteVariables(unification);
 
         return new Read(filledArg);
     }

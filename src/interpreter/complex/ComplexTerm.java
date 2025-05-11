@@ -85,24 +85,24 @@ public class ComplexTerm implements Term {
     }
 
     @Override
-    public Substitution unify(Term other) {
+    public Unification unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
-        if (other instanceof Atom atom && this.getArity() == 0 && this.getFunctor().equals(atom.getValue())) return Substitution.success();
-        if (other instanceof SimpleTerm) return Substitution.failure();
+        if (other instanceof Atom atom && this.getArity() == 0 && this.getFunctor().equals(atom.getValue())) return Unification.success();
+        if (other instanceof SimpleTerm) return Unification.failure();
 
         ComplexTerm otherComplex = (ComplexTerm) other;
 
-        if (!this.type.equals(otherComplex.getType())) return Substitution.failure();
+        if (!this.type.equals(otherComplex.getType())) return Unification.failure();
 
-        Substitution substitution = Substitution.success();
+        Unification unification = Unification.success();
         for (int i = 0; i < getArity(); i++) {
-            Term argl = this.getArg(i).substituteVariables(substitution);
-            Term argr = otherComplex.getArg(i).substituteVariables(substitution);
-            Substitution argSubstitution = argl.unify(argr);
-            substitution = substitution.unify(argSubstitution);
+            Term argl = this.getArg(i).substituteVariables(unification);
+            Term argr = otherComplex.getArg(i).substituteVariables(unification);
+            Unification argUnification = argl.unify(argr);
+            unification = unification.unify(argUnification);
         }
 
-        return substitution;
+        return unification;
     }
 
     @Override
@@ -115,8 +115,8 @@ public class ComplexTerm implements Term {
     }
 
     @Override
-    public ComplexTerm substituteVariables(Substitution substitution) {
-        List<Term> filledArgs = this.args.stream().map(t -> t.substituteVariables(substitution)).toList();
+    public ComplexTerm substituteVariables(Unification unification) {
+        List<Term> filledArgs = this.args.stream().map(t -> t.substituteVariables(unification)).toList();
         return new ComplexTerm(this.type, filledArgs);
     }
 

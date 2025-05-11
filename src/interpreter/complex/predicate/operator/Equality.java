@@ -1,6 +1,6 @@
 package interpreter.complex.predicate.operator;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.predicate.Predicate;
 
@@ -21,8 +21,8 @@ public class Equality extends Operator {
     }
 
     @Override
-    public Substitution execute() {
-        return new Substitution(argl().unify(argr()).isSuccess());
+    public Unification execute() {
+        return new Unification(argl().unify(argr()).isSuccess());
     }
 
     @Override

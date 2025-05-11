@@ -1,6 +1,6 @@
 package interpreter.complex.predicate;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.simple.Number;
 import interpreter.simple.Variable;
@@ -21,16 +21,16 @@ public class Between extends Predicate {
     }
 
     @Override
-    public Substitution execute() {
+    public Unification execute() {
         Term low = args.getFirst();
         Term high = args.get(1);
         Term value = args.getLast();
 
         if (low instanceof Number lownum && high instanceof Number highnum) {
             if (value instanceof Number valnum) {
-                return Substitution.fromBoolean(lownum.getValue() <= valnum.getValue() && valnum.getValue() <= highnum.getValue());
+                return Unification.fromBoolean(lownum.getValue() <= valnum.getValue() && valnum.getValue() <= highnum.getValue());
             } else if (value instanceof Variable valvar) {
-                return Substitution.fromEntry(valvar, lownum);
+                return Unification.fromEntry(valvar, lownum);
             }
         }
 

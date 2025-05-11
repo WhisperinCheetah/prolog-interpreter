@@ -1,6 +1,6 @@
 package interpreter.complex.predicate;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 
 import java.util.List;
@@ -16,15 +16,15 @@ public class Write extends Predicate {
     }
 
     @Override
-    public Substitution execute() {
+    public Unification execute() {
         System.out.print(getArgs().getFirst().toPrettyString());
 
-        return Substitution.success();
+        return Unification.success();
     }
 
     @Override
-    public Write substituteVariables(Substitution substitution) {
-        Term filledArg = getArgs().getFirst().substituteVariables(substitution);
+    public Write substituteVariables(Unification unification) {
+        Term filledArg = getArgs().getFirst().substituteVariables(unification);
         return new Write(filledArg);
     }
 

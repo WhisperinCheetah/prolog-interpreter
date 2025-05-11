@@ -1,6 +1,6 @@
 package interpreter.complex.predicate;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 
 import java.util.List;
 
@@ -15,14 +15,14 @@ public class NL extends Predicate {
     }
 
     @Override
-    public Substitution execute() {
+    public Unification execute() {
         System.out.println();
 
-        return Substitution.success();
+        return Unification.success();
     }
 
     @Override
-    public Predicate substituteVariables(Substitution substitution) {
+    public Predicate substituteVariables(Unification unification) {
         return new NL();
     }
 

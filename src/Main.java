@@ -2,14 +2,16 @@ import interpreter.FactDatabase;
 import parser.Parser;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
-public class Main implements Runnable {
 
+/**
+ * Class main that parses arguments and starts a REPL loop or script mode.
+ */
+public class Main implements Runnable {
 
     @Option(names = "-s", description = "Input file")
     String inputFile;
@@ -18,8 +20,6 @@ public class Main implements Runnable {
     boolean repl;
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Args: " + Arrays.toString(args));
-
         int exitCode = new CommandLine(new Main()).execute(args);
         System.exit(exitCode);
     }
@@ -34,6 +34,10 @@ public class Main implements Runnable {
         }
     }
 
+
+    /**
+     * @return FactDatabase from a file if inputFile != null, otherwise empty
+     */
     private FactDatabase setupDb() {
         if (inputFile == null) {
             return new FactDatabase();
@@ -41,7 +45,6 @@ public class Main implements Runnable {
 
         Parser parser = new Parser(inputFile);
 
-        FactDatabase db;
         try {
             return parser.parseProgram(true);
         } catch (IOException e) {
@@ -51,7 +54,7 @@ public class Main implements Runnable {
         }
     }
 
-    private void runScript() throws Exception {
+    private void runScript() {
         FactDatabase db = setupDb();
         db.runInitialization();
     }

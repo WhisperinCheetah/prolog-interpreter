@@ -1,6 +1,6 @@
 package interpreter.complex.predicate;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.expression.EvaluableExpression;
 import interpreter.simple.Variable;
@@ -33,11 +33,11 @@ public class Is extends Predicate {
     }
 
     @Override
-    public Substitution execute() {
+    public Unification execute() {
         Variable var = (Variable) getArg(0);
         EvaluableExpression evaluable = (EvaluableExpression) getArg(1);
 
-        return Substitution.fromEntry(var, evaluable.evaluate());
+        return Unification.fromEntry(var, evaluable.evaluate());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package db;
 
 import interpreter.Rule;
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.FactDatabase;
 import interpreter.complex.ComplexTerm;
 import interpreter.complex.predicate.Write;
@@ -53,7 +53,7 @@ public class DbWriteTests {
         FactDatabase db = new FactDatabase();
         db.addFact(rule);
 
-        Substitution res = db.backtrack(head);
+        Unification res = db.backtrack(head);
 
         System.setOut(originalOut);
         System.out.println("Got output: " + outContent);

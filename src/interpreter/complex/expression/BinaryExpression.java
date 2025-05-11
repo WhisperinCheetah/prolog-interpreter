@@ -1,6 +1,6 @@
 package interpreter.complex.expression;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.simple.Number;
 import interpreter.simple.Variable;
@@ -41,17 +41,17 @@ public abstract class BinaryExpression implements Term, EvaluableExpression {
     }
 
     @Override
-    public BinaryExpression substituteVariables(Substitution substitution) {
+    public BinaryExpression substituteVariables(Unification unification) {
         BinaryExpression copy = this.copy();
 
-        copy.argl = this.argl.substituteVariables(substitution);
-        copy.argr = this.argr.substituteVariables(substitution);
+        copy.argl = this.argl.substituteVariables(unification);
+        copy.argr = this.argr.substituteVariables(unification);
 
         return copy;
     }
 
     @Override
-    public Substitution unify(Term other) {
+    public Unification unify(Term other) {
         throw new UnsupportedOperationException("Expressions cannot be unified.");
     }
 

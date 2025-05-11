@@ -10,7 +10,7 @@ public interface Term extends Fact {
     Term renameVariables(HashMap<String, Variable> map);
 
     @Override
-    Term substituteVariables(Substitution substitution);
+    Term substituteVariables(Unification unification);
 
     String toPrettyString();
 

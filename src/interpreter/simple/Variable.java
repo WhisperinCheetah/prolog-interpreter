@@ -1,6 +1,6 @@
 package interpreter.simple;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.expression.EvaluableExpression;
 
@@ -33,8 +33,8 @@ public class Variable extends SimpleTerm implements EvaluableExpression {
     }
 
     @Override
-    public Substitution unify(Term other) {
-        return Substitution.fromEntry(this, other);
+    public Unification unify(Term other) {
+        return Unification.fromEntry(this, other);
     }
 
     @Override
@@ -45,14 +45,14 @@ public class Variable extends SimpleTerm implements EvaluableExpression {
     }
 
     @Override
-    public Term substituteVariables(Substitution substitution) {
-        Term newTerm = substitution.getMap().getOrDefault(this, this);
+    public Term substituteVariables(Unification unification) {
+        Term newTerm = unification.getMap().getOrDefault(this, this);
 
         if (newTerm instanceof Variable var && var.equals(this)) {
             return this;
         }
 
-        return newTerm.substituteVariables(substitution);
+        return newTerm.substituteVariables(unification);
     }
 
     @Override

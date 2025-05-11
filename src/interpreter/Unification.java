@@ -5,50 +5,50 @@ import interpreter.simple.Variable;
 
 import java.util.*;
 
-public class Substitution {
+public class Unification {
     private final boolean success;
     private final HashMap<Variable, Term> varTermMap;
 
-    public Substitution(boolean success, HashMap<Variable, Term> varTermMap) {
+    public Unification(boolean success, HashMap<Variable, Term> varTermMap) {
         this.success = success;
         this.varTermMap = varTermMap;
     }
 
-    public Substitution(boolean success) {
+    public Unification(boolean success) {
         this.success = success;
         this.varTermMap = new HashMap<>();
     }
 
-    public static Substitution success() {
-        return new Substitution(true, new HashMap<>());
+    public static Unification success() {
+        return new Unification(true, new HashMap<>());
     }
 
-    public static Substitution failure() {
-        return new Substitution(false, new HashMap<>());
+    public static Unification failure() {
+        return new Unification(false, new HashMap<>());
     }
 
-    public static Substitution fromBoolean(boolean success) {
-        return new Substitution(success, new HashMap<>());
+    public static Unification fromBoolean(boolean success) {
+        return new Unification(success, new HashMap<>());
     }
 
-    public static Substitution fromEntry(Variable var, Term term) {
+    public static Unification fromEntry(Variable var, Term term) {
         HashMap<Variable, Term> varTermMap = new HashMap<>();
         varTermMap.put(var, term);
-        return new Substitution(true, varTermMap);
+        return new Unification(true, varTermMap);
     }
 
-    public Substitution unify(Substitution other) {
-        if (this.isFailure() || other.isFailure()) return Substitution.failure();
+    public Unification unify(Unification other) {
+        if (this.isFailure() || other.isFailure()) return Unification.failure();
         HashMap<Variable, Term> map = new HashMap<>(this.varTermMap);
         for (Map.Entry<Variable, Term> entry : other.varTermMap.entrySet()) {
             if (!varTermMap.containsKey(entry.getKey()) || varTermMap.get(entry.getKey()).equals(entry.getValue())) {
                 map.put(entry.getKey(), entry.getValue());
             }
 
-            else return Substitution.failure();
+            else return Unification.failure();
         }
 
-        return new Substitution(true, map);
+        return new Unification(true, map);
     }
 
     public boolean isSuccess() {

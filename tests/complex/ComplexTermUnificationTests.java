@@ -1,6 +1,6 @@
 package complex;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.complex.ComplexTerm;
 import interpreter.simple.Atom;
 import interpreter.simple.Variable;
@@ -22,7 +22,7 @@ public class ComplexTermUnificationTests {
         ComplexTerm f1 = new ComplexTerm("f", List.of(A, b));
         ComplexTerm f2 = new ComplexTerm("f", List.of(a, B));
 
-        Substitution result = f1.unify(f2);
+        Unification result = f1.unify(f2);
 
         assertTrue(result.isSuccess());
         assertEquals(result.getMap().get(A), a);
@@ -34,7 +34,7 @@ public class ComplexTermUnificationTests {
         Variable A = new Variable("A");
         ComplexTerm f = new ComplexTerm("f", List.of());
 
-        Substitution result = f.unify(A);
+        Unification result = f.unify(A);
 
         assertTrue(result.isSuccess());
         assertEquals(result.getMap().get(A), f);
@@ -45,7 +45,7 @@ public class ComplexTermUnificationTests {
         Atom a = new Atom("a");
         ComplexTerm f = new ComplexTerm("f", List.of());
 
-        Substitution result = f.unify(a);
+        Unification result = f.unify(a);
 
         assertTrue(result.isFailure());
     }
@@ -58,7 +58,7 @@ public class ComplexTermUnificationTests {
         Variable A = new Variable("A");
         ComplexTerm f2WithVar = new ComplexTerm("f2", List.of(A));
 
-        Substitution result = f2.unify(f2WithVar);
+        Unification result = f2.unify(f2WithVar);
 
         assertTrue(result.isSuccess());
         assertEquals(result.getMap().get(A), f1);

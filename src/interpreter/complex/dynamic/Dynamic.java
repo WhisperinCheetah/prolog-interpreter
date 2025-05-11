@@ -16,7 +16,7 @@ public abstract class Dynamic extends ComplexTerm {
         this.arg = arg;
     }
 
-    public abstract Substitution execute(FactDatabase db);
+    public abstract Unification execute(FactDatabase db);
 
     @Override
     public Dynamic renameVariables(HashMap<String, Variable> map) {
@@ -29,11 +29,11 @@ public abstract class Dynamic extends ComplexTerm {
     }
 
     @Override
-    public Dynamic substituteVariables(Substitution substitution) {
+    public Dynamic substituteVariables(Unification unification) {
         Dynamic copy = (Dynamic) this.copy();
 
-        copy.setArgs(copy.getArgs().stream().map(t -> t.substituteVariables(substitution)).toList());
-        copy.arg = arg.substituteVariables(substitution);
+        copy.setArgs(copy.getArgs().stream().map(t -> t.substituteVariables(unification)).toList());
+        copy.arg = arg.substituteVariables(unification);
 
         return copy;
     }

@@ -2,7 +2,7 @@ package db;
 
 import interpreter.Fact;
 import interpreter.Rule;
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.FactDatabase;
 import interpreter.complex.ComplexTerm;
 import interpreter.simple.Atom;
@@ -29,7 +29,7 @@ public class DbBacktrackingTests {
         FactDatabase db = getTermDatabase();
 
         ComplexTerm query = new ComplexTerm("likes", List.of(new Atom("john"), new Atom("mary")));
-        Substitution result = db.backtrack(query);
+        Unification result = db.backtrack(query);
 
         assertTrue(result.isSuccess());
     }
@@ -41,8 +41,8 @@ public class DbBacktrackingTests {
         ComplexTerm query1 = new ComplexTerm("likes", List.of(new Atom("john"), new Atom("john")));
         Atom query2 = new Atom("john");
 
-        Substitution result1 = db.backtrack(query1);
-        Substitution result2 = db.backtrack(query2);
+        Unification result1 = db.backtrack(query1);
+        Unification result2 = db.backtrack(query2);
 
         assertTrue(result1.isFailure());
         assertTrue(result2.isFailure());
@@ -55,7 +55,7 @@ public class DbBacktrackingTests {
         Variable X = new Variable("X");
         ComplexTerm query = new ComplexTerm("likes", List.of(new Atom("john"), X));
 
-        Substitution result = db.backtrack(query);
+        Unification result = db.backtrack(query);
 
         assertTrue(result.isSuccess());
         assertEquals(new Atom("mary"), result.getMap().get(X));
@@ -76,7 +76,7 @@ public class DbBacktrackingTests {
 
         ComplexTerm query = new ComplexTerm("likes", List.of(new Atom("john"), new Atom("mary")));
 
-        Substitution result = db.backtrack(query);
+        Unification result = db.backtrack(query);
 
         assertTrue(result.isSuccess());
     }
@@ -88,7 +88,7 @@ public class DbBacktrackingTests {
         Variable X = new Variable("X");
         ComplexTerm query = new ComplexTerm("likes", List.of(X, new Atom("mary")));
 
-        Substitution result = db.backtrack(query);
+        Unification result = db.backtrack(query);
 
         assertTrue(result.isSuccess());
         assertEquals(new Atom("john"), result.getMap().get(X));
@@ -121,7 +121,7 @@ public class DbBacktrackingTests {
 
         ComplexTerm query = new ComplexTerm("loves", List.of(new Atom("john"), new Atom("mary")));
 
-        Substitution result = db.backtrack(query);
+        Unification result = db.backtrack(query);
 
         assertTrue(result.isSuccess());
     }
@@ -133,7 +133,7 @@ public class DbBacktrackingTests {
         Variable X = new Variable("X");
         ComplexTerm query = new ComplexTerm("loves", List.of(new Atom("john"), X));
 
-        Substitution result = db.backtrack(query);
+        Unification result = db.backtrack(query);
 
         assertTrue(result.isSuccess());
         assertEquals(new Atom("mary"), result.getMap().get(X));
@@ -145,7 +145,7 @@ public class DbBacktrackingTests {
 
         ComplexTerm query = new ComplexTerm("loves", List.of(new Atom("john"), new Atom("mary")));
 
-        Substitution result = db.backtrack(query);
+        Unification result = db.backtrack(query);
 
         assertTrue(result.isSuccess());
     }
@@ -157,7 +157,7 @@ public class DbBacktrackingTests {
         Variable X = new Variable("X");
         ComplexTerm query = new ComplexTerm("loves", List.of(new Atom("john"), X));
 
-        Substitution result = db.backtrack(query);
+        Unification result = db.backtrack(query);
 
         assertTrue(result.isSuccess());
         assertEquals(new Atom("mary"), result.getMap().get(X));

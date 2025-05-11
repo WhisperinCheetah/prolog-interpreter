@@ -1,6 +1,6 @@
 package interpreter.simple;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.expression.EvaluableExpression;
 
@@ -32,11 +32,11 @@ public class Number extends SimpleTerm implements EvaluableExpression {
     }
 
     @Override
-    public Substitution unify(Term other) {
+    public Unification unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
-        if (other instanceof Number num && value == num.value) return Substitution.success();
+        if (other instanceof Number num && value == num.value) return Unification.success();
 
-        return Substitution.failure();
+        return Unification.failure();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class Number extends SimpleTerm implements EvaluableExpression {
     }
 
     @Override
-    public Term substituteVariables(Substitution substitution) {
+    public Term substituteVariables(Unification unification) {
         return this.copy();
     }
 

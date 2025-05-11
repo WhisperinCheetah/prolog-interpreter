@@ -1,7 +1,7 @@
 package interpreter.complex.dynamic;
 
 import interpreter.Fact;
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.FactDatabase;
 
 public class Asserta extends Dynamic {
@@ -15,14 +15,14 @@ public class Asserta extends Dynamic {
     }
 
     @Override
-    public Substitution execute(FactDatabase db) {
+    public Unification execute(FactDatabase db) {
         if (!db.isDynamic(this.arg)) {
             throw new RuntimeException("Argument " + this.arg + " is not a dynamic type");
         }
 
         db.insertFact(this.arg, 0);
 
-        return Substitution.success();
+        return Unification.success();
     }
 
     @Override

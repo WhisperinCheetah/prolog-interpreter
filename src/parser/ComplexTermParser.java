@@ -12,13 +12,6 @@ import java.util.Optional;
 public class ComplexTermParser {
 
 
-    private static Term getOrFail(Optional<Term> term) {
-        if (term.isEmpty()) throw new AssertionError("The given term should not be empty");
-
-        return term.get();
-    }
-
-    // TODO
     public static ComplexTerm parseComplexTerm(String input) {
         if (!input.contains("(")) {
             return new ComplexTerm(input);
@@ -48,6 +41,16 @@ public class ComplexTermParser {
         return Optional.empty();
     }
 
+
+    /**
+     * Tries to parse in the following order:
+     * 1. Predicate
+     * 2. Dynamic
+     * 3. Base ComplexTerm
+     *
+     * @param input A line of input
+     * @return A ComplexTerm if the line is a ComplexTerm, otherwise empty
+     */
     public static Optional<ComplexTerm> parse(String input) {
         Optional<ComplexTerm> term = PredicateParser.parse(input).map(p -> p);
 

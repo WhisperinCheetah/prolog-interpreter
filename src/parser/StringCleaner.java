@@ -7,6 +7,9 @@ import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Helper class which helps with cleaning input lines
+ */
 public class StringCleaner {
 
     static boolean isOperator(char c) {
@@ -140,6 +143,10 @@ public class StringCleaner {
         return input; // No top-level operator found; return as-is
     }
 
+    /**
+     * @param input A line of input, possible with some infix notation
+     * @return A line of input with the possible infix notation converted to prefix notation
+     */
     public static String convertToPrefix(String input) {
         if (!Rule.isRule(input)) {
             return _convertToPrefix(input);
@@ -163,6 +170,12 @@ public class StringCleaner {
         return input.replaceAll("\\s+", "");
     }
 
+    /**
+     * This function takes a line of input and removes all whitespace that are not a single space not in quote-blocks
+     *
+     * @param input A line of input with whitespace
+     * @return A line of input with only single spaces
+     */
     public static String removeNonSingleSpaces(String input) {
         StringBuilder output = new StringBuilder();
 
@@ -199,6 +212,13 @@ public class StringCleaner {
         return output.toString(); // TODO
     }
 
+
+    /**
+     * This function takes a line of input and removes all single spaces not in quote-blocks
+     *
+     * @param input A line of input with single spaces
+     * @return A line of input without whitespace
+     */
     public static String removeSingleSpaces(String input) {
         StringBuilder output = new StringBuilder();
 
@@ -235,6 +255,17 @@ public class StringCleaner {
         return output.toString();
     }
 
+
+    /**
+     * This function takes a dirty line with whitespace and infix notation and does the following things:
+     * 1. Removes trailing '.'
+     * 2. Converts ':-dynamic <functor>' to ':-dynamic(<functor>)'
+     * 3. Converts infix (e.g. 3 + 2) to prefix (e.g. +(3,2))
+     * 4. Removes all whitespace from non-quotes
+     *
+     * @param input A line of input
+     * @return A cleaned up line of input
+     */
     public static String cleanString(String input) {
         if (input.trim().isEmpty()) return input;
 

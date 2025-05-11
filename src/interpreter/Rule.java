@@ -25,7 +25,7 @@ public class Rule implements Fact {
     }
 
     @Override
-    public Substitution unify(Term other) {
+    public Unification unify(Term other) {
         return head.unify(other);
     }
 
@@ -40,9 +40,9 @@ public class Rule implements Fact {
     }
 
     @Override
-    public Rule substituteVariables(Substitution substitution) {
-        ComplexTerm head = this.head.substituteVariables(substitution);
-        List<Term> body = this.body.stream().map(t -> t.substituteVariables(substitution)).toList();
+    public Rule substituteVariables(Unification unification) {
+        ComplexTerm head = this.head.substituteVariables(unification);
+        List<Term> body = this.body.stream().map(t -> t.substituteVariables(unification)).toList();
 
         return new Rule(head, body);
     }

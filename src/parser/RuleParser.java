@@ -35,6 +35,11 @@ public class RuleParser {
         return new Rule(head, body);
     }
 
+
+    /**
+     * @param input a line as input
+     * @return A rule if the line is a rule, empty if it isn't
+     */
     public static Optional<Rule> parse(String input) {
         if (Rule.isRule(input)) {
             return Optional.of(parseRule(input));

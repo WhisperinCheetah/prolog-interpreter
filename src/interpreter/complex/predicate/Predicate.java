@@ -1,7 +1,7 @@
 package interpreter.complex.predicate;
 
 import interpreter.FunctorType;
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.ComplexTerm;
 import interpreter.simple.Variable;
@@ -19,7 +19,7 @@ public abstract class Predicate extends ComplexTerm {
         super(functor, args);
     }
 
-    public abstract Substitution execute();
+    public abstract Unification execute();
 
     @Override
     public Predicate renameVariables(HashMap<String, Variable> map) {
@@ -31,10 +31,10 @@ public abstract class Predicate extends ComplexTerm {
     }
 
     @Override
-    public Predicate substituteVariables(Substitution substitution) {
+    public Predicate substituteVariables(Unification unification) {
         Predicate copy = this.copy();
 
-        copy.setArgs(this.getArgs().stream().map(t -> t.substituteVariables(substitution)).toList());
+        copy.setArgs(this.getArgs().stream().map(t -> t.substituteVariables(unification)).toList());
 
         return copy;
     }

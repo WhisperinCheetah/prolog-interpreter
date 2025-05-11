@@ -87,6 +87,21 @@ public class PredicateParser {
         return Optional.of(new Between(args));
     }
 
+
+    /**
+     * Tries to parse following predicates in order:
+     * 1. Write
+     * 2. Read
+     * 3. NL (Newline)
+     * 4. Fail
+     * 6. An Operator (+, -, *, /)
+     * 7. Is
+     * 8. Succ
+     * 9. Between
+     *
+     * @param input A line of input
+     * @return A Predicate if the line is a predicate
+     */
     public static Optional<Predicate> parse(String input) {
         Optional<Predicate> predicate = WriteParser.parse(input).map(w -> w);
 

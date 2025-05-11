@@ -1,6 +1,6 @@
 package interpreter.complex.predicate;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.simple.Variable;
 import interpreter.simple.Number;
@@ -37,18 +37,18 @@ public class Succ extends Predicate {
     }
 
     @Override
-    public Substitution execute() {
+    public Unification execute() {
         Term argl = args.getFirst();
         Term argr = args.getLast();
 
         if (argl instanceof Number numl && argr instanceof Number numr) {
-            return Substitution.fromBoolean(numr.getValue() - numl.getValue() == 1.0);
+            return Unification.fromBoolean(numr.getValue() - numl.getValue() == 1.0);
         }
         if (argl instanceof Number numl && argr instanceof Variable varr) {
-            return Substitution.fromEntry(varr, new Number(numl.getValue() + 1.0));
+            return Unification.fromEntry(varr, new Number(numl.getValue() + 1.0));
         }
         if (argl instanceof Variable varl && argr instanceof Number numl) {
-            return Substitution.fromEntry(varl, new Number(numl.getValue() - 1.0));
+            return Unification.fromEntry(varl, new Number(numl.getValue() - 1.0));
         }
 
         throw new IllegalArgumentException("Variables " + argl + " and " + argr + " not sufficiently instantiated");

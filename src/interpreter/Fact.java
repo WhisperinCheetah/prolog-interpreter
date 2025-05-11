@@ -5,9 +5,9 @@ import interpreter.simple.Variable;
 import java.util.HashMap;
 
 public interface Fact {
-    Substitution unify(Term other);
+    Unification unify(Term other);
     Fact renameVariables(HashMap<String, Variable> map);
-    Fact substituteVariables(Substitution substitution);
+    Fact substituteVariables(Unification unification);
 
     Fact copy();
 }

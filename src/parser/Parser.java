@@ -17,6 +17,10 @@ public class Parser {
 
     final String path;
 
+    /**
+     * Constructor that takes a file and creates a new Parser
+     * @param path: path to input file
+     */
     public Parser(String path) {
         this.path = path;
 
@@ -70,6 +74,21 @@ public class Parser {
         return splitByChar(input, ',');
     }
 
+    /**
+     * function parseProgram which parses the file given in the constructor.
+     * It first splits all the lines by '.' outside quote-blocks.
+     * Then cleans all the lines.
+     * Tries to parse different types in following order:
+     * 1. Initialization
+     * 2. Dynamic
+     * 3. Rule
+     * 4. ComplexTerm
+     * Each has its own class.
+     *
+     * @param verbose: enable logging
+     * @return a populated FactDatabase
+     * @throws IOException if an exception occurred during I/O handling
+     */
     public FactDatabase parseProgram(boolean verbose) throws IOException {
         String dirtyProgram = new String(Files.readAllBytes(Paths.get(path))).trim();
         List<String> lines = Parser.splitByChar(dirtyProgram, '.').stream().map(StringCleaner::cleanString).filter(s -> !s.isEmpty()).toList();
@@ -102,10 +121,6 @@ public class Parser {
             }
 
             db.addFact(fact.get());
-        }
-
-        for (Fact fact : db.getFacts()) {
-            System.out.println(fact);
         }
 
         if (verbose) {

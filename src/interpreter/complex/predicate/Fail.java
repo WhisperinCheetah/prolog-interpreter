@@ -1,6 +1,6 @@
 package interpreter.complex.predicate;
 
-import interpreter.Substitution;
+import interpreter.Unification;
 
 import java.util.List;
 
@@ -15,12 +15,12 @@ public class Fail extends Predicate {
     }
 
     @Override
-    public Substitution execute() {
-        return Substitution.failure();
+    public Unification execute() {
+        return Unification.failure();
     }
 
     @Override
-    public Fail substituteVariables(Substitution substitution) {
+    public Fail substituteVariables(Unification unification) {
         return this.copy();
     }
 

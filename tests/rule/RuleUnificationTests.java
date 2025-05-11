@@ -1,7 +1,7 @@
 package rule;
 
 import interpreter.Rule;
-import interpreter.Substitution;
+import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.ComplexTerm;
 import interpreter.simple.Atom;
@@ -27,7 +27,7 @@ public class RuleUnificationTests {
         Atom a = new Atom("a");
         ComplexTerm filledHead = new ComplexTerm("f", List.of(a));
 
-        Substitution result = rule.unify(filledHead);
+        Unification result = rule.unify(filledHead);
 
         assertTrue(result.isSuccess());
         assertEquals(result.getMap().get(X), a);

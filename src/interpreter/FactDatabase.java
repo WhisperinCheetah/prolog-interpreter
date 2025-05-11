@@ -25,22 +25,42 @@ public class FactDatabase {
         this.dynamics = new HashSet<>();
     }
 
+    /**
+     * This function is used by asserta to insert a fact at the start of the database.
+     *
+     * @param fact The fact to be inserted in the database
+     * @param index The index where it has to be inserted
+     */
     public void insertFact(Fact fact, int index) {
         this.facts.add(index, fact);
     }
 
+    /**
+     * @param fact Adds a fact to the database
+     */
     public void addFact(Fact fact) {
         facts.add(fact);
     }
 
+    /**
+     * @param init Adds a initialization to the database
+     */
     public void addInitialization(Initialization init) {
         this.init = init;
     }
 
+    /**
+     * @param dynamic A DynamicDirective to be added to the database
+     */
     public void addDynamic(DynamicDirective dynamic) {
         this.dynamics.add(dynamic.getGoal().getType());
     }
 
+
+    /**
+     * @param fact the fact that is tested to be dynamic
+     * @return true if the fact is dynamic
+     */
     public boolean isDynamic(Fact fact) {
         if (fact instanceof Rule rule) return dynamics.contains(rule.head.getType());
         if (fact instanceof Predicate) return false;
@@ -66,6 +86,14 @@ public class FactDatabase {
         return new ArrayList<>(this.dynamics);
     }
 
+
+    /**
+     * Tries to parse a query.
+     *
+     * @param queryString The user input
+     * @return A list of parsed Terms
+     * @throws ParseException If the input could not be parsed
+     */
     public List<Term> parseQuery(String queryString) throws ParseException {
         List<String> cleanStrings = Parser.splitByComma(queryString).stream().map(StringCleaner::cleanString).toList();
 
@@ -86,34 +114,42 @@ public class FactDatabase {
         return renamedQueryTerms;
     }
 
-    public Substitution backtrackRecursive(List<Term> queries, int index, Substitution substitution) {
-        if (index == queries.size() || substitution.isFailure()) {
-            return substitution;
+    /**
+     * The heart of the database. Tries to backtrack a (multiple) query(s) and returns their unification.
+     *
+     * @param queries A list of queries that need to get unified
+     * @param index Current query index
+     * @param unification The current unification
+     * @return The unified unification from all the queries
+     */
+    public Unification backtrackRecursive(List<Term> queries, int index, Unification unification) {
+        if (index == queries.size() || unification.isFailure()) {
+            return unification;
         }
 
-        Term query = queries.get(index).substituteVariables(substitution);
+        Term query = queries.get(index).substituteVariables(unification);
 
         if (query instanceof Predicate predicate) {
-            return backtrackRecursive(queries, index + 1, substitution.unify(predicate.execute()));
+            return backtrackRecursive(queries, index + 1, unification.unify(predicate.execute()));
         }
 
         if (query instanceof Dynamic dynamic) {
-            return backtrackRecursive(queries, index + 1, substitution.unify(dynamic.execute(this)));
+            return backtrackRecursive(queries, index + 1, unification.unify(dynamic.execute(this)));
         }
 
         for (Fact fact : facts) {
             Fact rfact = fact.renameVariables(new HashMap<>());
 
-            Substitution res = rfact.unify(query);
+            Unification res = rfact.unify(query);
 
             if (res.isSuccess() && rfact instanceof Rule rule) {
-                Substitution ruleRes = backtrackRecursive(rule.getBody(), 0, res);
+                Unification ruleRes = backtrackRecursive(rule.getBody(), 0, res);
 
                 res = res.unify(ruleRes);
             }
 
             if (res.isSuccess()) {
-                Substitution recursiveRes = backtrackRecursive(queries, index+1, substitution.unify(res));
+                Unification recursiveRes = backtrackRecursive(queries, index+1, unification.unify(res));
 
                 if (recursiveRes.isSuccess()) {
                     return recursiveRes;
@@ -121,19 +157,26 @@ public class FactDatabase {
             }
         }
 
-        return Substitution.failure();
+        return Unification.failure();
     }
 
-    public Substitution backtrack(Term query) {
-        return backtrackRecursive(List.of(query), 0, Substitution.success());
+    public Unification backtrack(Term query) {
+        return backtrackRecursive(List.of(query), 0, Unification.success());
     }
 
-    public Substitution backtrackMultiple(List<Term> queries) {
-        return backtrackRecursive(queries, 0, Substitution.success());
+    public Unification backtrackMultiple(List<Term> queries) {
+        return backtrackRecursive(queries, 0, Unification.success());
     }
 
+
+    /**
+     * Takes user input as a query, parses it and tries to unify it in the database. Prints the result.
+     *
+     * @param queryString The user input
+     * @throws ParseException if the input failed to parse
+     */
     public void runQuery(String queryString) throws ParseException {
-        Substitution initializationResult = this.runInitialization();
+        Unification initializationResult = this.runInitialization();
 
         // System.out.println(initializationResult);
 
@@ -145,16 +188,22 @@ public class FactDatabase {
 
         List<Term> query = this.parseQuery(queryString);
 
-        Substitution res = backtrackMultiple(query);
+        Unification res = backtrackMultiple(query);
 
         System.out.println(res);
 
         System.out.println(res.toPrettyString(query));
     }
 
-    public Substitution runInitialization() {
+
+    /**
+     * Runs the initialization goal if it exists.
+     *
+     * @return The unification from the backtracking
+     */
+    public Unification runInitialization() {
         if (this.init == null) {
-            return Substitution.success();
+            return Unification.success();
         }
 
         return this.backtrack(this.init.getGoal());
