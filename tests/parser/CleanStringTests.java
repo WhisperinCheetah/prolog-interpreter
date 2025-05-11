@@ -1,6 +1,5 @@
 package parser;
 
-import engine.parser.StringCleaner;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

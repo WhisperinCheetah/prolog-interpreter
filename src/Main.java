@@ -1,5 +1,5 @@
-import engine.TermDatabase;
-import engine.parser.Parser;
+import interpreter.FactDatabase;
+import parser.Parser;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -34,14 +34,14 @@ public class Main implements Runnable {
         }
     }
 
-    private TermDatabase setupDb() {
+    private FactDatabase setupDb() {
         if (inputFile == null) {
-            return new TermDatabase();
+            return new FactDatabase();
         }
 
         Parser parser = new Parser(inputFile);
 
-        TermDatabase db;
+        FactDatabase db;
         try {
             return parser.parseProgram(true);
         } catch (IOException e) {
@@ -52,12 +52,12 @@ public class Main implements Runnable {
     }
 
     private void runScript() throws Exception {
-        TermDatabase db = setupDb();
+        FactDatabase db = setupDb();
         db.runInitialization();
     }
 
     private void runRepl() throws Exception {
-        TermDatabase db = setupDb();
+        FactDatabase db = setupDb();
 
         Scanner scanner = new Scanner(System.in);
         while (true) {

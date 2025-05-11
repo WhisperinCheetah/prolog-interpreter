@@ -1,13 +1,11 @@
 package parser;
 
-import engine.complex.expression.Addition;
-import engine.complex.expression.EvaluableExpression;
-import engine.complex.expression.Multiplication;
-import engine.complex.expression.Subtraction;
-import engine.parser.ExpressionParser;
-import engine.parser.StringCleaner;
-import engine.simple.Number;
-import engine.simple.Variable;
+import interpreter.complex.expression.Addition;
+import interpreter.complex.expression.EvaluableExpression;
+import interpreter.complex.expression.Multiplication;
+import interpreter.complex.expression.Subtraction;
+import interpreter.simple.Number;
+import interpreter.simple.Variable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

@@ -1,9 +1,9 @@
 package complex;
 
-import engine.Substitution;
-import engine.complex.ComplexTerm;
-import engine.simple.Atom;
-import engine.simple.Variable;
+import interpreter.Substitution;
+import interpreter.complex.ComplexTerm;
+import interpreter.simple.Atom;
+import interpreter.simple.Variable;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

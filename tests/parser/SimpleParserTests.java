@@ -1,13 +1,13 @@
 package parser;
 
-import engine.parser.simples.AtomParser;
-import engine.parser.simples.NumberParser;
-import engine.parser.simples.SimpleTermParser;
-import engine.parser.simples.VariableParser;
-import engine.simple.Atom;
-import engine.simple.Number;
-import engine.simple.SimpleTerm;
-import engine.simple.Variable;
+import parser.simples.AtomParser;
+import parser.simples.NumberParser;
+import parser.simples.SimpleTermParser;
+import parser.simples.VariableParser;
+import interpreter.simple.Atom;
+import interpreter.simple.Number;
+import interpreter.simple.SimpleTerm;
+import interpreter.simple.Variable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

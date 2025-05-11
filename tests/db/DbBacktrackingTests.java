@@ -1,12 +1,12 @@
 package db;
 
-import engine.Fact;
-import engine.Rule;
-import engine.Substitution;
-import engine.TermDatabase;
-import engine.complex.ComplexTerm;
-import engine.simple.Atom;
-import engine.simple.Variable;
+import interpreter.Fact;
+import interpreter.Rule;
+import interpreter.Substitution;
+import interpreter.FactDatabase;
+import interpreter.complex.ComplexTerm;
+import interpreter.simple.Atom;
+import interpreter.simple.Variable;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,19 +15,18 @@ import java.util.List;
 
 public class DbBacktrackingTests {
 
-    public TermDatabase getTermDatabase() {
+    public FactDatabase getTermDatabase() {
         ComplexTerm dbComplex = new ComplexTerm("likes", List.of(new Atom("john"), new Atom("mary")));
 
-        TermDatabase db = new TermDatabase();
+        FactDatabase db = new FactDatabase();
         db.addFact(dbComplex);
-        db.finalizeDatabase();
 
         return db;
     }
 
     @Test
     public void backtrackingComplexTermTest1() {
-        TermDatabase db = getTermDatabase();
+        FactDatabase db = getTermDatabase();
 
         ComplexTerm query = new ComplexTerm("likes", List.of(new Atom("john"), new Atom("mary")));
         Substitution result = db.backtrack(query);
@@ -37,7 +36,7 @@ public class DbBacktrackingTests {
 
     @Test
     public void backtrackingComplexTermTest2() {
-        TermDatabase db = getTermDatabase();
+        FactDatabase db = getTermDatabase();
 
         ComplexTerm query1 = new ComplexTerm("likes", List.of(new Atom("john"), new Atom("john")));
         Atom query2 = new Atom("john");
@@ -51,7 +50,7 @@ public class DbBacktrackingTests {
 
     @Test
     public void backtrackingComplexTermTest3() {
-        TermDatabase db = getTermDatabase();
+        FactDatabase db = getTermDatabase();
 
         Variable X = new Variable("X");
         ComplexTerm query = new ComplexTerm("likes", List.of(new Atom("john"), X));
@@ -62,19 +61,18 @@ public class DbBacktrackingTests {
         assertEquals(new Atom("mary"), result.getMap().get(X));
     }
 
-    public TermDatabase getTermDatabaseWithVars() {
+    public FactDatabase getTermDatabaseWithVars() {
         ComplexTerm dbComplex = new ComplexTerm("likes", List.of(new Atom("john"), new Variable("X")));
 
-        TermDatabase db = new TermDatabase();
+        FactDatabase db = new FactDatabase();
         db.addFact(dbComplex);
-        db.finalizeDatabase();
 
         return db;
     }
 
     @Test
     public void backtrackingComplexTermTest4() {
-        TermDatabase db = getTermDatabaseWithVars();
+        FactDatabase db = getTermDatabaseWithVars();
 
         ComplexTerm query = new ComplexTerm("likes", List.of(new Atom("john"), new Atom("mary")));
 
@@ -85,7 +83,7 @@ public class DbBacktrackingTests {
 
     @Test
     public void backtrackingComplexTermTest5() {
-        TermDatabase db = getTermDatabaseWithVars();
+        FactDatabase db = getTermDatabaseWithVars();
 
         Variable X = new Variable("X");
         ComplexTerm query = new ComplexTerm("likes", List.of(X, new Atom("mary")));
@@ -96,7 +94,7 @@ public class DbBacktrackingTests {
         assertEquals(new Atom("john"), result.getMap().get(X));
     }
 
-    public TermDatabase getTermDatabaseWithRule(boolean misleading) {
+    public FactDatabase getTermDatabaseWithRule(boolean misleading) {
         ComplexTerm head = new ComplexTerm("loves", List.of(new Variable("X"), new Variable("Y")));
         ComplexTerm body1 = new ComplexTerm("likes", List.of(new Variable("X"), new Variable("Y")));
         ComplexTerm body2 = new ComplexTerm("likes", List.of(new Variable("Y"), new Variable("X")));
@@ -111,15 +109,15 @@ public class DbBacktrackingTests {
         if (misleading) facts.add(misleadingTerm);
         facts.addAll(List.of(f1, f2, rule));
 
-        TermDatabase db = new TermDatabase(facts);
-        db.finalizeDatabase();
+        FactDatabase db = new FactDatabase();
+        facts.forEach(db::addFact);
 
         return db;
     }
 
     @Test
     public void backtrackingRuleTest1() {
-        TermDatabase db = getTermDatabaseWithRule(false);
+        FactDatabase db = getTermDatabaseWithRule(false);
 
         ComplexTerm query = new ComplexTerm("loves", List.of(new Atom("john"), new Atom("mary")));
 
@@ -130,7 +128,7 @@ public class DbBacktrackingTests {
 
     @Test
     public void backtrackingRuleTest2() {
-        TermDatabase db = getTermDatabaseWithRule(false);
+        FactDatabase db = getTermDatabaseWithRule(false);
 
         Variable X = new Variable("X");
         ComplexTerm query = new ComplexTerm("loves", List.of(new Atom("john"), X));
@@ -143,7 +141,7 @@ public class DbBacktrackingTests {
 
     @Test
     public void backtrackingRuleTest3() {
-        TermDatabase db = getTermDatabaseWithRule(true);
+        FactDatabase db = getTermDatabaseWithRule(true);
 
         ComplexTerm query = new ComplexTerm("loves", List.of(new Atom("john"), new Atom("mary")));
 
@@ -154,7 +152,7 @@ public class DbBacktrackingTests {
 
     @Test
     public void backtrackingRuleTest4() {
-        TermDatabase db = getTermDatabaseWithRule(true);
+        FactDatabase db = getTermDatabaseWithRule(true);
 
         Variable X = new Variable("X");
         ComplexTerm query = new ComplexTerm("loves", List.of(new Atom("john"), X));

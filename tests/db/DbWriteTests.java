@@ -1,11 +1,11 @@
 package db;
 
-import engine.Rule;
-import engine.Substitution;
-import engine.TermDatabase;
-import engine.complex.ComplexTerm;
-import engine.complex.predicate.Write;
-import engine.simple.Atom;
+import interpreter.Rule;
+import interpreter.Substitution;
+import interpreter.FactDatabase;
+import interpreter.complex.ComplexTerm;
+import interpreter.complex.predicate.Write;
+import interpreter.simple.Atom;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,8 @@ public class DbWriteTests {
 
         Rule rule = new Rule(head, List.of(bodyTerm));
 
-        TermDatabase db = new TermDatabase(List.of(rule));
+        FactDatabase db = new FactDatabase();
+        db.addFact(rule);
 
         Substitution res = db.backtrack(head);
 

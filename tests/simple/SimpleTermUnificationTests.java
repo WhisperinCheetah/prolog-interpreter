@@ -1,8 +1,8 @@
 package simple;
 
-import engine.simple.Atom;
-import engine.simple.Number;
-import engine.simple.Variable;
+import interpreter.simple.Atom;
+import interpreter.simple.Number;
+import interpreter.simple.Variable;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

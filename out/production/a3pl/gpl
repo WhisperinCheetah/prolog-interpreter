@@ -4,5 +4,5 @@ cd ..
 
 mkdir -p out
 
-javac -cp "./lib/picocli-4.7.5.jar" -d out $(find ./src -name "*.java")
-#java -cp out:lib/picocli-4.7.5.jar Main "$@"
+javac -cp lib/*:. -d out $(find ./src -name "*.java")
+java -cp lib/*:out:. Main "$@"

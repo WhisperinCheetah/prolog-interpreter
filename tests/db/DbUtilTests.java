@@ -1,9 +1,9 @@
 package db;
 
-import engine.Term;
-import engine.TermDatabase;
-import engine.complex.ComplexTerm;
-import engine.simple.Atom;
+import interpreter.Term;
+import interpreter.FactDatabase;
+import interpreter.complex.ComplexTerm;
+import interpreter.simple.Atom;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,7 @@ public class DbUtilTests {
 
     @Test
     public void parseQueryTest() {
-        TermDatabase db = new TermDatabase();
+        FactDatabase db = new FactDatabase();
         String query = "likes(john,mary)";
 
         List<Term> parsedQuery = null;

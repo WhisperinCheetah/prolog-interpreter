@@ -1,0 +1,169 @@
+package interpreter;
+
+import interpreter.complex.ComplexTerm;
+import interpreter.complex.dynamic.Dynamic;
+import interpreter.complex.predicate.Predicate;
+import interpreter.directives.DynamicDirective;
+import parser.Parser;
+import parser.StringCleaner;
+import parser.TermParser;
+import interpreter.directives.Initialization;
+import interpreter.simple.Variable;
+
+import java.text.ParseException;
+import java.util.*;
+
+public class FactDatabase {
+
+    Initialization init;
+    List<Fact> facts;
+    Set<FunctorType> dynamics;
+
+    public FactDatabase() {
+        this.init = null;
+        this.facts = new ArrayList<>();
+        this.dynamics = new HashSet<>();
+    }
+
+    public void insertFact(Fact fact, int index) {
+        this.facts.add(index, fact);
+    }
+
+    public void addFact(Fact fact) {
+        facts.add(fact);
+    }
+
+    public void addInitialization(Initialization init) {
+        this.init = init;
+    }
+
+    public void addDynamic(DynamicDirective dynamic) {
+        this.dynamics.add(dynamic.getGoal().getType());
+    }
+
+    public boolean isDynamic(Fact fact) {
+        if (fact instanceof Rule rule) return dynamics.contains(rule.head.getType());
+        if (fact instanceof Predicate) return false;
+        if (fact instanceof Dynamic) return false;
+        if (fact instanceof ComplexTerm complexTerm) return dynamics.contains(complexTerm.getType());
+
+        return false;
+    }
+
+    public int size() {
+        return this.facts.size();
+    }
+
+    public List<Fact> getFacts() {
+        return this.facts;
+    }
+
+    public Set<FunctorType> getDynamics() {
+        return this.dynamics;
+    }
+
+    public List<FunctorType> getDynamicsList() {
+        return new ArrayList<>(this.dynamics);
+    }
+
+    public List<Term> parseQuery(String queryString) throws ParseException {
+        List<String> cleanStrings = Parser.splitByComma(queryString).stream().map(StringCleaner::cleanString).toList();
+
+        List<Term> queryTerms = new ArrayList<>();
+        for (String cleanTerm : cleanStrings) {
+            Optional<Term> term = TermParser.parse(cleanTerm);
+
+            if (term.isEmpty()) {
+                throw new ParseException("Could not parse query", 0);
+            }
+
+            queryTerms.add(term.get());
+        }
+
+        HashMap<String, Variable> varMap = new HashMap<>();
+        List<Term> renamedQueryTerms = queryTerms.stream().map(t -> t.renameVariables(varMap)).toList();
+
+        return renamedQueryTerms;
+    }
+
+    public Substitution backtrackRecursive(List<Term> queries, int index, Substitution substitution) {
+        if (index == queries.size() || substitution.isFailure()) {
+            return substitution;
+        }
+
+        Term query = queries.get(index).substituteVariables(substitution);
+
+        if (query instanceof Predicate predicate) {
+            return backtrackRecursive(queries, index + 1, substitution.unify(predicate.execute()));
+        }
+
+        if (query instanceof Dynamic dynamic) {
+            return backtrackRecursive(queries, index + 1, substitution.unify(dynamic.execute(this)));
+        }
+
+        for (Fact fact : facts) {
+            Fact rfact = fact.renameVariables(new HashMap<>());
+
+            Substitution res = rfact.unify(query);
+
+            if (res.isSuccess() && rfact instanceof Rule rule) {
+                Substitution ruleRes = backtrackRecursive(rule.getBody(), 0, res);
+
+                res = res.unify(ruleRes);
+            }
+
+            if (res.isSuccess()) {
+                Substitution recursiveRes = backtrackRecursive(queries, index+1, substitution.unify(res));
+
+                if (recursiveRes.isSuccess()) {
+                    return recursiveRes;
+                }
+            }
+        }
+
+        return Substitution.failure();
+    }
+
+    public Substitution backtrack(Term query) {
+        return backtrackRecursive(List.of(query), 0, Substitution.success());
+    }
+
+    public Substitution backtrackMultiple(List<Term> queries) {
+        return backtrackRecursive(queries, 0, Substitution.success());
+    }
+
+    public void runQuery(String queryString) throws ParseException {
+        Substitution initializationResult = this.runInitialization();
+
+        // System.out.println(initializationResult);
+
+        if (initializationResult.isFailure()) {
+            System.out.println("Initialization goal failed");
+            System.out.println(initializationResult);
+            return;
+        }
+
+        List<Term> query = this.parseQuery(queryString);
+
+        Substitution res = backtrackMultiple(query);
+
+        System.out.println(res);
+
+        System.out.println(res.toPrettyString(query));
+    }
+
+    public Substitution runInitialization() {
+        if (this.init == null) {
+            return Substitution.success();
+        }
+
+        return this.backtrack(this.init.getGoal());
+    }
+
+    public void nextState() {}
+
+    @Override
+    public String toString() {
+        return "TermDatabase " + facts;
+    }
+}
