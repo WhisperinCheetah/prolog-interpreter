@@ -52,6 +52,15 @@ public class Number extends SimpleTerm implements EvaluableExpression {
     }
 
     @Override
+    public String toPrettyString() {
+        if (value % 1 == 0) {
+            return String.valueOf((int)value);
+        }
+
+        return String.valueOf(value);
+    }
+
+    @Override
     public Number copy() {
         return new Number(value);
     }

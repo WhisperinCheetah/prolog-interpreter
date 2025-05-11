@@ -17,7 +17,7 @@ public class Write extends Predicate {
 
     @Override
     public Substitution execute() {
-        System.out.print(getArgs().getFirst());
+        System.out.print(getArgs().getFirst().toPrettyString());
 
         return Substitution.success();
     }

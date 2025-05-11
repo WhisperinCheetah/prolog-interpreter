@@ -12,5 +12,7 @@ public interface Term extends Fact {
     @Override
     Term substituteVariables(Substitution substitution);
 
+    String toPrettyString();
+
     Term copy();
 }

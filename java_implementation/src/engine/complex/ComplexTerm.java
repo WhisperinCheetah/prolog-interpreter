@@ -1,6 +1,7 @@
 package engine.complex;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import engine.*;
 import engine.simple.Atom;
@@ -117,6 +118,11 @@ public class ComplexTerm implements Term {
     public ComplexTerm substituteVariables(Substitution substitution) {
         List<Term> filledArgs = this.args.stream().map(t -> t.substituteVariables(substitution)).toList();
         return new ComplexTerm(this.type, filledArgs);
+    }
+
+    @Override
+    public String toPrettyString() {
+        return this.getFunctor() + "(" + args.stream().map(Term::toPrettyString).collect(Collectors.joining(", ")) + ")";
     }
 
     @Override

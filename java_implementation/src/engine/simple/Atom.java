@@ -57,6 +57,11 @@ public class Atom extends SimpleTerm {
     }
 
     @Override
+    public String toPrettyString() {
+        return value;
+    }
+
+    @Override
     public Atom copy() {
         return new Atom(value);
     }

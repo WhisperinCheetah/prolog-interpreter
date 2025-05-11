@@ -65,6 +65,11 @@ public abstract class BinaryExpression implements Term, EvaluableExpression {
     }
 
     @Override
+    public String toPrettyString() {
+        return this.argl + this.functor + this.argr;
+    }
+
+    @Override
     public String toString() {
         return functor + "(" + argl.toString() + "," + argr.toString() + ")";
     }

@@ -1,17 +1,5 @@
-age(robespierre, 25).
-age(danton, 29).
-age(marat, 35).
-age(camus, 22).
-age(desmoulins, 19).
+:- initialization(main).
 
-eligible_for_event(Person) :-
-    age(Person, Age),
-    between(20, 30, Age).
+main :- write('gpl zegt: '), groet(wereld), nl.
 
-:- initialization(list_eligible_members).
-
-list_eligible_members :-
-    eligible_for_event(Person),
-    write('Citizen '), write(Person), write(' is eligible for the event.'), nl,
-    fail.
-
+groet(X) :- write(dag(X)).

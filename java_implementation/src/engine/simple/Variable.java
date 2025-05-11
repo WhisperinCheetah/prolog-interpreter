@@ -57,6 +57,11 @@ public class Variable extends SimpleTerm implements EvaluableExpression {
     }
 
     @Override
+    public String toPrettyString() {
+        return name;
+    }
+
+    @Override
     public int hashCode() {
         return super.hashCode();
     }
