@@ -34,7 +34,7 @@ public class Number extends SimpleTerm implements EvaluableExpression {
     @Override
     public Unification unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
-        if (other instanceof Number num && value == num.value) return Unification.success();
+        if (other instanceof Number num) return Unification.fromBoolean(value == num.value);
 
         return Unification.failure();
     }

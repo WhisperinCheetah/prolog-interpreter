@@ -2,6 +2,7 @@ package interpreter.complex;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import interpreter.*;
 import interpreter.simple.Atom;
@@ -87,22 +88,20 @@ public class ComplexTerm implements Term {
     @Override
     public Unification unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
-        if (other instanceof Atom atom && this.getArity() == 0 && this.getFunctor().equals(atom.getValue())) return Unification.success();
+        if (other instanceof Atom atom) return Unification.fromBoolean(this.getArity() == 0 && this.getFunctor().equals(atom.getValue()));
         if (other instanceof SimpleTerm) return Unification.failure();
 
         ComplexTerm otherComplex = (ComplexTerm) other;
 
         if (!this.type.equals(otherComplex.getType())) return Unification.failure();
 
-        Unification unification = Unification.success();
-        for (int i = 0; i < getArity(); i++) {
-            Term argl = this.getArg(i).substituteVariables(unification);
-            Term argr = otherComplex.getArg(i).substituteVariables(unification);
-            Unification argUnification = argl.unify(argr);
-            unification = unification.unify(argUnification);
-        }
-
-        return unification;
+        return IntStream.range(0, getArity())
+                .mapToObj(i -> {
+                    Term left = getArg(i).substituteVariables(Unification.success());
+                    Term right = otherComplex.getArg(i).substituteVariables(Unification.success());
+                    return left.unify(right);
+                })
+                .reduce(Unification.success(), Unification::unify);
     }
 
     @Override

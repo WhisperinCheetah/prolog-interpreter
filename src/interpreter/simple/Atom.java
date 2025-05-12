@@ -37,9 +37,20 @@ public class Atom extends SimpleTerm {
 
     @Override
     public Unification unify(Term other) {
-        if (other instanceof Variable) return other.unify(this);
-        if (other instanceof Atom atom && this.value.equals(atom.value)) return Unification.success();
-        if (other instanceof ComplexTerm) return other.unify(this);
+        if (other instanceof Variable variable) {
+            return variable.unify(this);
+        }
+
+        if (other instanceof Atom) {
+            Atom atom = (Atom) other;
+            if (this.value.equals(atom.value)) {
+                return Unification.success();
+            }
+        }
+
+        if (other instanceof ComplexTerm complex) {
+            return complex.unify(this);
+        }
 
         return Unification.failure();
     }
