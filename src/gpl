@@ -1,13 +1,12 @@
 #!/bin/bash
 
-cd "$(dirname "$0")/.." || exit
-
 export JAVA_HOME=$(pwd)/jdk/jdk-21.0.6
 export PATH=$JAVA_HOME/bin:$PATH
 
 mkdir -p out
 
-echo $(ls -al)
+SRC=$(dirname "$0")
 
-jdk/jdk-21.0.6/bin/javac -cp lib/*:. -d out $(find ./src -name "*.java")
-jdk/jdk-21.0.6/bin/java -cp lib/*:out:. Main "$@"
+javac -cp $SRC/lib/*:. -d out $(find $SRC -name "*.java")
+java -cp $SRC/lib/*:out:. Main "$@"
+

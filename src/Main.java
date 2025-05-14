@@ -19,6 +19,9 @@ public class Main implements Runnable {
     @Option(names = {"-r", "--repl"}, description = "Start REPL")
     boolean repl;
 
+    @Option(names = {"-v", "--verbose"}, description="Enable verbosity")
+    boolean verbose;
+
     public static void main(String[] args) throws Exception {
         int exitCode = new CommandLine(new Main()).execute(args);
         System.exit(exitCode);
@@ -34,7 +37,6 @@ public class Main implements Runnable {
         }
     }
 
-
     /**
      * @return FactDatabase from a file if inputFile != null, otherwise empty
      */
@@ -43,10 +45,10 @@ public class Main implements Runnable {
             return new FactDatabase();
         }
 
-        Parser parser = new Parser(inputFile);
+        Parser parser = new Parser(inputFile, verbose);
 
         try {
-            return parser.parseProgram(true);
+            return parser.parseProgram();
         } catch (IOException e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();

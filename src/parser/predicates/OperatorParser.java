@@ -41,6 +41,7 @@ public class OperatorParser {
             BiFunction<Term, Term, Predicate> constructor
     ) {
         if (!test.apply(input)) {
+            System.out.println(input + " is not");
             return Optional.empty();
         }
 

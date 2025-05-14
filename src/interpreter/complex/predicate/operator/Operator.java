@@ -11,6 +11,7 @@ public abstract class Operator extends Predicate {
     }
 
     protected static boolean isOperator(String op, String input) {
+        System.out.println("Regex: " + "^" + op + "\\(.*,.*\\)");
         return input.matches("^" + op + "\\(.*,.*\\)");
     }
 

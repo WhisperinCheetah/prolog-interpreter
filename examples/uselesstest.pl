@@ -1,0 +1,1 @@
+did_not_get_an_a(Student):-grade(Student,Grade),Grade \= a

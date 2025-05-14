@@ -16,13 +16,15 @@ import java.util.function.Function;
 public class Parser {
 
     final String path;
+    boolean verbose;
 
     /**
      * Constructor that takes a file and creates a new Parser
      * @param path: path to input file
      */
-    public Parser(String path) {
+    public Parser(String path, boolean verbose) {
         this.path = path;
+        this.verbose = verbose;
 
         if (path == null) {
             throw new IllegalArgumentException("No path provided");
@@ -85,11 +87,10 @@ public class Parser {
      * 4. ComplexTerm
      * Each has its own class.
      *
-     * @param verbose: enable logging
      * @return a populated FactDatabase
      * @throws IOException if an exception occurred during I/O handling
      */
-    public FactDatabase parseProgram(boolean verbose) throws IOException {
+    public FactDatabase parseProgram() throws IOException {
         String dirtyProgram = new String(Files.readAllBytes(Paths.get(path))).trim();
         List<String> lines = Parser.splitByChar(dirtyProgram, '.').stream().map(StringCleaner::cleanString).filter(s -> !s.isEmpty()).toList();
 
