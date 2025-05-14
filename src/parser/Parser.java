@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Parser {
 
@@ -74,6 +75,17 @@ public class Parser {
 
     public static List<String> splitByComma(String input) {
         return splitByChar(input, ',');
+    }
+
+    public static List<String> splitBySemicolon(String input) {
+        return splitByChar(input, ';');
+    }
+
+    public static List<String> splitByCommaAndSemicolon(String input) {
+        List<String> splitByComma = splitByComma(input);
+        List<String> splitByBoth = splitByComma.stream().map(Parser::splitBySemicolon).flatMap(List::stream).toList();
+
+        return splitByBoth;
     }
 
     /**

@@ -20,7 +20,7 @@ public class RuleParser {
 
         ComplexTerm head = maybeHead.get();
 
-        List<String> bodyParts = Parser.splitByComma(headAndBody[1]);
+        List<String> bodyParts = Parser.splitByCommaAndSemicolon(headAndBody[1]);
         List<Term> body = new ArrayList<>();
         for (String bodyPart : bodyParts) {
             Optional<Term> term = TermParser.parseWithComplexTermPriority(bodyPart);

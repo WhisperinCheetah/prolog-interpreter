@@ -19,6 +19,10 @@ public abstract class Predicate extends ComplexTerm {
         super(functor, args);
     }
 
+    public Predicate(String s) {
+        super(s);
+    }
+
     public abstract Unification execute();
 
     @Override

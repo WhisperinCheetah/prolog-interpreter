@@ -160,7 +160,7 @@ public class StringCleaner {
         String head = headAndBody[0];
 
         String body = headAndBody[1];
-        List<String> bodyParts = Parser.splitByComma(body);
+        List<String> bodyParts = Parser.splitByCommaAndSemicolon(body);
         String cleanedBody = bodyParts.stream().map(StringCleaner::_convertToPrefix).collect(Collectors.joining(","));
 
         return head + ":-" + cleanedBody;

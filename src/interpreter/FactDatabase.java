@@ -95,7 +95,7 @@ public class FactDatabase {
      * @throws ParseException If the input could not be parsed
      */
     public List<Term> parseQuery(String queryString) throws ParseException {
-        List<String> cleanStrings = Parser.splitByComma(queryString).stream().map(StringCleaner::cleanString).toList();
+        List<String> cleanStrings = Parser.splitByCommaAndSemicolon(queryString).stream().map(StringCleaner::cleanString).toList();
 
         List<Term> queryTerms = new ArrayList<>();
         for (String cleanTerm : cleanStrings) {
@@ -143,9 +143,20 @@ public class FactDatabase {
             Unification res = rfact.unify(query);
 
             if (res.isSuccess() && rfact instanceof Rule rule) {
-                Unification ruleRes = backtrackRecursive(rule.getBody(), 0, res);
+                // Unification ruleRes = backtrackRecursive(rule.getBody(), 0, res);
 
-                res = res.unify(ruleRes);
+                // res = res.unify(ruleRes);
+
+                List<Term> mergedQueries = new ArrayList<>(queries);
+                mergedQueries.addAll(index + 1, rule.getBody());
+
+                Unification recursiveRes = backtrackRecursive(mergedQueries, index + 1, res);
+
+                res = res.unify(recursiveRes);
+
+                if (recursiveRes.isSuccess()) {
+                    return recursiveRes;
+                }
             }
 
             if (res.isSuccess()) {

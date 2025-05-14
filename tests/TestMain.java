@@ -4,6 +4,7 @@ import interpreter.simple.Atom;
 import interpreter.simple.Variable;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestMain {
@@ -28,4 +29,12 @@ public class TestMain {
         System.out.println(sub);
     }
 
+    @Test
+    public void test3() {
+        List<String> l = List.of("a", "b", "c");
+        List<String> dup = new ArrayList<>(l);
+        dup.addAll(1, List.of("f", "g"));
+
+        System.out.println(dup);
+    }
 }

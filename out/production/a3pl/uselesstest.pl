@@ -1,1 +1,9 @@
-did_not_get_an_a(Student):-grade(Student,Grade),Grade \= a
+leq(0, _).
+leq(s(X), s(Y)) :- leq(X, Y).
+
+:- initialization(main).
+
+main :-
+    leq(X, s(s(s(0)))),
+    write(X), nl,
+    fail.

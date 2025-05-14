@@ -1,6 +1,7 @@
 package parser.predicates;
 
 import interpreter.Term;
+import interpreter.complex.predicate.Predicate;
 import interpreter.complex.predicate.Write;
 import parser.TermParser;
 
@@ -20,7 +21,7 @@ public class WriteParser {
         return new Write(arg.get());
     }
 
-    public static Optional<Write> parse(String input) {
+    public static Optional<Predicate> parse(String input) {
         if (Write.isWrite(input)) {
             return Optional.of(parseWrite(input));
         }

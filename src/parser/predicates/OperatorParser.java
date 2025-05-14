@@ -22,7 +22,7 @@ public class OperatorParser {
         List<String> argsString = Parser.splitByComma(argString);
 
         if (argsString.size() != 2) {
-            throw new RuntimeException("Invalid number of arguments in operator expression: " + argString);
+            throw new RuntimeException("Invalid number of arguments in operator. Found " + argsString.size() + " but expected 2 in " + input);
         }
 
         Optional<Term> argl = TermParser.parseWithComplexTermPriority(argsString.getFirst());
@@ -41,7 +41,6 @@ public class OperatorParser {
             BiFunction<Term, Term, Predicate> constructor
     ) {
         if (!test.apply(input)) {
-            System.out.println(input + " is not");
             return Optional.empty();
         }
 

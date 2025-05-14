@@ -16,8 +16,7 @@ public class NotUnify extends Operator {
     }
 
     public static boolean isNotUnify(String input) {
-        System.out.println("input is not unify? " + Operator.isOperator("\\=", input));
-        return Operator.isOperator("\\=", input);
+        return Operator.isOperator("\\\\=", input);
     }
 
     @Override

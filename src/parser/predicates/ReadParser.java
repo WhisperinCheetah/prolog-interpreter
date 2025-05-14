@@ -1,6 +1,7 @@
 package parser.predicates;
 
 import interpreter.Term;
+import interpreter.complex.predicate.Predicate;
 import interpreter.complex.predicate.Read;
 import parser.TermParser;
 
@@ -22,7 +23,7 @@ public class ReadParser {
         return new Read(arg);
     }
 
-    public static Optional<Read> parse(String input) {
+    public static Optional<Predicate> parse(String input) {
         if (Read.isRead(input)) {
             return Optional.of(parseRead(input));
         }

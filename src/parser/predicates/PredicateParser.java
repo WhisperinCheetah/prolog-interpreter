@@ -2,10 +2,7 @@ package parser.predicates;
 
 import interpreter.Term;
 import interpreter.complex.expression.EvaluableExpression;
-import interpreter.complex.predicate.Between;
-import interpreter.complex.predicate.Is;
-import interpreter.complex.predicate.Predicate;
-import interpreter.complex.predicate.Succ;
+import interpreter.complex.predicate.*;
 import parser.ExpressionParser;
 import parser.Parser;
 import parser.TermParser;
@@ -14,6 +11,7 @@ import interpreter.simple.Variable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class PredicateParser {
 
@@ -57,6 +55,14 @@ public class PredicateParser {
         return args;
     }
 
+    public static Optional<Predicate> parseNL(String input) {
+        if (NL.isNL(input)) {
+            return Optional.of(new NL());
+        }
+
+        return Optional.empty();
+    }
+
     public static Optional<Predicate> parseIs(String input) {
         if (!Is.isIs(input)) {
             return Optional.empty();
@@ -87,6 +93,14 @@ public class PredicateParser {
         return Optional.of(new Between(args));
     }
 
+    public static Optional<Predicate> parseCut(String input) {
+        if (!Cut.isCut(input)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new Cut());
+    }
+
 
     /**
      * Tries to parse following predicates in order:
@@ -98,41 +112,24 @@ public class PredicateParser {
      * 7. Is
      * 8. Succ
      * 9. Between
+     * 10. Cut
      *
      * @param input A line of input
      * @return A Predicate if the line is a predicate
      */
     public static Optional<Predicate> parse(String input) {
-        Optional<Predicate> predicate = WriteParser.parse(input).map(w -> w);
+        List<Function<String, Optional<Predicate>>> functionStack = List.of(
+                WriteParser::parse,
+                ReadParser::parse,
+                PredicateParser::parseNL,
+                FailParser::parse,
+                OperatorParser::parse,
+                PredicateParser::parseIs,
+                PredicateParser::parseSucc,
+                PredicateParser::parseBetween,
+                PredicateParser::parseCut
+        );
 
-        if (predicate.isEmpty()) {
-            predicate = ReadParser.parse(input).map(r -> r);
-        }
-
-        if (predicate.isEmpty()) {
-            predicate = NLParser.parse(input).map(n -> n);
-        }
-
-        if (predicate.isEmpty()) {
-            predicate = FailParser.parse(input).map(f -> f);
-        }
-
-        if (predicate.isEmpty()) {
-            predicate = OperatorParser.parse(input);
-        }
-
-        if (predicate.isEmpty()) {
-            predicate = parseIs(input);
-        }
-
-        if (predicate.isEmpty()) {
-            predicate = parseSucc(input);
-        }
-
-        if (predicate.isEmpty()) {
-            predicate = parseBetween(input);
-        }
-
-        return predicate;
+        return Parser.parseStack(input, functionStack);
     }
 }

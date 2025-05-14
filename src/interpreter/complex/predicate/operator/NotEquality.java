@@ -16,7 +16,7 @@ public class NotEquality extends Operator {
     }
 
     public static boolean isNotEquality(String input) {
-        return Operator.isOperator("\\==", input);
+        return Operator.isOperator("\\\\==", input);
     }
 
     @Override
