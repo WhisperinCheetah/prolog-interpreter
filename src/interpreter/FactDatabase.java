@@ -143,14 +143,10 @@ public class FactDatabase {
             Unification res = rfact.unify(query);
 
             if (res.isSuccess() && rfact instanceof Rule rule) {
-                // Unification ruleRes = backtrackRecursive(rule.getBody(), 0, res);
-
-                // res = res.unify(ruleRes);
-
                 List<Term> mergedQueries = new ArrayList<>(queries);
                 mergedQueries.addAll(index + 1, rule.getBody());
 
-                Unification recursiveRes = backtrackRecursive(mergedQueries, index + 1, res);
+                Unification recursiveRes = backtrackRecursive(mergedQueries, index + 1, unification.unify(res));
 
                 res = res.unify(recursiveRes);
 

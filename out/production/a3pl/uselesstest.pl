@@ -4,6 +4,6 @@ leq(s(X), s(Y)) :- leq(X, Y).
 :- initialization(main).
 
 main :-
-    leq(X, s(s(s(0)))),
-    write(X), nl,
+    leq(MainX, s(s(s(0)))),
+    write(MainX), nl,
     fail.
