@@ -17,7 +17,7 @@ public class Cut extends Predicate {
 
     @Override
     public Unification execute() {
-        return Unification.success();
+        return Unification.cut();
     }
 
     @Override

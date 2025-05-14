@@ -22,7 +22,7 @@ public class Equality extends Operator {
 
     @Override
     public Unification execute() {
-        return new Unification(argl().unify(argr()).isSuccess());
+        return new Unification(argl().equals(argr()));
     }
 
     @Override

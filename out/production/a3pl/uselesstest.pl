@@ -1,9 +1,20 @@
-leq(0, _).
-leq(s(X), s(Y)) :- leq(X, Y).
+check_equal(X, Y) :-
+    X = Y,
+    write('X = Y succeeded'), nl.
+
+check_identical(X, Y) :-
+    X == Y, !,
+    write('X == Y succeeded'), nl.
+
+check_identical(_, _) :-
+    write('X == Y failed'), nl.
 
 :- initialization(main).
 
 main :-
-    leq(MainX, s(s(s(0)))),
-    write(MainX), nl,
-    fail.
+    check_identical(A, 13),
+    check_equal(A, 13),
+    check_identical(A, 13),
+    check_equal(42, 42),
+    check_identical(42, 42).
+

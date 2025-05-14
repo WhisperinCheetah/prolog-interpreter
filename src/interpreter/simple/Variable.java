@@ -39,6 +39,8 @@ public class Variable extends SimpleTerm implements EvaluableExpression {
 
     @Override
     public Term renameVariables(HashMap<String, Variable> map) {
+        if (this.name.equals("_")) return this;
+
         if (!map.containsKey(this.name)) map.put(this.name, this.copy());
 
         return map.get(this.name);

@@ -130,6 +130,10 @@ public class FactDatabase {
 
         Term query = queries.get(index).substituteVariables(unification);
 
+        if (query instanceof Cut) {
+            return Unification.cut().unify(backtrackRecursive(queries, index + 1, unification));
+        }
+
         if (query instanceof Predicate predicate) {
             return backtrackRecursive(queries, index + 1, unification.unify(predicate.execute()));
         }
@@ -151,7 +155,7 @@ public class FactDatabase {
 
                 res = res.unify(recursiveRes);
 
-                if (recursiveRes.isSuccess()) {
+                if (recursiveRes.isSuccess() || recursiveRes.isCut()) {
                     return recursiveRes;
                 }
             }
@@ -159,13 +163,13 @@ public class FactDatabase {
             if (res.isSuccess()) {
                 Unification recursiveRes = backtrackRecursive(queries, index+1, unification.unify(res));
 
-                if (recursiveRes.isSuccess()) {
+                if (recursiveRes.isSuccess() || recursiveRes.isCut()) {
                     return recursiveRes;
                 }
             }
         }
 
-        return Unification.failure();
+        return Unification.failure(unification.isCut());
     }
 
     public Unification backtrack(Term query) {
