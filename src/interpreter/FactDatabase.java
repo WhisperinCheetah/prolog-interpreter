@@ -2,6 +2,7 @@ package interpreter;
 
 import interpreter.complex.ComplexTerm;
 import interpreter.complex.dynamic.Dynamic;
+import interpreter.complex.predicate.Cut;
 import interpreter.complex.predicate.Predicate;
 import interpreter.directives.DynamicDirective;
 import parser.Parser;
