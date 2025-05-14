@@ -116,7 +116,8 @@ public class FactDatabase {
     }
 
     /**
-     * The heart of the database. Tries to backtrack a (multiple) query(s) and returns their unification.
+     * This function is the beating heart of the interpreter. It recursively backtracks a list of queries that
+     * need to be unified in the database.
      *
      * @param queries A list of queries that need to get unified
      * @param index Current query index
@@ -172,10 +173,22 @@ public class FactDatabase {
         return Unification.failure(unification.isCut());
     }
 
+    /**
+     * Helper-function for starting a recursive backtrack from a single query
+     *
+     * @param query the query to be backtracked
+     * @return a Unification
+     */
     public Unification backtrack(Term query) {
         return backtrackRecursive(List.of(query), 0, Unification.success());
     }
 
+    /**
+     * Helper-function for starting a recursive backtrack from multiple queries
+     *
+     * @param queries a list of queries
+     * @return a Unification
+     */
     public Unification backtrackMultiple(List<Term> queries) {
         return backtrackRecursive(queries, 0, Unification.success());
     }
