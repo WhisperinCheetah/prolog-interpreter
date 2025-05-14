@@ -21,7 +21,7 @@ public class NotEquality extends Operator {
 
     @Override
     public Unification execute() {
-        return new Unification(argl().unify(argr()).isFailure());
+        return new Unification(!argl().equals(argr()));
     }
 
     @Override
