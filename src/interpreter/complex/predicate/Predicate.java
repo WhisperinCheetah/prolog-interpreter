@@ -23,11 +23,17 @@ public abstract class Predicate extends ComplexTerm {
         super(s);
     }
 
+    /**
+     * Predicates usually need to execute something (like a Write or a Fail). This gets called when trying to backtrack
+     * any Predicate.
+     *
+     * @return a Unification
+     */
     public abstract Unification execute();
 
     @Override
     public Predicate renameVariables(HashMap<String, Variable> map) {
-        Predicate copy = (Predicate) this.copy();
+        Predicate copy = this.copy();
 
         copy.setArgs(this.getArgs().stream().map(t -> t.renameVariables(map)).toList());
 

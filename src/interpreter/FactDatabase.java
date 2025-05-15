@@ -2,7 +2,7 @@ package interpreter;
 
 import interpreter.complex.ComplexTerm;
 import interpreter.complex.dynamic.Dynamic;
-import interpreter.complex.predicate.Cut;
+import interpreter.complex.predicate.builtins.Cut;
 import interpreter.complex.predicate.Predicate;
 import interpreter.directives.DynamicDirective;
 import parser.Parser;
@@ -141,15 +141,15 @@ public class FactDatabase {
         Term query = queries.get(index).substituteVariables(unification);
 
         if (query instanceof Cut) {
-            return Unification.cut().unify(backtrackRecursive(queries, index + 1, unification));
+            return Unification.cut().merge(backtrackRecursive(queries, index + 1, unification));
         }
 
         if (query instanceof Predicate predicate) {
-            return backtrackRecursive(queries, index + 1, unification.unify(predicate.execute()));
+            return backtrackRecursive(queries, index + 1, unification.merge(predicate.execute()));
         }
 
         if (query instanceof Dynamic dynamic) {
-            return backtrackRecursive(queries, index + 1, unification.unify(dynamic.execute(this)));
+            return backtrackRecursive(queries, index + 1, unification.merge(dynamic.execute(this)));
         }
 
         // iterate over all facts in the database
@@ -167,9 +167,9 @@ public class FactDatabase {
                 List<Term> mergedQueries = new ArrayList<>(queries);
                 mergedQueries.addAll(index + 1, rule.getBody());
 
-                Unification recursiveRes = backtrackRecursive(mergedQueries, index + 1, unification.unify(res));
+                Unification recursiveRes = backtrackRecursive(mergedQueries, index + 1, unification.merge(res));
 
-                res = res.unify(recursiveRes);
+                res = res.merge(recursiveRes);
 
                 if (recursiveRes.isSuccess() || recursiveRes.isCut()) {
                     return recursiveRes;
@@ -178,7 +178,7 @@ public class FactDatabase {
 
             // otherwise if it's just a success, go on to the next item in the query list
             if (res.isSuccess()) {
-                Unification recursiveRes = backtrackRecursive(queries, index+1, unification.unify(res));
+                Unification recursiveRes = backtrackRecursive(queries, index+1, unification.merge(res));
 
                 if (recursiveRes.isSuccess() || recursiveRes.isCut()) {
                     return recursiveRes;
@@ -246,8 +246,6 @@ public class FactDatabase {
 
         return this.backtrack(this.init.getGoal());
     }
-
-    public void nextState() {}
 
     @Override
     public String toString() {

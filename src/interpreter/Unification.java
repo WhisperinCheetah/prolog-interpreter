@@ -5,6 +5,10 @@ import interpreter.simple.Variable;
 
 import java.util.*;
 
+/**
+ * The Unification class holds information from unifying terms. It keeps a variable map and a boolean that
+ * tells if the unification was a success or not. It also remembers if the backtracking was cut.
+ */
 public class Unification {
     private final boolean isCut;
     private final boolean success;
@@ -58,7 +62,17 @@ public class Unification {
         return new Unification(true, new HashMap<>(), true);
     }
 
-    public Unification unify(Unification other) {
+    /**
+     * Tries to merge two Unification objects.
+     * If either is a failure return a failure
+     * Try to add all entries from one's map to the others. If there are collisions that don't have the same
+     * substitution, return a failure
+     * Return a new Unification from the merged maps.
+     *
+     * @param other the unification to be merged with
+     * @return a merged unification between this and other
+     */
+    public Unification merge(Unification other) {
         if (this.isFailure() || other.isFailure()) return Unification.failure(this.isCut || other.isCut);
         HashMap<Variable, Term> map = new HashMap<>(this.varTermMap);
         for (Map.Entry<Variable, Term> entry : other.varTermMap.entrySet()) {
@@ -86,10 +100,6 @@ public class Unification {
 
     public HashMap<Variable, Term> getMap() {
         return varTermMap;
-    }
-
-    public void insert(Variable var, Term term) {
-        varTermMap.put(var, term);
     }
 
     public String toPrettyString(List<Term> queries) {

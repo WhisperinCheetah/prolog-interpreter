@@ -12,7 +12,12 @@ public interface Term extends Fact {
     @Override
     Term substituteVariables(Unification unification);
 
+
+    /**
+     * @return a prettified toString of the term
+     */
     String toPrettyString();
 
+    @Override
     Term copy();
 }

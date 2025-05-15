@@ -3,12 +3,12 @@ package parser.predicates;
 import interpreter.Term;
 import interpreter.complex.expression.EvaluableExpression;
 import interpreter.complex.predicate.*;
+import interpreter.complex.predicate.builtins.*;
 import parser.ExpressionParser;
 import parser.Parser;
 import parser.TermParser;
 import parser.simples.NumberParser;
 import parser.simples.VariableParser;
-import interpreter.simple.Variable;
 
 import java.util.List;
 import java.util.Optional;

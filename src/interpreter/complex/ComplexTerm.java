@@ -85,6 +85,18 @@ public class ComplexTerm implements Term {
         return vars;
     }
 
+
+    /**
+     * Tries to unify this ComplexTerm with another Term
+     * If the Term is a Variable, call the Variable implementation of unify
+     * If the Term is an Atom, return true if the FunctorType is (variable's name, arity 0)
+     * If it's another SimpleTerm return a failure
+     * otherwise
+     * Check if the types are the same and do a pair-wise unification of all arguments
+     *
+     * @param other The Term to get unified with
+     * @return A Unification
+     */
     @Override
     public Unification unify(Term other) {
         if (other instanceof Variable) return other.unify(this);
@@ -101,7 +113,7 @@ public class ComplexTerm implements Term {
                     Term right = otherComplex.getArg(i).substituteVariables(Unification.success());
                     return left.unify(right);
                 })
-                .reduce(Unification.success(), Unification::unify);
+                .reduce(Unification.success(), Unification::merge);
     }
 
     @Override

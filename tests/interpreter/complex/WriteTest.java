@@ -1,6 +1,6 @@
 package interpreter.complex;
 
-import interpreter.complex.predicate.Write;
+import interpreter.complex.predicate.builtins.Write;
 import interpreter.simple.Atom;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

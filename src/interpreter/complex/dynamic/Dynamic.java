@@ -7,6 +7,10 @@ import interpreter.simple.Variable;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Abstract class Dynamic is similar to predicate but the execute function requires access to the FactDatabase,
+ * so this is a different abstract class.
+ */
 public abstract class Dynamic extends ComplexTerm {
 
     protected Fact arg;
@@ -16,11 +20,18 @@ public abstract class Dynamic extends ComplexTerm {
         this.arg = arg;
     }
 
+
+    /**
+     * Executes the dynamic predicate. Adding or retracting a fact from the FactDatabase.
+     *
+     * @param db the FactDatabase
+     * @return a Unification (can fail)
+     */
     public abstract Unification execute(FactDatabase db);
 
     @Override
     public Dynamic renameVariables(HashMap<String, Variable> map) {
-        Dynamic copy = (Dynamic) this.copy();
+        Dynamic copy = this.copy();
 
         copy.setArgs(copy.getArgs().stream().map(t -> t.renameVariables(map)).toList());
         copy.arg = arg.renameVariables(map);
@@ -30,7 +41,7 @@ public abstract class Dynamic extends ComplexTerm {
 
     @Override
     public Dynamic substituteVariables(Unification unification) {
-        Dynamic copy = (Dynamic) this.copy();
+        Dynamic copy = this.copy();
 
         copy.setArgs(copy.getArgs().stream().map(t -> t.substituteVariables(unification)).toList());
         copy.arg = arg.substituteVariables(unification);

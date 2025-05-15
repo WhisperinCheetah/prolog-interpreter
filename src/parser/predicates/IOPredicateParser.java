@@ -1,10 +1,10 @@
 package parser.predicates;
 
 import interpreter.Term;
-import interpreter.complex.predicate.NL;
+import interpreter.complex.predicate.builtins.NL;
 import interpreter.complex.predicate.Predicate;
-import interpreter.complex.predicate.Read;
-import interpreter.complex.predicate.Write;
+import interpreter.complex.predicate.builtins.Read;
+import interpreter.complex.predicate.builtins.Write;
 import parser.Parser;
 import parser.TermParser;
 

@@ -40,6 +40,12 @@ public class StringCleaner {
         return result.toString();
     }
 
+    /**
+     * Converts an expression (combination of (, ), +, -, *, /) to prefix notation
+     *
+     * @param expr a line of input that's an expression
+     * @return prefix notation
+     */
     public static String infixToFunctionalPrefix(String expr) {
         String noWhitespace = StringCleaner.removeAllWhitespaces(expr);
 
@@ -100,6 +106,12 @@ public class StringCleaner {
     }
 
 
+    /**
+     * Converts input operator to prefix notation
+     *
+     * @param input a line of input
+     * @return the line of input in prefix notation
+     */
     public static String _convertToPrefix(String input) {
         String[] operators = {"==", "\\==", "=", "\\=", " is "};
         int parenDepth = 0;
@@ -144,6 +156,8 @@ public class StringCleaner {
     }
 
     /**
+     * Helper function that differentiates between Rule and other lines, then calls _convertToPrefix
+     *
      * @param input A line of input, possible with some infix notation
      * @return A line of input with the possible infix notation converted to prefix notation
      */
@@ -197,11 +211,8 @@ public class StringCleaner {
 
             if (inQuotes) {
                 output.append(c);
-                continue;
             } else {
-                if (c == ' ' && input.charAt(i + 1) == ' ') {
-                    continue;
-                } else {
+                if (!(c == ' ' && input.charAt(i + 1) == ' ')) {
                     output.append(c);
                 }
             }
@@ -209,7 +220,7 @@ public class StringCleaner {
 
         output.append(input.charAt(input.length() - 1));
 
-        return output.toString(); // TODO
+        return output.toString();
     }
 
 
@@ -240,11 +251,8 @@ public class StringCleaner {
 
             if (inQuotes) {
                 output.append(c);
-                continue;
             } else {
-                if (c == ' ') {
-                    continue;
-                } else {
+                if (!(c == ' ')) {
                     output.append(c);
                 }
             }
@@ -258,10 +266,13 @@ public class StringCleaner {
 
     /**
      * This function takes a dirty line with whitespace and infix notation and does the following things:
-     * 1. Removes trailing '.'
-     * 2. Converts ':-dynamic <functor>' to ':-dynamic(<functor>)'
-     * 3. Converts infix (e.g. 3 + 2) to prefix (e.g. +(3,2))
-     * 4. Removes all whitespace from non-quotes
+     * 1. Trims the line
+     * 2. Tries to remove a trailing '.'
+     * 3. Removes all non-space whitespace characters
+     * 4. Removes all non-single spaces
+     * 5. Converts ':- dynamic functor/arity' to ':- dynamic(functor/arity)'
+     * 6. Convert =, \=, ==, \== and is/2 to prefix notation, also converts right-hand expression of is/2 to prefix
+     * 7. Removes all other whitespace
      *
      * @param input A line of input
      * @return A cleaned up line of input

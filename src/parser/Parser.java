@@ -21,8 +21,9 @@ public class Parser {
     boolean verbose;
 
     /**
-     * Constructor that takes a file and creates a new Parser
-     * @param path: path to input file
+     * Constructor that takes a file and creates a new Parser with that file
+     *
+     * @param path Input file
      */
     public Parser(String path, boolean verbose) {
         this.path = path;
@@ -33,6 +34,16 @@ public class Parser {
         }
     }
 
+
+    /**
+     * Takes a list of functions that return an optional result of type T, applies them all and takes the result
+     * of the first function that succeeded.
+     *
+     * @param input a line of input
+     * @param parserStack the list of functions
+     * @param <T> the return type
+     * @return maybe a result of type T
+     */
     public static <T> Optional<T> parseStack(String input, List<Function<String, Optional<T>>> parserStack) {
         return parserStack.stream()
                 .map(parser -> parser.apply(input))
@@ -41,6 +52,13 @@ public class Parser {
                 .findFirst();
     }
 
+    /**
+     * Splits a line by a certain character 'delimiter'. Does not split when between quotes or brackets.
+     *
+     * @param input a line of input
+     * @param delimiter the character to be split by
+     * @return a list of split lines
+     */
     public static List<String> splitByChar(String input, char delimiter) {
         ArrayList<String> splitArgsStrings = new ArrayList<>();
         int openBracketCounter = 0;

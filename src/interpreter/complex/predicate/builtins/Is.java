@@ -1,8 +1,9 @@
-package interpreter.complex.predicate;
+package interpreter.complex.predicate.builtins;
 
 import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.expression.EvaluableExpression;
+import interpreter.complex.predicate.Predicate;
 import interpreter.simple.Number;
 import interpreter.simple.Variable;
 

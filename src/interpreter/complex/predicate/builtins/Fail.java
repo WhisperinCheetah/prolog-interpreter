@@ -1,6 +1,7 @@
-package interpreter.complex.predicate;
+package interpreter.complex.predicate.builtins;
 
 import interpreter.Unification;
+import interpreter.complex.predicate.Predicate;
 
 import java.util.List;
 

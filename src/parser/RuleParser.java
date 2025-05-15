@@ -37,6 +37,8 @@ public class RuleParser {
 
 
     /**
+     * Tries to parse a Rule
+     *
      * @param input a line as input
      * @return A rule if the line is a rule, empty if it isn't
      */

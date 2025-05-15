@@ -4,7 +4,7 @@ import interpreter.Rule;
 import interpreter.Unification;
 import interpreter.FactDatabase;
 import interpreter.complex.ComplexTerm;
-import interpreter.complex.predicate.Write;
+import interpreter.complex.predicate.builtins.Write;
 import interpreter.simple.Atom;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,10 +1,7 @@
-package interpreter.complex.predicate;
+package interpreter.complex.predicate.builtins;
 
-import interpreter.FunctorType;
-import interpreter.Term;
 import interpreter.Unification;
-
-import java.util.List;
+import interpreter.complex.predicate.Predicate;
 
 public class Cut extends Predicate {
     public Cut() {

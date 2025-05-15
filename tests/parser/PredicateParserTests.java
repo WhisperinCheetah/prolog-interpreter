@@ -4,6 +4,7 @@ import interpreter.complex.ComplexTerm;
 import interpreter.complex.dynamic.*;
 import interpreter.complex.expression.Addition;
 import interpreter.complex.predicate.*;
+import interpreter.complex.predicate.builtins.*;
 import interpreter.simple.Atom;
 import interpreter.simple.Number;
 import interpreter.simple.Variable;

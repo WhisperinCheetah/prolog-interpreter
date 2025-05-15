@@ -1,5 +1,8 @@
 package interpreter;
 
+/**
+ * A FunctorType which holds a functor string and an arity.
+ */
 public class FunctorType {
     public final String functor;
     public final int arity;
