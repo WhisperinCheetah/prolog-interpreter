@@ -123,7 +123,8 @@ public class Parser {
      */
     public FactDatabase parseProgram() throws IOException {
         String dirtyProgram = new String(Files.readAllBytes(Paths.get(path))).trim();
-        List<String> lines = Parser.splitByChar(dirtyProgram, '.').stream().map(StringCleaner::cleanString).filter(s -> !s.isEmpty()).toList();
+        String commentlessDirtyProgram = StringCleaner.removeCommentsFromProgram(dirtyProgram);
+        List<String> lines = Parser.splitByChar(commentlessDirtyProgram, '.').stream().map(StringCleaner::cleanString).filter(s -> !s.isEmpty()).toList();
 
         FactDatabase db = new FactDatabase();
 

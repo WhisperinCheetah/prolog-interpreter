@@ -150,4 +150,28 @@ public class CleanStringTests {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void removeCommentsTest1() {
+        String input = "let me just % dit gaat weg gaan";
+        String actual = StringCleaner.removeCommentsFromProgram(input);
+
+        assertEquals("let me just ", actual);
+    }
+
+    @Test
+    public void removeCommentsTest2() {
+        String input = "dit staat in '% quotes' % dit niet";
+        String actual = StringCleaner.removeCommentsFromProgram(input);
+
+        assertEquals("dit staat in '% quotes' ", actual);
+    }
+
+    @Test
+    public void removeCommentsTest3() {
+        String input = "let me just % dit gaat weg gaan\n dit niet % maar dit wel";
+        String actual = StringCleaner.removeCommentsFromProgram(input);
+
+        assertEquals("let me just \n dit niet ", actual);
+    }
 }

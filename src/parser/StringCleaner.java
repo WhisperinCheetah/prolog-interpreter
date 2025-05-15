@@ -2,6 +2,7 @@ package parser;
 
 import interpreter.Rule;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Function;
@@ -293,5 +294,42 @@ public class StringCleaner {
         return functionStack.stream()
                 .reduce(Function.identity(), Function::andThen)
                 .apply(input);
+    }
+
+    private static String removeCommentFromLine(String line) {
+        char quoteChar = '\0';
+        int bracketCount = 0;
+        boolean inQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (!inQuotes && (c == '\'' || c == '"')) {
+                inQuotes = true;
+                quoteChar = c;
+            } else if (inQuotes && c == quoteChar) {
+                inQuotes = false;
+                quoteChar = '\0';
+            }
+
+            if (inQuotes) continue;
+
+            if (c == '(') bracketCount++;
+            else if (c == ')') bracketCount--;
+
+            // cut from here
+            if (bracketCount == 0 && !inQuotes && c == '%') {
+                return line.substring(0, i);
+            }
+        }
+
+        return line;
+    }
+
+    public static String removeCommentsFromProgram(String program) {
+        List<String> lines = List.of(program.split("\n"));
+        List<String> cleanLines = lines.stream().map(StringCleaner::removeCommentFromLine).toList();
+
+        return String.join("\n", cleanLines);
     }
 }
