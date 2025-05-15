@@ -1,4 +1,0 @@
-#!/bin/bash
-
-javac -d java_implementation/out $(find java_implementation/src -name "*.java")
-java -cp java_implementation/out Main "s@"
