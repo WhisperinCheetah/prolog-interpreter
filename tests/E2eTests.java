@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class E2eTests {
 
+    /**
+     * Does not contain test files that rely on disjunction (;/2) operator.
+     */
     private final List<String> paths = List.of(
             "examples/basics/arithmetics.pl",
             "examples/basics/backtracking.pl",
@@ -46,7 +49,7 @@ public class E2eTests {
         command.add("halt.");
 
         ProcessBuilder pb = new ProcessBuilder(command);
-        pb.redirectError(ProcessBuilder.Redirect.to(new File("/dev/null"))); // Merge stderr with stdout
+        pb.redirectError(ProcessBuilder.Redirect.to(new File("/dev/null"))); // disable warnings the easy way
         Process process = pb.start();
 
         StringBuilder result = new StringBuilder();

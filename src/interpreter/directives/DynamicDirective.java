@@ -13,4 +13,9 @@ public class DynamicDirective extends Directive{
     public static boolean isDynamic(String input) {
         return input.matches("^:-dynamic\\(.*\\)");
     }
+
+    @Override
+    public String toPrettyString() {
+        return ":- dynamic " + goal.getType();
+    }
 }

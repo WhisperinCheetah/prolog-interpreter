@@ -16,4 +16,6 @@ public abstract class Directive {
     public static boolean isDirective(String line) {
         return line.startsWith(":-");
     }
+
+    public abstract String toPrettyString();
 }

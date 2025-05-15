@@ -16,6 +16,10 @@ public class Between extends Predicate {
         }
     }
 
+    public Between(Term arg1, Term arg2, Term arg3) {
+        super("between", List.of(arg1, arg2, arg3), 3);
+    }
+
     public static boolean isBetween(String input) {
         return input.matches("^between\\(.*,.*,.*\\)");
     }

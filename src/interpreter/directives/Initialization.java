@@ -10,4 +10,9 @@ public class Initialization extends Directive {
     public static boolean isInitialization(String input) {
         return input.matches("^:-initialization\\(.*\\)");
     }
+
+    @Override
+    public String toPrettyString() {
+        return ":- initialization(" + goal + ")";
+    }
 }

@@ -6,6 +6,7 @@ import interpreter.complex.predicate.*;
 import parser.ExpressionParser;
 import parser.Parser;
 import parser.TermParser;
+import parser.simples.NumberParser;
 import parser.simples.VariableParser;
 import interpreter.simple.Variable;
 
@@ -24,7 +25,8 @@ public class PredicateParser {
             throw new IllegalArgumentException("Invalid number of arguments in is/2: " + argString);
         }
 
-        Optional<Variable> argl = VariableParser.parse(argsString.getFirst());
+        Optional<Term> argl = VariableParser.parse(argsString.getFirst()).map(v -> v); // try variable
+        if (argl.isEmpty()) { argl = NumberParser.parse(argsString.getFirst()).map(v -> v); } // try number instead
         Optional<EvaluableExpression> argr = ExpressionParser.parse(argsString.get(1));
 
         if (argl.isEmpty()) throw new IllegalArgumentException("Invalid argument in is/2: " + argsString.getFirst());
@@ -55,9 +57,10 @@ public class PredicateParser {
         return args;
     }
 
-    public static Optional<Predicate> parseNL(String input) {
-        if (NL.isNL(input)) {
-            return Optional.of(new NL());
+
+    public static Optional<Predicate> parseFail(String input) {
+        if (Fail.isFail(input)) {
+            return Optional.of(new Fail());
         }
 
         return Optional.empty();
@@ -119,10 +122,8 @@ public class PredicateParser {
      */
     public static Optional<Predicate> parse(String input) {
         List<Function<String, Optional<Predicate>>> functionStack = List.of(
-                WriteParser::parse,
-                ReadParser::parse,
-                PredicateParser::parseNL,
-                FailParser::parse,
+                IOPredicateParser::parse,
+                PredicateParser::parseFail,
                 OperatorParser::parse,
                 PredicateParser::parseIs,
                 PredicateParser::parseSucc,

@@ -11,6 +11,14 @@ import java.util.List;
 
 public class ComplexTermUnificationTests {
 
+    /**
+     * Test if
+     * f(A, b) and
+     * f(a, B) unify
+     * ;
+     * A should map to a and
+     * B should map to b
+     */
     @Test
     public void complexTermUnification1() {
         Variable A = new Variable("A");
@@ -52,6 +60,16 @@ public class ComplexTermUnificationTests {
 
     @Test
     public void complexTermUnification4() {
+        Atom fa = new Atom("f");
+        ComplexTerm f = new ComplexTerm("f", List.of());
+
+        Unification result = f.unify(fa);
+
+        assertTrue(result.isSuccess());
+    }
+
+    @Test
+    public void complexTermUnification5() {
         ComplexTerm f1 = new ComplexTerm("f1", List.of());
         ComplexTerm f2 = new ComplexTerm("f2", List.of(f1));
 

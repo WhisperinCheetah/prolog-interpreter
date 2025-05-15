@@ -3,6 +3,7 @@ package interpreter.complex.predicate;
 import interpreter.Unification;
 import interpreter.Term;
 import interpreter.complex.expression.EvaluableExpression;
+import interpreter.simple.Number;
 import interpreter.simple.Variable;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 public class Is extends Predicate {
 
     private void checkArgs(Term arg1, Term arg2) {
-        if (!(arg1 instanceof Variable)) throw new IllegalArgumentException("Left hand argument of is/2 must be evaluable");
+        if (!(arg1 instanceof Variable || arg1 instanceof Number)) throw new IllegalArgumentException("Left hand argument of is/2 must be variable or number");
         if (!(arg2 instanceof EvaluableExpression)) throw new IllegalArgumentException("Right hand argument of is/2 must be evaluable");
     }
 
@@ -34,10 +35,17 @@ public class Is extends Predicate {
 
     @Override
     public Unification execute() {
-        Variable var = (Variable) getArg(0);
+        if (getArg(0) instanceof Variable) {
+            Variable var = (Variable) getArg(0);
+            EvaluableExpression evaluable = (EvaluableExpression) getArg(1);
+
+            return Unification.fromEntry(var, evaluable.evaluate());
+        }
+
+        Number argl = (Number)getArg(0);
         EvaluableExpression evaluable = (EvaluableExpression) getArg(1);
 
-        return Unification.fromEntry(var, evaluable.evaluate());
+        return Unification.fromBoolean(argl.equals(evaluable.evaluate()));
     }
 
     @Override
