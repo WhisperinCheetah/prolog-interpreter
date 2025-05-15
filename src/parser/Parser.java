@@ -34,7 +34,6 @@ public class Parser {
         }
     }
 
-
     /**
      * Takes a list of functions that return an optional result of type T, applies them all and takes the result
      * of the first function that succeeded.

@@ -1,0 +1,19 @@
+digraph {
+	fact [label=Fact]
+	rule [label=Rule]
+	term [label=Term]
+	complexTerm [label=ComplexTerm]
+	predicate [label=Predicate]
+	simpleTerm [label=SimpleTerm]
+	atom [label=Atom]
+	number [label=Number]
+	variable [label=Variable]
+	fact -> rule
+	fact -> term
+	term -> simpleTerm
+	term -> complexTerm
+	complexTerm -> predicate
+	simpleTerm -> atom
+	simpleTerm -> number
+	simpleTerm -> variable
+}

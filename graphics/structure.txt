@@ -1,0 +1,23 @@
+[01;34m../src/parser/[0m
+├── ComplexTermParser.java
+├── [01;34mdirectives[0m
+│   ├── DynamicDirectiveParser.java
+│   └── InitializationParser.java
+├── [01;34mdynamics[0m
+│   └── DynamicPredicateParser.java
+├── ExpressionParser.java
+├── Parser.java
+├── [01;34mpredicates[0m
+│   ├── IOPredicateParser.java
+│   ├── OperatorParser.java
+│   └── PredicateParser.java
+├── RuleParser.java
+├── [01;34msimples[0m
+│   ├── AtomParser.java
+│   ├── NumberParser.java
+│   ├── SimpleTermParser.java
+│   └── VariableParser.java
+├── StringCleaner.java
+└── TermParser.java
+
+4 directories, 16 files
