@@ -8,6 +8,7 @@
       <w>assertz</w>
       <w>retractall</w>
       <w>succ</w>
+      <w>swipl</w>
       <w>varc</w>
     </words>
   </dictionary>

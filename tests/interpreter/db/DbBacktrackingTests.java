@@ -1,4 +1,4 @@
-package db;
+package interpreter.db;
 
 import interpreter.Fact;
 import interpreter.Rule;

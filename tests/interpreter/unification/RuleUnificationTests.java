@@ -1,8 +1,8 @@
-package rule;
+package interpreter.unification;
 
 import interpreter.Rule;
-import interpreter.Unification;
 import interpreter.Term;
+import interpreter.Unification;
 import interpreter.complex.ComplexTerm;
 import interpreter.simple.Atom;
 import interpreter.simple.Variable;

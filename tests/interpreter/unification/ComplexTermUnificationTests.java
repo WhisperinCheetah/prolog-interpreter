@@ -1,4 +1,4 @@
-package complex;
+package interpreter.unification;
 
 import interpreter.Unification;
 import interpreter.complex.ComplexTerm;

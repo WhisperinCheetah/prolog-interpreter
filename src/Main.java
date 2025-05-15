@@ -22,8 +22,18 @@ public class Main implements Runnable {
     @Option(names = {"-v", "--verbose"}, description="Enable verbosity")
     boolean verbose;
 
+    @Option(names = {"-t", "--testing"}, description="Disable System.exit")
+    boolean testing;
+
     public static void main(String[] args) throws Exception {
         int exitCode = new CommandLine(new Main()).execute(args);
+
+        for (String arg : args) {
+            if (arg.equals("-t") || arg.equals("--testing")) {
+                return;
+            }
+        }
+
         System.exit(exitCode);
     }
 

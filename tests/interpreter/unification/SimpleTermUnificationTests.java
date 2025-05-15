@@ -1,4 +1,4 @@
-package simple;
+package interpreter.unification;
 
 import interpreter.simple.Atom;
 import interpreter.simple.Number;

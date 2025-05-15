@@ -1,4 +1,4 @@
-package db;
+package interpreter.db;
 
 import interpreter.Term;
 import interpreter.FactDatabase;

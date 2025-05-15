@@ -1,4 +1,4 @@
-package complex;
+package interpreter.complex;
 
 import interpreter.Term;
 import interpreter.complex.ComplexTerm;

@@ -1,4 +1,4 @@
-package complex;
+package interpreter.complex;
 
 import interpreter.complex.predicate.Write;
 import interpreter.simple.Atom;
