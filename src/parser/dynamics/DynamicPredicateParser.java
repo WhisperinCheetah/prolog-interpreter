@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class DynamicParser {
+public class DynamicPredicateParser {
 
     private static Fact parseDynamicArg(String input, boolean termOnly) {
         String argString = input.substring(input.indexOf("(") + 1, input.lastIndexOf(")"));
@@ -95,11 +95,11 @@ public class DynamicParser {
 
     public static Optional<Dynamic> parse(String input) {
         List<Function<String, Optional<Dynamic>>> parsers = List.of(
-                DynamicParser::parseAsserta,
-                DynamicParser::parseAssertz,
-                DynamicParser::parseAssert,
-                DynamicParser::parseRetract,
-                DynamicParser::parseRetractall
+                DynamicPredicateParser::parseAsserta,
+                DynamicPredicateParser::parseAssertz,
+                DynamicPredicateParser::parseAssert,
+                DynamicPredicateParser::parseRetract,
+                DynamicPredicateParser::parseRetractall
         );
 
         return parsers.stream()

@@ -93,15 +93,15 @@ public class Unification {
     }
 
     public String toPrettyString(List<Term> queries) {
-        if (varTermMap.isEmpty()) {
-            return success ? "true" : "false";
-        }
-
         Set<Variable> queryVariables = new HashSet<>();
         for (Term query : queries) {
             if (query instanceof ComplexTerm complexQuery) {
                 queryVariables.addAll(complexQuery.getVariables());
             }
+        }
+
+        if (queryVariables.isEmpty() || queryVariables.stream().anyMatch(varTermMap.keySet()::contains)) {
+            return success ? "true" : "false";
         }
 
         StringBuilder str = new StringBuilder();

@@ -5,6 +5,8 @@ import interpreter.complex.ComplexTerm;
 import interpreter.directives.DynamicDirective;
 import interpreter.directives.Initialization;
 import org.junit.jupiter.api.Test;
+import parser.directives.DynamicDirectiveParser;
+import parser.directives.InitializationParser;
 
 import java.util.Optional;
 

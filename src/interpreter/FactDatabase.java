@@ -203,19 +203,14 @@ public class FactDatabase {
     public void runQuery(String queryString) throws ParseException {
         Unification initializationResult = this.runInitialization();
 
-        // System.out.println(initializationResult);
-
         if (initializationResult.isFailure()) {
-            System.out.println("Initialization goal failed");
-            System.out.println(initializationResult);
+            System.out.println("Warning: Initialization goal failed");
             return;
         }
 
         List<Term> query = this.parseQuery(queryString);
 
         Unification res = backtrackMultiple(query);
-
-        System.out.println(res);
 
         System.out.println(res.toPrettyString(query));
     }

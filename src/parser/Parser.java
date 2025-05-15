@@ -4,6 +4,8 @@ import interpreter.Fact;
 import interpreter.FactDatabase;
 import interpreter.directives.DynamicDirective;
 import interpreter.directives.Initialization;
+import parser.directives.DynamicDirectiveParser;
+import parser.directives.InitializationParser;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class Parser {
 

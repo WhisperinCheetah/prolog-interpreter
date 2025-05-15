@@ -8,7 +8,7 @@ import interpreter.simple.Atom;
 import interpreter.simple.Number;
 import interpreter.simple.Variable;
 import org.junit.jupiter.api.Test;
-import parser.dynamics.DynamicParser;
+import parser.dynamics.DynamicPredicateParser;
 import parser.predicates.PredicateParser;
 
 import java.util.List;
@@ -102,7 +102,7 @@ public class PredicateParserTests {
     @Test
     public void parseAssertaTest() {
         String input = "asserta(a)";
-        Optional<Dynamic> dyn = DynamicParser.parse(input);
+        Optional<Dynamic> dyn = DynamicPredicateParser.parse(input);
 
         assertTrue(dyn.isPresent());
         assertEquals(new Asserta(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
@@ -111,7 +111,7 @@ public class PredicateParserTests {
     @Test
     public void parseAssertTest() {
         String input = "assert(a)";
-        Optional<Dynamic> dyn = DynamicParser.parse(input);
+        Optional<Dynamic> dyn = DynamicPredicateParser.parse(input);
 
         assertTrue(dyn.isPresent());
         assertEquals(new Assert(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
@@ -120,7 +120,7 @@ public class PredicateParserTests {
     @Test
     public void parseAssertzTest() {
         String input = "assertz(a)";
-        Optional<Dynamic> dyn = DynamicParser.parse(input);
+        Optional<Dynamic> dyn = DynamicPredicateParser.parse(input);
 
         assertTrue(dyn.isPresent());
         assertEquals(new Assertz(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
@@ -129,7 +129,7 @@ public class PredicateParserTests {
     @Test
     public void parseRetractTest() {
         String input = "retract(a)";
-        Optional<Dynamic> dyn = DynamicParser.parse(input);
+        Optional<Dynamic> dyn = DynamicPredicateParser.parse(input);
 
         assertTrue(dyn.isPresent());
         assertEquals(new Retract(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
@@ -138,7 +138,7 @@ public class PredicateParserTests {
     @Test
     public void parseRetractallTest() {
         String input = "retractall(a)";
-        Optional<Dynamic> dyn = DynamicParser.parse(input);
+        Optional<Dynamic> dyn = DynamicPredicateParser.parse(input);
 
         assertTrue(dyn.isPresent());
         assertEquals(new Retractall(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());

@@ -25,6 +25,13 @@ public class Main implements Runnable {
     @Option(names = {"-t", "--testing"}, description="Disable System.exit")
     boolean testing;
 
+    /**
+     * The big main function. Creates an object to parse the arguments and adds itself. When it's done
+     * it checks if a testing flag was given in the arguments such that the function just gets returned
+     * instead of the program being exited.
+     *
+     * The CommandLine object will call the function 'run'
+     */
     public static void main(String[] args) throws Exception {
         int exitCode = new CommandLine(new Main()).execute(args);
 
@@ -66,29 +73,37 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Runs a script
+     */
     private void runScript() {
         FactDatabase db = setupDb();
         db.runInitialization();
     }
 
+    /**
+     * Starts a REPL
+     */
     private void runRepl() throws Exception {
         FactDatabase db = setupDb();
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
+            System.out.print("?- ");
             String input = scanner.nextLine();
 
             if (input.equalsIgnoreCase("exit")) {
                 break;
-            } else if (input.equalsIgnoreCase("")) {
-                System.out.print("\r");
-                db.nextState();
-            } else if (input.startsWith("?-")) {
-                db.runQuery(input.substring(input.indexOf("?-") + 2));
+            } else {
+                db.runQuery(input);
             }
         }
     }
 
+    /**
+     * Function run which gets called after the main function. Checks it the program is started
+     * in REPL mode or script mode and runs the corresponding function.
+     */
     public void _run() throws Exception {
         if (repl) {
             runRepl();

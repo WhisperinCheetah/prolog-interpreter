@@ -1,7 +1,8 @@
-package parser;
+package parser.directives;
 
 import interpreter.complex.ComplexTerm;
 import interpreter.directives.Initialization;
+import parser.ComplexTermParser;
 
 import java.util.Optional;
 

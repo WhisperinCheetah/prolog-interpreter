@@ -1,4 +1,4 @@
-package parser;
+package parser.directives;
 
 import interpreter.FunctorType;
 import interpreter.directives.DynamicDirective;
