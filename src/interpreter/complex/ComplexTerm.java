@@ -121,6 +121,8 @@ public class ComplexTerm implements Term {
 
     @Override
     public String toPrettyString() {
+        if (this.getArity() == 0) return this.getFunctor();
+
         return this.getFunctor() + "(" + args.stream().map(Term::toPrettyString).collect(Collectors.joining(", ")) + ")";
     }
 

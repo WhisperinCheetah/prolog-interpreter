@@ -87,4 +87,8 @@ public class Rule implements Fact {
     public String toString() {
         return head.toString() + " :- " + body.toString();
     }
+
+    public String toPrettyString() {
+        return head.toPrettyString() + " :- " + body.toString();
+    }
 }

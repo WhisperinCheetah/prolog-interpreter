@@ -1,12 +1,14 @@
 package parser;
 
 import interpreter.complex.ComplexTerm;
+import interpreter.complex.dynamic.*;
 import interpreter.complex.expression.Addition;
 import interpreter.complex.predicate.*;
 import interpreter.simple.Atom;
 import interpreter.simple.Number;
 import interpreter.simple.Variable;
 import org.junit.jupiter.api.Test;
+import parser.dynamics.DynamicParser;
 import parser.predicates.PredicateParser;
 
 import java.util.List;
@@ -99,26 +101,46 @@ public class PredicateParserTests {
 
     @Test
     public void parseAssertaTest() {
+        String input = "asserta(a)";
+        Optional<Dynamic> dyn = DynamicParser.parse(input);
 
+        assertTrue(dyn.isPresent());
+        assertEquals(new Asserta(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
     }
 
     @Test
     public void parseAssertTest() {
+        String input = "assert(a)";
+        Optional<Dynamic> dyn = DynamicParser.parse(input);
 
+        assertTrue(dyn.isPresent());
+        assertEquals(new Assert(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
     }
 
     @Test
     public void parseAssertzTest() {
+        String input = "assertz(a)";
+        Optional<Dynamic> dyn = DynamicParser.parse(input);
 
+        assertTrue(dyn.isPresent());
+        assertEquals(new Assertz(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
     }
 
     @Test
     public void parseRetractTest() {
+        String input = "retract(a)";
+        Optional<Dynamic> dyn = DynamicParser.parse(input);
 
+        assertTrue(dyn.isPresent());
+        assertEquals(new Retract(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
     }
 
     @Test
     public void parseRetractallTest() {
+        String input = "retractall(a)";
+        Optional<Dynamic> dyn = DynamicParser.parse(input);
 
+        assertTrue(dyn.isPresent());
+        assertEquals(new Retractall(new Atom("a")).toPrettyString(), dyn.get().toPrettyString());
     }
 }
