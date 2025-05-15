@@ -37,28 +37,35 @@ public class FactDatabase {
     }
 
     /**
-     * @param fact Adds a fact to the database
+     * Adds a fact to the database
+     *
+     * @param fact The fact to be added
      */
     public void addFact(Fact fact) {
         facts.add(fact);
     }
 
     /**
-     * @param init Adds a initialization to the database
+     * Adds an initialization/1 directive to the database
+     *
+     * @param init The Initialization
      */
     public void addInitialization(Initialization init) {
         this.init = init;
     }
 
     /**
+     * Adds a dynamic/1 directive to the database
+     *
      * @param dynamic A DynamicDirective to be added to the database
      */
     public void addDynamic(DynamicDirective dynamic) {
         this.dynamics.add(dynamic.getGoal().getType());
     }
 
-
     /**
+     * Check if a given fact has been made dynamic in a script (:- dynamic functor-name/arity)
+     *
      * @param fact the fact that is tested to be dynamic
      * @return true if the fact is dynamic
      */
@@ -89,10 +96,11 @@ public class FactDatabase {
 
 
     /**
-     * Tries to parse a query.
+     * Try to parse a query.
      *
      * @param queryString The user input
      * @return A list of parsed Terms
+     *
      * @throws ParseException If the input could not be parsed
      */
     public List<Term> parseQuery(String queryString) throws ParseException {
@@ -117,7 +125,7 @@ public class FactDatabase {
 
     /**
      * This function is the beating heart of the interpreter. It recursively backtracks a list of queries that
-     * need to be unified in the database.
+     * need to be unified with the database.
      *
      * @param queries A list of queries that need to get unified
      * @param index Current query index
@@ -129,6 +137,7 @@ public class FactDatabase {
             return unification;
         }
 
+        // substitute the variables that are in the unification object
         Term query = queries.get(index).substituteVariables(unification);
 
         if (query instanceof Cut) {
@@ -143,11 +152,17 @@ public class FactDatabase {
             return backtrackRecursive(queries, index + 1, unification.unify(dynamic.execute(this)));
         }
 
+        // iterate over all facts in the database
         for (Fact fact : facts) {
+
+            // rename the variables in the fact such that they are 'linked' to each other
             Fact rfact = fact.renameVariables(new HashMap<>());
 
+            // try to unify the query with the fact
             Unification res = rfact.unify(query);
 
+            // if the unification is success and the fact is a rule, add the body of the rule to the list
+            // of queries, and try to backtrack them too.
             if (res.isSuccess() && rfact instanceof Rule rule) {
                 List<Term> mergedQueries = new ArrayList<>(queries);
                 mergedQueries.addAll(index + 1, rule.getBody());
@@ -161,6 +176,7 @@ public class FactDatabase {
                 }
             }
 
+            // otherwise if it's just a success, go on to the next item in the query list
             if (res.isSuccess()) {
                 Unification recursiveRes = backtrackRecursive(queries, index+1, unification.unify(res));
 
@@ -170,6 +186,7 @@ public class FactDatabase {
             }
         }
 
+        // if no fact returned a success, return a failure
         return Unification.failure(unification.isCut());
     }
 
@@ -201,6 +218,7 @@ public class FactDatabase {
      * @throws ParseException if the input failed to parse
      */
     public void runQuery(String queryString) throws ParseException {
+        // run initialization
         Unification initializationResult = this.runInitialization();
 
         if (initializationResult.isFailure()) {
