@@ -110,22 +110,29 @@ Deze functionaliteit is bijzonder belangrijk gezien de automatische testen hierv
 
 ## Uitbreidingen
 
-Implementeer minstens één van de onderstaande uitbreidingen. 
-Je mag meerdere uitbreidingen implementeren voor extra punten, maar extra punten worden alleen toegekend als de uitbreidingen voldoende goed zijn uitgevoerd. Het is dus beter om één uitbreiding perfect te implementeren dan drie uitbreidingen half te implementeren, in dat geval zal je geen extra punten verdienen.
+Implementeer de drie onderstaande uitbreidingen. Je kan in samenspraak ook voor een eigen uitbreiding gaan, deze telt dan als vervanging van een uitbreiding uit de verplichte lijst (naar keuze).
+
+Verplichte uitbriedingen:
+
+- lijsten
+- dcg support
+- meta abstracties
 
 ### Lijsten
 
 Een leuke uitbreiding voor je Prolog-interpreter is de ondersteuning van lijsten. Lijsten zijn een van de fundamentele datastructuren in Prolog, en het uitbreiden van je interpreter met extra lijstfunctionaliteiten kan je programma’s veel krachtiger maken. Voeg lijsten toe aan de interpreter met pattern matching syntax, voorzie daarbij ook de volgende lijst predicaten:  
 
+- [ ] `append/3`
+- [ ] `member/2`
 - [ ] `bagof/3` 
 - [ ] `findall/3` 
 - [ ] `setof/3` 
 
-Zorg voor een set van testen die je predicaten testen.  
+Zorg voor een set van testen die je predicaten testen.
 
 ### DCG support 
 
-Een interessante uitbreiding voor je Prolog-interpreter is de ondersteuning van Definite clauses.Clause Grammars (DCG), een ingebouwde manier om grammatica’s en parsers te definiëren in Prolog. DCG’s worden vaak gebruikt voor het verwerken van natuurlijke taal en het bouwen van parsers voor programmeertalen. Hint: Het boek legt uit hoe je DCG's syntax kan omzetten naar traditionele Prolog regels.
+Een interessante uitbreiding voor je Prolog-interpreter is de ondersteuning van Definite Clause Grammars (DCG), een ingebouwde manier om grammatica’s en parsers te definiëren in Prolog. DCG’s worden vaak gebruikt voor het verwerken van natuurlijke taal en het bouwen van parsers voor programmeertalen. Hint: Het boek legt uit hoe je DCG's syntax kan omzetten naar traditionele Prolog regels.
 
 Voor meer info raadpleeg de Prolog documentatie [DCG](https://www.swi-prolog.org/pldoc/man?section=DCG).
 
@@ -150,6 +157,10 @@ Voor deze opdracht mag je dan zelf een unieke feature bedenken die jouw Prolog-i
 Houd er rekening mee dat je eigen uitbreiding vooraf goedgekeurd moet worden. Om goedkeuring te krijgen, volstaat het om een korte beschrijving van je uitbreiding per e-mail op te sturen (naar de hoofdlesgever en praktijkassistent). Let op: als je een uitbreiding implementeert zonder voorafgaande goedkeuring, kun je hier helaas geen punten voor verdienen.
 
 Een interessante uitbreiding voor je Prolog-interpreter zou het implementeren van goed gedefinieerde input-output (I/O)-primitieven kunnen zijn die efficiënt omgaan met backtracking. In de standaard Prolog-implementaties wordt I/O vaak op een onhandige manier afgehandeld, wat problemen kan opleveren bij backtracking. 
+
+## Tweede zit
+
+De opgave in tweede zit blijft hetzelfde, echter je moet nu alle drie de uitbreidingen implementeren. Het onderdeel uitbreidingen zal nu ook op meer punten staan.
 
 ## Niet functionele eisen
 
@@ -250,7 +261,7 @@ Je directory structuur ziet er dus ongeveer zo uit:
 
 ## Deadline
 
-Het project moet ingediend zijn op 9 mei 2025 om 20:00 CEST.
+Het project moet ingediend zijn op 17 augustus 2025 om 20:00 CEST.
 
 # Algemene richtlijnen
 
